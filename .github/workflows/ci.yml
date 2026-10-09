@@ -46,7 +46,11 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: backend/go.mod
+          # go.mod says 1.27, and setup-go would install the newest patch.
+          # Go 1.27.2 writes unified IR export version 5; staticcheck 2026.2.1
+          # and golangci-lint 2.14.0 only read up to version 4. 1.27.1 is the
+          # last patch those linters can analyze. Tests and the binary are unchanged.
+          go-version: "1.27.1"
           cache-dependency-path: backend/go.sum
 
       - name: Format check
