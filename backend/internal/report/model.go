@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/actions"
-	"github.com/osmendes/db-auditor/internal/guidance"
+	"github.com/mayconmendes-qc/db-auditor/internal/actions"
+	"github.com/mayconmendes-qc/db-auditor/internal/guidance"
 )
 
 // Document is the renderer-independent, run-scoped report representation.
@@ -146,6 +146,7 @@ func BuildLines(d Document) []Line {
 	lines = append(lines, Line{Text: "Achados por severidade (itens incluídos no PDF)", Style: "subheading"})
 	for _, severity := range []struct{ key, label string }{{"critical", "Críticos"}, {"high", "Altos"}, {"medium", "Médios"}, {"low", "Baixos"}, {"info", "Informativos"}} {
 		lines = append(lines, Line{Text: fmt.Sprintf("%s|%d|%d", severity.label, severityCounts[severity.key], len(d.Findings)), Style: "bar"})
+		lines = append(lines, Line{Text: fmt.Sprintf("Alternativa textual: %s = %d de %d itens.", severity.label, severityCounts[severity.key], len(d.Findings)), Style: "body"})
 	}
 	lines = append(lines, Line{"Cobertura: " + coverageLabel(d.Coverage), "body"})
 	if d.Score != nil {

@@ -135,7 +135,7 @@ WHERE r.environment_id=$1::uuid AND r.id=$2::uuid AND r.status='success'`, env, 
 	if err != nil {
 		return err
 	}
-	if previous == nil || previous.Completeness != "complete" {
+	if previous == nil || !AllowRegressionAlert(current.Completeness, previous.Completeness) {
 		return nil
 	}
 	var previousAnalysis string

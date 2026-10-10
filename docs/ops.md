@@ -123,7 +123,7 @@ O dump não contém senha de alvo. Confira o `.env.prod` à parte antes de subir
 
 1. `GET /health` → `ok`
 2. `GET /ready` → `ready`
-3. `GET` na porta 9090 (`/metrics`) contém `auditor_up 1`. O mesmo caminho em 8080 responde 404.
+3. De dentro da rede do Compose, `GET http://api:9090/metrics` contém `auditor_up 1`. A porta 9090 não é publicada no host. O mesmo caminho em 8080 responde 404.
 4. UI **Status** lista API, store e runs
 5. Logs JSON incluem `request_id` e `duration_ms`
 6. UI **Documentação** descreve o fluxo de configuração via `.env`

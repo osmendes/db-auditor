@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 type ruleReader interface {
@@ -37,7 +37,12 @@ func registerRuleRoutes(mux *http.ServeMux, store InventoryStore) {
 			writeError(w, http.StatusInternalServerError, CodeInternal, "Não foi possível obter regras.")
 			return
 		}
-		writeJSON(w, http.StatusOK, map[string]any{"items": items, "environment_id": id, "schema": schema})
+		payload, err := json.Marshal(map[string]any{"items": items, "environment_id": id, "schema": schema})
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, CodeInternal, "Não foi possível obter regras.")
+			return
+		}
+		writePrivateJSON(w, r, http.StatusOK, payload)
 	})
 
 	mux.HandleFunc("PUT /api/v1/environments/{id}/rules/{rule}", func(w http.ResponseWriter, r *http.Request) {

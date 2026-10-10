@@ -55,6 +55,9 @@ func ValidateTargetDSNs(targets map[string]string) error {
 		}
 		sslmode := u.Query().Get("sslmode")
 		if sslmode != "verify-full" {
+			if insecureHost(host) && (sslmode == "disable" || sslmode == "require" || sslmode == "verify-ca") {
+				continue
+			}
 			loopback := net.ParseIP(host)
 			local := host == "localhost" || loopback != nil && loopback.IsLoopback()
 			if !local || os.Getenv("AUDITOR_ALLOW_INSECURE_LOCAL_TARGETS") != "true" || sslmode != "disable" {
@@ -63,4 +66,19 @@ func ValidateTargetDSNs(targets map[string]string) error {
 		}
 	}
 	return nil
+}
+
+// InsecureTargetHosts is the explicit, empty-by-default allowlist for weak TLS.
+// Names are logged at boot. Hosts still have to be present in AUDITOR_TARGET_ALLOWED_HOSTS.
+func InsecureTargetHosts() []string {
+	return splitCSV(os.Getenv("AUDITOR_TARGET_INSECURE_HOSTS"))
+}
+
+func insecureHost(host string) bool {
+	for _, name := range InsecureTargetHosts() {
+		if strings.EqualFold(strings.TrimSuffix(name, "."), host) {
+			return true
+		}
+	}
+	return false
 }

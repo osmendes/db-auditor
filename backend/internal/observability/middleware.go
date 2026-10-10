@@ -46,6 +46,7 @@ func Middleware(next http.Handler) http.Handler {
 			rid = newRequestID()
 		}
 		w.Header().Set("X-Request-ID", rid)
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://cdn.fontshare.com https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'")
 		ctx := context.WithValue(r.Context(), requestIDKey, rid)
 		r = r.WithContext(ctx)
 

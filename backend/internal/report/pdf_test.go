@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -66,6 +67,24 @@ func TestPDFVariantsAndBoundaryContent(t *testing.T) {
 			if err != nil || ValidatePDF(pdf) != nil || PageCount(pdf) == 0 {
 				t.Fatalf("PDF inválido: %v", err)
 			}
+			joined := ""
+			for _, line := range BuildLines(variant.doc) {
+				joined += line.Text + "\n"
+			}
+			switch variant.name {
+			case "executivo-vazio":
+				if !strings.Contains(joined, "Nenhum achado observado neste escopo da execução.") {
+					t.Fatal("relatório vazio sem alternativa textual")
+				}
+			case "tecnico-longo":
+				if !strings.Contains(joined, "ID do achado: id-1") {
+					t.Fatal("relatório longo sem ID de evidência")
+				}
+			case "tabela-parcial":
+				if !strings.Contains(joined, "ID do achado: id-2") || !strings.Contains(joined, "A cobertura é parcial") {
+					t.Fatal("relatório parcial sem ID ou aviso de cobertura")
+				}
+			}
 			if dir := os.Getenv("AUDITOR_REPORT_VARIANTS_DIR"); dir != "" {
 				if err := os.WriteFile(dir+"/"+variant.name+".pdf", pdf, 0600); err != nil {
 					t.Fatal(err)
@@ -106,6 +125,20 @@ func TestLargeInventoryPDFIsBounded(t *testing.T) {
 	if len(pdf) > maxPDFBytes || PageCount(pdf) > 200 {
 		t.Fatalf("large report exceeded bounds: %d bytes, %d pages", len(pdf), PageCount(pdf))
 	}
+	runtime.GC()
+	var before, after runtime.MemStats
+	runtime.ReadMemStats(&before)
+	rendered, err := RenderPDF(d)
+	runtime.ReadMemStats(&after)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rendered) > maxPDFBytes {
+		t.Fatalf("streamed report exceeded %d bytes", maxPDFBytes)
+	}
+	if growth := after.TotalAlloc - before.TotalAlloc; growth > 96<<20 {
+		t.Fatalf("relatório volumoso alocou %d bytes; o worker deve falhar antes de estourar a memória", growth)
+	}
 }
 
 func TestPDFRejectsOversizedTextBeforeLayout(t *testing.T) {
@@ -135,7 +168,7 @@ func TestReportContentGolden(t *testing.T) {
 	for _, line := range lines {
 		joined += line.Text + "\n"
 	}
-	for _, want := range []string{"DB Auditor - Relatório executivo", "4 tabelas | 1 achado", "Cobertura: parcial", "Índice indisponível", "Referência base", "Evolução de armazenamento", "Evidência técnica: proof", "Confirme as funções da conta", "Metodologia e glossário"} {
+	for _, want := range []string{"DB Auditor - Relatório executivo", "4 tabelas | 1 achado", "Cobertura: parcial", "Índice indisponível", "Referência base", "Evolução de armazenamento", "Evidência técnica: proof", "Confirme as funções da conta", "Metodologia e glossário", "Alternativa textual: Críticos = 1 de 1 itens."} {
 		if !strings.Contains(joined, want) {
 			t.Fatalf("report missing %q", want)
 		}

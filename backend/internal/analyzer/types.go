@@ -106,6 +106,10 @@ type SnapshotFacts struct {
 	Extensions       []ExtensionFact
 	Settings         map[string]string
 	Peers            []ServerSide
+	// Maintenance trend uses only complete, comparable collections.
+	CollectionComplete bool
+	PreviousComplete   bool
+	PreviousTables     []TableFact
 }
 
 // TableFact is a minimal table size fact for storage analysis.

@@ -81,10 +81,15 @@ jobs:
         with:
           version: latest
           working-directory: backend
+          only-new-issues: true
+
+      - name: Prove gosec fails a new finding
+        working-directory: backend
+        run: sh tools/lint-probe/expect-fail.sh
 
       - name: Prepare disposable snapshot store
         run: |
-          for migration in migrations/01_baseline.sql migrations/03_audit_schedule.sql migrations/04_p1.sql migrations/05_p2.sql migrations/06_second_stage.sql migrations/07_third_stage.sql migrations/08_action_workload.sql migrations/09_query_action_metrics.sql migrations/10_account_activity.sql migrations/11_quality_validation.sql migrations/12_view_detail.sql migrations/13_index_detail.sql migrations/14_function_detail.sql migrations/15_cagg_source.sql migrations/16_identity.sql migrations/17_report_retention.sql; do
+          for migration in migrations/01_baseline.sql migrations/03_audit_schedule.sql migrations/04_p1.sql migrations/05_p2.sql migrations/06_second_stage.sql migrations/07_third_stage.sql migrations/08_action_workload.sql migrations/09_query_action_metrics.sql migrations/10_account_activity.sql migrations/11_quality_validation.sql migrations/12_view_detail.sql migrations/13_index_detail.sql migrations/14_function_detail.sql migrations/15_cagg_source.sql migrations/16_identity.sql migrations/17_report_retention.sql migrations/18_totp_discard_retention.sql; do
             docker exec -i ${{ job.services.postgres.id }} psql -v ON_ERROR_STOP=1 -U postgres -d db_auditor_test < "$migration" >/dev/null
           done
 
@@ -93,6 +98,7 @@ jobs:
           AUDITOR_MONGO_TEST_URI: mongodb://127.0.0.1:27017/db_auditor_ci?tls=false&directConnection=true
           AUDITOR_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:55437/db_auditor_test?sslmode=disable
           AUDITOR_TEST_DISPOSABLE: "1"
+          AUDITOR_TEST_SCALE: "1"
         run: go test -p 1 ./... -coverprofile=coverage.out
 
       - name: Trivy filesystem (backend)

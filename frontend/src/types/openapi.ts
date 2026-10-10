@@ -18,6 +18,11 @@ export type ApiPath =
   | "/api/v1/auth/logout"
   | "/api/v1/auth/me"
   | "/api/v1/auth/password"
+  | "/api/v1/auth/totp"
+  | "/api/v1/auth/totp/confirm"
+  | "/api/v1/auth/totp/disable"
+  | "/api/v1/auth/totp/enroll"
+  | "/api/v1/auth/totp/require"
   | "/api/v1/auth/users"
   | "/api/v1/auth/users/{id}"
   | "/api/v1/auth/users/{id}/sessions/revoke"
@@ -37,6 +42,7 @@ export type ApiPath =
   | "/api/v1/environments/{id}/continuous-aggregates/page"
   | "/api/v1/environments/{id}/databases"
   | "/api/v1/environments/{id}/dimensions"
+  | "/api/v1/environments/{id}/findings-diff"
   | "/api/v1/environments/{id}/functions"
   | "/api/v1/environments/{id}/history"
   | "/api/v1/environments/{id}/hypertables"
@@ -136,6 +142,56 @@ export interface CAGGDetailSnapshot {
   definition_fingerprint: string;
   materialization_size_bytes?: number | null;
   collected_at: string;
+}
+
+export interface Finding {
+  id: string;
+  environment_id: string;
+  audit_run_id?: string | null;
+  finding_type: string;
+  rule_id?: string;
+  rule_version?: string;
+  category?: string;
+  confidence?: number;
+  impact?: string;
+  risk?: string;
+  recommendation?: string;
+  friendly_meaning?: string;
+  friendly_next?: string;
+  validation?: string;
+  severity: string;
+  status: string;
+  title: string;
+  summary: string;
+  object_type?: string;
+  object_key?: string;
+  database_name?: string;
+  schema_name?: string;
+  object_name?: string;
+  dedup_key: string;
+  first_seen_at: string;
+  last_seen_at: string;
+  resolved_at?: string | null;
+  recurrence_count?: number;
+  suppression_reason?: string | null;
+  suppressed_until?: string | null;
+  assignee?: string;
+  due_at?: string | null;
+  superseded_by?: string | null;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  evidence?: Record<string, unknown>;
+  references?: string[];
+  rule_parameters?: Record<string, unknown>;
+}
+
+export interface FindingChange {
+  change: string;
+  object_key: string;
+  title: string;
+  severity: string;
+  finding_id?: string;
 }
 
 export interface FunctionDetailSnapshot {

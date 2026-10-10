@@ -123,12 +123,27 @@ func RenderPDF(document Document) ([]byte, error) {
 			fontSize, step = 10, 14
 		}
 	}
-	objects := []string{"", "", "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>"}
-	kids := []string{}
-	for index, commands := range pages {
-		pageID := len(objects) + 1
-		contentID := pageID + 1
-		kids = append(kids, fmt.Sprintf("%d 0 R", pageID))
+	lines = nil
+	var out bytes.Buffer
+	out.WriteString("%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
+	offsets := []int{0}
+	writeObject := func(body string) error {
+		offsets = append(offsets, out.Len())
+		fmt.Fprintf(&out, "%d 0 obj\n%s\nendobj\n", len(offsets)-1, body)
+		if out.Len() > maxPDFBytes {
+			return fmt.Errorf("relatório excede %d bytes; reduza o escopo ou use filtros", maxPDFBytes)
+		}
+		return nil
+	}
+	pageCount := len(pages)
+	contentID := func(index int) int { return index + 1 }
+	pageID := func(index int) int { return pageCount + index + 1 }
+	fontID := 2*pageCount + 1
+	pagesID := 2*pageCount + 2
+	catalogID := 2*pageCount + 3
+	for index := range pages {
+		commands := pages[index]
+		pages[index] = nil
 		stream := "1 1 1 rg 0 0 595 842 re f\n"
 		if index > 0 {
 			run := document.RunID
@@ -137,27 +152,38 @@ func RenderPDF(document Document) ([]byte, error) {
 			}
 			stream += fmt.Sprintf("0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (%s) Tj ET\n", escapePDFText("DB Auditor · "+reportTypeLabel(document.Type)+" · execução "+run))
 		}
-		stream += strings.Join(commands, "") + fmt.Sprintf("0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (%s) Tj ET\n", escapePDFText(fmt.Sprintf("Página %d de %d", index+1, len(pages))))
-		objects = append(objects, fmt.Sprintf("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents %d 0 R >>", contentID), fmt.Sprintf("<< /Length %d >>\nstream\n%sendstream", len(stream), stream))
-	}
-	objects[0] = "<< /Type /Catalog /Pages 2 0 R >>"
-	objects[1] = fmt.Sprintf("<< /Type /Pages /Kids [%s] /Count %d >>", strings.Join(kids, " "), len(pages))
-	var out bytes.Buffer
-	out.WriteString("%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
-	offsets := []int{0}
-	for index, object := range objects {
-		offsets = append(offsets, out.Len())
-		fmt.Fprintf(&out, "%d 0 obj\n%s\nendobj\n", index+1, object)
-		if out.Len() > maxPDFBytes {
-			return nil, fmt.Errorf("relatório excede %d bytes; reduza o escopo ou use filtros", maxPDFBytes)
+		stream += strings.Join(commands, "") + fmt.Sprintf("0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (%s) Tj ET\n", escapePDFText(fmt.Sprintf("Página %d de %d", index+1, pageCount)))
+		if err := writeObject(fmt.Sprintf("<< /Length %d >>\nstream\n%sendstream", len(stream), stream)); err != nil {
+			return nil, err
 		}
+	}
+	pages = nil
+	kids := make([]string, pageCount)
+	for index := 0; index < pageCount; index++ {
+		kids[index] = fmt.Sprintf("%d 0 R", pageID(index))
+		body := fmt.Sprintf("<< /Type /Page /Parent %d 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 %d 0 R >> >> /Contents %d 0 R >>", pagesID, fontID, contentID(index))
+		if err := writeObject(body); err != nil {
+			return nil, err
+		}
+	}
+	if err := writeObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>"); err != nil {
+		return nil, err
+	}
+	if err := writeObject(fmt.Sprintf("<< /Type /Pages /Kids [%s] /Count %d >>", strings.Join(kids, " "), pageCount)); err != nil {
+		return nil, err
+	}
+	if err := writeObject(fmt.Sprintf("<< /Type /Catalog /Pages %d 0 R >>", pagesID)); err != nil {
+		return nil, err
+	}
+	if catalogID != len(offsets)-1 {
+		return nil, fmt.Errorf("relatório PDF inconsistente")
 	}
 	xref := out.Len()
 	fmt.Fprintf(&out, "xref\n0 %d\n0000000000 65535 f \n", len(offsets))
 	for _, offset := range offsets[1:] {
 		fmt.Fprintf(&out, "%010d 00000 n \n", offset)
 	}
-	fmt.Fprintf(&out, "trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n", len(offsets), xref)
+	fmt.Fprintf(&out, "trailer\n<< /Size %d /Root %d 0 R >>\nstartxref\n%d\n%%%%EOF\n", len(offsets), catalogID, xref)
 	if out.Len() > maxPDFBytes {
 		return nil, fmt.Errorf("relatório excede %d bytes; reduza o escopo ou use filtros", maxPDFBytes)
 	}

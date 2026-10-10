@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 type rulesStoreStub struct{ *stubStore }

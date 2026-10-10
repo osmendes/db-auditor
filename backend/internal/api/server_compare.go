@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 type serverSideLoader interface {

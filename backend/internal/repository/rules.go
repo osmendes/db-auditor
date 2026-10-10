@@ -7,8 +7,8 @@ import (
 	"reflect"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/osmendes/db-auditor/internal/analyzer"
-	"github.com/osmendes/db-auditor/internal/capabilities"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/capabilities"
 )
 
 // EnsureRuleCatalog only inserts new immutable versions. Existing catalog

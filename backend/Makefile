@@ -25,7 +25,7 @@ lint:
 	golangci-lint run
 
 build:
-	CGO_ENABLED=0 go build -trimpath -ldflags='-s -w -X github.com/osmendes/db-auditor/internal/buildinfo.Version=$(VERSION) -X github.com/osmendes/db-auditor/internal/buildinfo.Commit=$(COMMIT) -X github.com/osmendes/db-auditor/internal/buildinfo.Date=$(DATE)' -o bin/auditor ./cmd/auditor
+	CGO_ENABLED=0 go build -trimpath -ldflags='-s -w -X github.com/mayconmendes-qc/db-auditor/internal/buildinfo.Version=$(VERSION) -X github.com/mayconmendes-qc/db-auditor/internal/buildinfo.Commit=$(COMMIT) -X github.com/mayconmendes-qc/db-auditor/internal/buildinfo.Date=$(DATE)' -o bin/auditor ./cmd/auditor
 
 sqlc:
 	sqlc generate

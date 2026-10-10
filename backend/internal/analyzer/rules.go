@@ -43,7 +43,7 @@ var ruleIDs = []string{
 	"security.powerful_role", "security.security_definer", "integrity.missing_primary_key",
 	"integrity.fk_without_index", "integrity.constraint_unvalidated", "integrity.fk_type_mismatch",
 	"integrity.orphan_sequence", "integrity.sequence_default_mismatch", "index.prefix_overlap", "index.invalid", "index.write_burden",
-	"index.investigate_missing", "maintenance.stale_analyze", "maintenance.dead_tuple_pressure",
+	"index.investigate_missing", "maintenance.stale_analyze", "maintenance.dead_tuple_pressure", "maintenance.growth_trend",
 	"model.wide_table", "model.repeated_columns", "model.duplicate_entity",
 	"model.implicit_relationship", "model.naming_inconsistent", "model.undocumented_critical",
 	"model.type_review", "model.jsonb_critical",

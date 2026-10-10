@@ -94,7 +94,7 @@ O artefato expira após 30 dias. A expiração remove o PDF, mas preserva o regi
 - **Mapeamentos, Desvio de schema e Comparar:** relacione objetos entre ambientes e examine diferenças. Versão, perfil e cobertura podem limitar a comparação.
 - **Regras:** veja o catálogo, sua versão e a explicação das verificações. Uma regra não aplicável ao mecanismo não deve ser interpretada como resultado saudável.
 - **Status:** veja se API, armazenamento interno, conexões e tarefas estão funcionando.
-- **Contas:** operadores gerenciam usuários e acessos. Não compartilhe senha; peça revogação se perder um dispositivo.
+- **Contas:** operadores gerenciam usuários e acessos. Não compartilhe senha; peça revogação se perder um dispositivo. TOTP é opcional: em Contas, gere o segredo, confirme o código do autenticador e guarde os códigos de recuperação. Só um operador pode exigir o código na própria conta. Não há SMS.
 - **Documentação:** consulte ajuda contextual e o glossário dentro do aplicativo.
 
 ## 10. Se algo parecer errado

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/osmendes/db-auditor/internal/fingerprint"
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/fingerprint"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 // MappingStore exposes object mapping persistence.

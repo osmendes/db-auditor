@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 type AuthStore interface {
@@ -45,6 +45,7 @@ func requestIdentity(r *http.Request) *repository.AuditorUser {
 }
 
 func registerAuthRoutes(mux *http.ServeMux, store AuthStore) {
+	registerTOTPRoutes(mux, store)
 	mux.HandleFunc("POST /api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		var body struct{ Username, Password string }
@@ -54,24 +55,16 @@ func registerAuthRoutes(mux *http.ServeMux, store AuthStore) {
 		}
 		username := strings.TrimSpace(body.Username)
 		host := clientIP(r)
-		ipKey := sha256.Sum256([]byte("login-ip:" + host))
-		accountKey := sha256.Sum256([]byte("login-user:" + strings.ToLower(username)))
-		ipAttempts, err := store.RecordLoginAttempt(r.Context(), ipKey[:], time.Minute, false)
+		pairKey := sha256.Sum256([]byte("login-pair:" + host + "\n" + strings.ToLower(username)))
+		pairAttempts, err := store.RecordLoginAttempt(r.Context(), pairKey[:], 5*time.Minute, true)
 		if err != nil {
 			writeError(w, http.StatusServiceUnavailable, CodeUnavailable, "Autenticação indisponível.")
 			return
 		}
-		accountAttempts, err := store.RecordLoginAttempt(r.Context(), accountKey[:], 5*time.Minute, true)
-		if err != nil {
-			writeError(w, http.StatusServiceUnavailable, CodeUnavailable, "Autenticação indisponível.")
-			return
-		}
-		if ipAttempts.Count > 600 || accountAttempts.Count > 10 || accountAttempts.RetryAfter > 0 {
-			retryAfter := "60"
-			if accountAttempts.Count > 10 {
-				retryAfter = "300"
-			} else if accountAttempts.RetryAfter > 0 {
-				retryAfter = fmt.Sprint(accountAttempts.RetryAfter)
+		if pairAttempts.Count > 10 || pairAttempts.RetryAfter > 0 {
+			retryAfter := "300"
+			if pairAttempts.RetryAfter > 0 {
+				retryAfter = fmt.Sprint(pairAttempts.RetryAfter)
 			}
 			w.Header().Set("Retry-After", retryAfter)
 			writeError(w, http.StatusTooManyRequests, CodeUnavailable, "Muitas tentativas. Aguarde e tente novamente.")
@@ -86,6 +79,12 @@ func registerAuthRoutes(mux *http.ServeMux, store AuthStore) {
 			writeError(w, http.StatusUnauthorized, CodeUnavailable, "Credenciais inválidas.")
 			return
 		}
+		if err := store.ClearLoginAttempt(r.Context(), pairKey[:]); err != nil {
+			slog.Warn("could not clear login attempt counter", "error", err)
+		}
+		if respondTOTPChallenge(w, r, store, user) {
+			return
+		}
 		token := make([]byte, 32)
 		if _, err := rand.Read(token); err != nil {
 			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao criar sessão.")
@@ -96,9 +95,6 @@ func registerAuthRoutes(mux *http.ServeMux, store AuthStore) {
 		if err := store.CreateAuditorSession(r.Context(), user.ID, digest[:], time.Now().Add(8*time.Hour)); err != nil {
 			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao criar sessão.")
 			return
-		}
-		if err := store.ClearLoginAttempt(r.Context(), accountKey[:]); err != nil {
-			slog.Warn("could not clear login attempt counter", "error", err)
 		}
 		if r.URL.Query().Get("mode") == "cookie" {
 			http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: encoded, Path: "/", MaxAge: 28800,
@@ -273,7 +269,7 @@ func clearSessionCookie(w http.ResponseWriter, r *http.Request) {
 func authMiddleware(next http.Handler, store AuthStore) http.Handler {
 	limiter := &apiWindow{byKey: make(map[string]attemptWindow), max: 600}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.HasPrefix(r.URL.Path, "/api/v1/") || r.URL.Path == "/api/v1/auth/login" {
+		if !strings.HasPrefix(r.URL.Path, "/api/v1/") || r.URL.Path == "/api/v1/auth/login" || r.URL.Path == "/api/v1/auth/totp" {
 			next.ServeHTTP(w, r)
 			return
 		}

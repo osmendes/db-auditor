@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "../components/PageHeader";
+import { TotpCard } from "../components/TotpCard";
 import {
   Button,
   Card,
@@ -143,6 +144,7 @@ export function AccountsPage() {
         description="Gerencie seu acesso ao auditor. Alterações de senha ou permissão encerram as sessões anteriores."
       />
       <div className="mt-8 space-y-5">
+        <TotpCard />
         {error ? (
           <ErrorBanner message={error} onRetry={() => void refresh()} />
         ) : null}

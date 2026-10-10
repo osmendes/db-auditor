@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/osmendes/db-auditor/internal/database/sqlc"
+	"github.com/mayconmendes-qc/db-auditor/internal/database/sqlc"
 )
 
 // AuditRunStore adapts Store to audit.RunStore using sqlc queries.

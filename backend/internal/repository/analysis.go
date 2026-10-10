@@ -8,7 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 type AnalysisRun struct {
@@ -74,10 +74,49 @@ func (s *Store) SaveAnalysisFindings(ctx context.Context, findings []analyzer.Fi
 		if err != nil && err != pgx.ErrNoRows {
 			return 0, err
 		}
+		evidence := analyzer.EvidenceJSON(f.Evidence)
+		signature := EvidenceSignature(evidence)
+		var actionStatus, storedSignature string
+		var suppressUntil *time.Time
+		err = tx.QueryRow(ctx, `SELECT COALESCE(a.status,''), COALESCE(a.evidence_sha256,''), a.suppress_until
+FROM finding_action a
+JOIN finding existing ON existing.id=a.finding_id
+WHERE existing.environment_id=$1::uuid AND existing.dedup_key=$2 AND existing.rule_version=$3`, f.EnvironmentID, f.DedupKey, f.RuleVersion).Scan(&actionStatus, &storedSignature, &suppressUntil)
+		if err != nil && err != pgx.ErrNoRows {
+			return 0, err
+		}
+		until := time.Time{}
+		hasUntil := suppressUntil != nil
+		if hasUntil {
+			until = *suppressUntil
+		}
+		switch DecideDiscard(actionStatus, storedSignature, signature, until, hasUntil, time.Now()) {
+		case DiscardHold:
+			var id string
+			err = tx.QueryRow(ctx, `SELECT id::text FROM finding WHERE environment_id=$1::uuid AND dedup_key=$2 AND rule_version=$3`, f.EnvironmentID, f.DedupKey, f.RuleVersion).Scan(&id)
+			if err != nil && err != pgx.ErrNoRows {
+				return 0, err
+			}
+			if id != "" && f.AuditRunID != "" {
+				if _, err = tx.Exec(ctx, `INSERT INTO finding_event(finding_id,audit_run_id,event_type,reason,evidence) VALUES($1::uuid,$2::uuid,'suppressed','identical evidence remains discarded',$3::jsonb) ON CONFLICT DO NOTHING`, id, f.AuditRunID, evidence); err != nil {
+					return 0, err
+				}
+			}
+			continue
+		case DiscardReopen:
+			if _, err = tx.Exec(ctx, `UPDATE finding SET status='suppressed', suppressed_until=now()
+WHERE environment_id=$1::uuid AND dedup_key=$2 AND rule_version=$3 AND status='suppressed'`, f.EnvironmentID, f.DedupKey, f.RuleVersion); err != nil {
+				return 0, err
+			}
+			if _, err = tx.Exec(ctx, `UPDATE finding_action SET status='suggested', evidence_sha256=NULL, suppress_until=NULL, updated_at=now()
+WHERE finding_id=(SELECT id FROM finding WHERE environment_id=$1::uuid AND dedup_key=$2 AND rule_version=$3)`, f.EnvironmentID, f.DedupKey, f.RuleVersion); err != nil {
+				return 0, err
+			}
+		}
 		persisted, err := scanFinding(tx.QueryRow(ctx, upsertFindingSQL,
 			f.EnvironmentID, f.AuditRunID, f.FindingType, string(f.Severity),
 			f.Title, f.Summary, f.ObjectType, f.ObjectKey,
-			f.DatabaseName, f.SchemaName, f.ObjectName, analyzer.EvidenceJSON(f.Evidence), f.DedupKey,
+			f.DatabaseName, f.SchemaName, f.ObjectName, evidence, f.DedupKey,
 			f.RuleID, f.RuleVersion, f.Category, f.Confidence, f.Impact, f.Risk, f.Recommendation, f.Validation, refs, params))
 		if err != nil {
 			return 0, fmt.Errorf("finding %d (%s): %w", i+1, f.FindingType, err)
@@ -85,8 +124,8 @@ func (s *Store) SaveAnalysisFindings(ctx context.Context, findings []analyzer.Fi
 		if _, err = tx.Exec(ctx, `INSERT INTO finding_event (finding_id,audit_run_id,event_type,category,severity,database_name,schema_name,object_name,rule_version,title,summary,recommendation,confidence,evidence,finding_status,impact,risk,validation,reference_urls,rule_parameters) VALUES ($1::uuid,$2::uuid,'observed',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13::jsonb,$14,$15,$16,$17,$18::jsonb,$19::jsonb) ON CONFLICT DO NOTHING`, persisted.ID, f.AuditRunID, f.Category, string(f.Severity), f.DatabaseName, f.SchemaName, f.ObjectName, f.RuleVersion, f.Title, f.Summary, f.Recommendation, f.Confidence, analyzer.EvidenceJSON(f.Evidence), persisted.Status, f.Impact, f.Risk, f.Validation, refs, params); err != nil {
 			return 0, err
 		}
-		if previousStatus == "resolved" {
-			if _, err = tx.Exec(ctx, `INSERT INTO finding_event (finding_id,audit_run_id,event_type) VALUES ($1::uuid,$2::uuid,'reopened') ON CONFLICT DO NOTHING`, persisted.ID, f.AuditRunID); err != nil {
+		if previousStatus == "resolved" || actionStatus == "discarded" && storedSignature != signature {
+			if _, err = tx.Exec(ctx, `INSERT INTO finding_event (finding_id,audit_run_id,event_type,reason) VALUES ($1::uuid,$2::uuid,'reopened','evidence changed or suppression expired') ON CONFLICT DO NOTHING`, persisted.ID, f.AuditRunID); err != nil {
 				return 0, err
 			}
 		}

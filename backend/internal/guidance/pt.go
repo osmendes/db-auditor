@@ -45,6 +45,7 @@ var portuguese = map[string]Text{
 	"index.investigate_missing":           {"Uma consulta pode se beneficiar de índice ainda não identificado.", "Analise o plano; o fingerprint sozinho não determina as colunas do índice."},
 	"maintenance.stale_analyze":           {"As estatísticas da tabela podem estar antigas.", "Revise atividade, autovacuum e necessidade de ANALYZE."},
 	"maintenance.dead_tuple_pressure":     {"Registros antigos podem pressionar a manutenção da tabela.", "Confirme a tendência e a configuração de autovacuum."},
+	"maintenance.growth_trend":            {"O tamanho ou a atividade mudou entre duas coletas completas.", "Trate o número como hipótese. Confirme período, backup e aprovação antes de qualquer manutenção."},
 	"model.wide_table":                    {"Esta tabela possui muitas colunas.", "Converse com a equipe de domínio sobre padrões de leitura e limites do modelo."},
 	"model.repeated_columns":              {"Há colunas com nomes ou funções aparentemente repetidos.", "Confirme a semântica antes de propor normalização."},
 	"model.duplicate_entity":              {"Dois objetos podem representar a mesma entidade.", "Valide com responsáveis e aplicações antes de consolidar dados."},

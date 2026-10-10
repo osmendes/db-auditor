@@ -117,6 +117,8 @@ function SessionApp() {
   );
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [mfaToken, setMfaToken] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [restoring, setRestoring] = useState(true);
@@ -147,10 +149,30 @@ function SessionApp() {
     setBusy(true);
     setError("");
     try {
-      setUser(await api.login(username, password));
+      const result = await api.login(username, password);
+      if ("mfa_required" in result) {
+        setMfaToken(result.mfa_token);
+        setPassword("");
+        return;
+      }
+      setUser(result);
       setPassword("");
     } catch (cause) {
       setError(formatError(cause, "Não foi possível entrar."));
+    } finally {
+      setBusy(false);
+    }
+  };
+  const confirmCode = async (event: FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    setError("");
+    try {
+      setUser(await api.confirmTotp(mfaToken, code));
+      setMfaToken("");
+      setCode("");
+    } catch (cause) {
+      setError(formatError(cause, "Código inválido."));
     } finally {
       setBusy(false);
     }
@@ -185,11 +207,16 @@ function SessionApp() {
       <LoginScreen
         username={username}
         password={password}
+        code={code}
+        mfa={mfaToken !== ""}
         error={error}
         busy={busy}
         onUsername={setUsername}
         onPassword={setPassword}
-        onSubmit={(event) => void login(event)}
+        onCode={setCode}
+        onSubmit={(event) =>
+          void (mfaToken ? confirmCode(event) : login(event))
+        }
       />
     );
   }
@@ -207,18 +234,24 @@ function SessionApp() {
 function LoginScreen({
   username,
   password,
+  code,
+  mfa,
   error,
   busy,
   onUsername,
   onPassword,
+  onCode,
   onSubmit,
 }: {
   username: string;
   password: string;
+  code: string;
+  mfa: boolean;
   error: string;
   busy: boolean;
   onUsername: (value: string) => void;
   onPassword: (value: string) => void;
+  onCode: (value: string) => void;
   onSubmit: (event: FormEvent) => void;
 }) {
   const { theme, toggleTheme } = useTheme();
@@ -257,13 +290,22 @@ function LoginScreen({
           value={password}
           onChange={(event) => onPassword(event.target.value)}
         />
+        {mfa ? (
+          <Input
+            label="Código TOTP ou recuperação"
+            required
+            autoComplete="one-time-code"
+            value={code}
+            onChange={(event) => onCode(event.target.value)}
+          />
+        ) : null}
         {error ? (
           <p role="alert" className="text-sm text-rose-300">
             {error}
           </p>
         ) : null}
         <Button disabled={busy} className="w-full" type="submit">
-          {busy ? "Entrando…" : "Entrar"}
+          {busy ? "Entrando…" : mfa ? "Confirmar código" : "Entrar"}
         </Button>
       </form>
     </main>

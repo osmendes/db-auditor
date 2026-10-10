@@ -21,6 +21,13 @@ func TestValidateTargetDSNs(t *testing.T) {
 			t.Errorf("%s accepted", name)
 		}
 	}
+	t.Setenv("AUDITOR_TARGET_INSECURE_HOSTS", "db.example.com")
+	if err := ValidateTargetDSNs(map[string]string{"env": "postgresql://ro:secret@db.example.com:5432/data?sslmode=require"}); err != nil {
+		t.Fatalf("explicit weak TLS allowlist rejected: %v", err)
+	}
+	if err := ValidateTargetDSNs(map[string]string{"env": "postgresql://ro:secret@other.example.com:5432/data?sslmode=require"}); err == nil {
+		t.Fatal("host outside both allowlists accepted")
+	}
 }
 
 func TestValidateTargetDSNsNeedsAllowlist(t *testing.T) {

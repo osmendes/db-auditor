@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/osmendes/db-auditor/internal/scheduler"
+	"github.com/mayconmendes-qc/db-auditor/internal/scheduler"
 )
 
 type scheduleAPI interface {

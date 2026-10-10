@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/osmendes/db-auditor/internal/actions"
-	"github.com/osmendes/db-auditor/internal/guidance"
+	"github.com/mayconmendes-qc/db-auditor/internal/actions"
+	"github.com/mayconmendes-qc/db-auditor/internal/guidance"
 )
 
 var ErrActionNotFound = errors.New("finding action source not found")
@@ -129,11 +129,28 @@ AND (f.audit_run_id IS NULL OR after_run.started_at > (SELECT started_at FROM au
 			return nil, ErrActionEvidenceRequired
 		}
 	}
-	_, err = tx.Exec(ctx, `INSERT INTO finding_action(finding_id,status,owner_name,justification,result_note,updated_by)
-VALUES($1::uuid,$2,$3,$4,$5,$6)
+	var evidence []byte
+	if err = tx.QueryRow(ctx, `SELECT evidence FROM finding WHERE id=$1::uuid`, id).Scan(&evidence); err != nil {
+		return nil, err
+	}
+	var signature any
+	var suppressUntil any
+	if progress.Status == "discarded" {
+		signature = EvidenceSignature(evidence)
+		suppressUntil = time.Now().Add(90 * 24 * time.Hour)
+		if _, err = tx.Exec(ctx, `UPDATE finding SET status='suppressed', suppression_reason='descarte de evidência idêntica', suppressed_until=$2, updated_at=now() WHERE id=$1::uuid`, id, suppressUntil); err != nil {
+			return nil, err
+		}
+		if _, err = tx.Exec(ctx, `INSERT INTO finding_event(finding_id,event_type,reason) VALUES($1::uuid,'suppressed','discarded identical evidence') ON CONFLICT DO NOTHING`, id); err != nil {
+			return nil, err
+		}
+	}
+	_, err = tx.Exec(ctx, `INSERT INTO finding_action(finding_id,status,owner_name,justification,result_note,updated_by,evidence_sha256,suppress_until)
+VALUES($1::uuid,$2,$3,$4,$5,$6,$7,$8)
 ON CONFLICT(finding_id) DO UPDATE SET status=EXCLUDED.status,owner_name=EXCLUDED.owner_name,
- justification=EXCLUDED.justification,result_note=EXCLUDED.result_note,updated_by=EXCLUDED.updated_by,updated_at=now()`,
-		id, progress.Status, progress.Owner, progress.Justification, progress.Result, actor)
+ justification=EXCLUDED.justification,result_note=EXCLUDED.result_note,updated_by=EXCLUDED.updated_by,
+ evidence_sha256=EXCLUDED.evidence_sha256,suppress_until=EXCLUDED.suppress_until,updated_at=now()`,
+		id, progress.Status, progress.Owner, progress.Justification, progress.Result, actor, signature, suppressUntil)
 	if err != nil {
 		return nil, err
 	}
