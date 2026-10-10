@@ -123,10 +123,11 @@ func main() {
 	}
 	registry := audit.NewLiveRegistry(liveOpts)
 	audit.AttachStructuralCollectors(registry, liveOpts)
-	analysisService := analyzer.NewService(store, store, "1.0.0")
+	binaryVersion := buildinfo.String()
+	analysisService := analyzer.NewService(store, store, binaryVersion)
 	runner := audit.NewRunner(registry, runStore, audit.RunnerOptions{
-		ServiceVersion:           buildinfo.String(),
-		CollectorVersion:         "1.1.0",
+		ServiceVersion:           binaryVersion,
+		CollectorVersion:         binaryVersion,
 		MaxWorkers:               cfg.MaxCollectorWorkers,
 		MaxDatabaseConnections:   cfg.MaxDatabaseConnections,
 		OptionalCollectorTimeout: cfg.OptionalCollectorTimeout,

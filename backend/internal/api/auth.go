@@ -10,10 +10,8 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"net"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/osmendes/db-auditor/internal/repository"
@@ -44,45 +42,6 @@ type requestSession struct {
 func requestIdentity(r *http.Request) *repository.AuditorUser {
 	user, _ := r.Context().Value(identityKey{}).(*repository.AuditorUser)
 	return user
-}
-
-type attemptWindow struct {
-	count int
-	start time.Time
-}
-
-type loginLimiter struct {
-	mu   sync.Mutex
-	byIP map[string]attemptWindow
-	max  int
-}
-
-func (l *loginLimiter) allow(remote string) bool {
-	host, _, err := net.SplitHostPort(remote)
-	if err != nil {
-		host = remote
-	}
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	now := time.Now()
-	if len(l.byIP) > 10000 {
-		for k, v := range l.byIP {
-			if now.Sub(v.start) > time.Minute {
-				delete(l.byIP, k)
-			}
-		}
-	}
-	v := l.byIP[host]
-	if now.Sub(v.start) >= time.Minute {
-		v = attemptWindow{start: now}
-	}
-	v.count++
-	l.byIP[host] = v
-	limit := l.max
-	if limit <= 0 {
-		limit = 10
-	}
-	return v.count <= limit
 }
 
 func registerAuthRoutes(mux *http.ServeMux, store AuthStore) {
@@ -312,7 +271,7 @@ func clearSessionCookie(w http.ResponseWriter, r *http.Request) {
 }
 
 func authMiddleware(next http.Handler, store AuthStore) http.Handler {
-	limiter := &loginLimiter{byIP: make(map[string]attemptWindow), max: 600}
+	limiter := &apiWindow{byKey: make(map[string]attemptWindow), max: 600}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(r.URL.Path, "/api/v1/") || r.URL.Path == "/api/v1/auth/login" {
 			next.ServeHTTP(w, r)
