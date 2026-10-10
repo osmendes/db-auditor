@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/osmendes/db-auditor/internal/buildinfo"
 	"github.com/osmendes/db-auditor/internal/observability"
 	"github.com/osmendes/db-auditor/internal/repository"
@@ -72,6 +74,7 @@ func NewHandlerWithOptions(store InventoryStore, opts HandlerOptions) http.Handl
 	mux.HandleFunc("GET /health", health)
 	mux.HandleFunc("GET /ready", ready(store))
 	mux.HandleFunc("GET /api/v1/environments", listEnvironments(store))
+	mux.HandleFunc("POST /api/v1/environments", createEnvironmentLabel(store))
 	mux.HandleFunc("GET /api/v1/environments/{id}/databases", listDatabases(store))
 	mux.HandleFunc("GET /api/v1/environments/{id}/schemas", listSchemas(store))
 	mux.HandleFunc("GET /api/v1/environments/{id}/hypertables", listHypertables(store))
@@ -147,6 +150,48 @@ func listEnvironments(store InventoryStore) http.HandlerFunc {
 			items = visible
 		}
 		writeJSON(w, http.StatusOK, map[string]any{"items": items})
+	}
+}
+
+type environmentCreator interface {
+	CreateEnvironmentLabel(ctx context.Context, name, envType, discoveryMode string, active bool) (pgtype.UUID, string, error)
+}
+
+func createEnvironmentLabel(store InventoryStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := requestIdentity(r)
+		if user == nil || user.Role != "operator" {
+			writeError(w, http.StatusForbidden, CodeUnavailable, "Somente um operador cria o rótulo do ambiente.")
+			return
+		}
+		creator, ok := store.(environmentCreator)
+		if !ok {
+			writeError(w, http.StatusNotImplemented, CodeInternal, "Este servidor não cria ambientes.")
+			return
+		}
+		var body struct {
+			Name          string `json:"name"`
+			Type          string `json:"type"`
+			DiscoveryMode string `json:"discovery_mode"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || strings.TrimSpace(body.Name) == "" {
+			writeError(w, http.StatusBadRequest, CodeValidation, "Informe o nome do ambiente. A conexão fica no segredo do servidor.")
+			return
+		}
+		if body.Type == "" {
+			body.Type = "self_hosted"
+		}
+		if body.DiscoveryMode == "" {
+			body.DiscoveryMode = "single_database"
+		}
+		id, name, err := creator.CreateEnvironmentLabel(r.Context(), strings.TrimSpace(body.Name), body.Type, body.DiscoveryMode, true)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, CodeInternal, "Não foi possível criar o ambiente.")
+			return
+		}
+		writeJSON(w, http.StatusCreated, map[string]any{
+			"id": id.String(), "name": name, "dsn": nil,
+		})
 	}
 }
 

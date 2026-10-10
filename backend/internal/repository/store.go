@@ -49,6 +49,14 @@ func (s *Store) CreateEnvironment(ctx context.Context, name, envType, discoveryM
 	})
 }
 
+func (s *Store) CreateEnvironmentLabel(ctx context.Context, name, envType, discoveryMode string, active bool) (pgtype.UUID, string, error) {
+	row, err := s.CreateEnvironment(ctx, name, envType, discoveryMode, active)
+	if err != nil {
+		return pgtype.UUID{}, "", err
+	}
+	return row.ID, row.Name, nil
+}
+
 func (s *Store) ListActiveEnvironments(ctx context.Context) ([]sqlc.AuditEnvironment, error) {
 	return s.q.ListActiveEnvironments(ctx)
 }

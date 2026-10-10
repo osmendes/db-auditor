@@ -201,6 +201,13 @@
             "description": "ok"
           }
         }
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "label created; connection stays in the server secret"
+          }
+        }
       }
     },
     "/api/v1/environments/connection-status": {

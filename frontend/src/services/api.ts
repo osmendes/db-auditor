@@ -504,6 +504,10 @@ export const api = {
   reportFindings: (params?: AnalyticsParams) =>
     getJSON<Record<string, unknown>>(`/api/v1/reports/findings${qs(params)}`),
   environments: () => getJSON<EnvironmentsResponse>("/api/v1/environments"),
+  createEnvironmentLabel: (name: string) =>
+    postJSON<{ id: string; name: string; dsn: null }>("/api/v1/environments", {
+      name,
+    }),
   environmentCapabilities: (env: string) =>
     getJSON<EnvironmentCapabilities>(
       `/api/v1/environments/${env}/capabilities`,

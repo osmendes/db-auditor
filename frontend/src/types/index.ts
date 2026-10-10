@@ -143,7 +143,12 @@ export interface FindingAction {
   suggestion: string;
   plan: {
     category: string;
+    meaning?: string;
+    evidence?: string;
+    impact?: string;
+    next?: string;
     expected_benefit: string;
+    effort?: string;
     risk: string;
     prerequisites: string;
     confirmation: string;
