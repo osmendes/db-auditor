@@ -18,7 +18,6 @@ import {
 import { useApp } from "../context/AppContext";
 import { formatError } from "../lib/errors";
 import { downloadCSV, downloadJSON } from "../lib/export";
-import { findingGuidance } from "../lib/findingGuidance";
 import { labels } from "../lib/labels";
 import { fetchAllPages } from "../lib/pagination";
 import { nextSort, type SortState, sortBy } from "../lib/sort";
@@ -842,10 +841,7 @@ export function FindingsPage({
                       {labels.findingStatus(f.status)}
                     </Badge>
                   </td>
-                  <td className="px-3 py-1.5 text-slate-100">
-                    {f.friendly_meaning ??
-                      findingGuidance(f.finding_type).meaning}
-                  </td>
+                  <td className="px-3 py-1.5 text-slate-100">{f.title}</td>
                   <td className="px-3 py-1.5 font-mono text-xs text-slate-400">
                     {f.object_key || "—"}
                   </td>
@@ -874,10 +870,7 @@ export function FindingsPage({
         {selected ? (
           <Card
             title={`Detalhe · ${labels.severity(selected.severity)}`}
-            subtitle={
-              selected.friendly_meaning ??
-              findingGuidance(selected.finding_type).meaning
-            }
+            subtitle={action?.plan.meaning ?? selected.title}
           >
             <ul className="mt-3 space-y-1 text-sm text-slate-300">
               <li>Status: {labels.findingStatus(selected.status)}</li>
@@ -916,9 +909,15 @@ export function FindingsPage({
               </li>
               <li>
                 Próximo passo:{" "}
-                {selected.friendly_next ??
-                  findingGuidance(selected.finding_type).next}
+                {action?.plan.next ??
+                  "Abra a ação para ver o plano desta regra."}
               </li>
+              {action?.plan.impact ? (
+                <li>Impacto: {action.plan.impact}</li>
+              ) : null}
+              {action?.plan.effort ? (
+                <li>Esforço: {action.plan.effort}</li>
+              ) : null}
               {selected.audit_run_id ? (
                 <li>Execução de origem: {selected.audit_run_id}</li>
               ) : null}

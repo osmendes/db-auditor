@@ -36,6 +36,8 @@ export function EnvironmentsPage({ onNavigate }: EnvironmentsPageProps) {
   const [envSort, setEnvSort] = useState<SortState | null>(null);
   const [dbSort, setDbSort] = useState<SortState | null>(null);
   const [schemaSort, setSchemaSort] = useState<SortState | null>(null);
+  const [labelName, setLabelName] = useState("");
+  const [labelError, setLabelError] = useState<string | null>(null);
 
   const loadEnvironments = useCallback(() => {
     setError(null);
@@ -138,11 +140,43 @@ export function EnvironmentsPage({ onNavigate }: EnvironmentsPageProps) {
         Ambientes
       </h1>
       <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-400">
-        Topologia registrada no Snapshot Store. A configuração de conexão dos
-        bancos auditados continua via{" "}
-        <code className="text-slate-300">.env</code> (somente leitura). Veja a
-        Documentação para o fluxo completo.
+        O rótulo nasce aqui. A conexão continua no segredo do servidor e não é
+        digitada nem devolvida por esta tela. A coleta só ocorre quando o slot
+        do ambiente corresponde a esse rótulo.
       </p>
+      {api.hasRole("operator") ? (
+        <form
+          className="mt-4 flex max-w-xl flex-wrap items-end gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const name = labelName.trim();
+            if (!name) return;
+            setLabelError(null);
+            void api
+              .createEnvironmentLabel(name)
+              .then(() => {
+                setLabelName("");
+                setReloadKey((k) => k + 1);
+              })
+              .catch((err: unknown) =>
+                setLabelError(
+                  formatError(err, "Não foi possível criar o rótulo"),
+                ),
+              );
+          }}
+        >
+          <Input
+            label="Novo ambiente"
+            value={labelName}
+            placeholder="Nome do ambiente"
+            onChange={(event) => setLabelName(event.target.value)}
+          />
+          <Button type="submit">Criar rótulo</Button>
+        </form>
+      ) : null}
+      {labelError ? (
+        <p className="mt-2 text-sm text-rose-300">{labelError}</p>
+      ) : null}
 
       <div className="mt-6 space-y-6">
         {error ? (

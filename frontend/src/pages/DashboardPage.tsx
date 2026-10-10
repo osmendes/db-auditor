@@ -25,6 +25,7 @@ const StoragePieChart = lazy(() =>
 import type {
   ConnectionStatus,
   DashboardKPIs,
+  Finding,
   FindingsTrendResponse,
   JobHealthResponse,
   RunTrendPoint,
@@ -184,8 +185,13 @@ function TrendBars({
 }
 
 export function DashboardPage() {
-  const { environmentId, setEnvironmentId, setSection, selectedEnvironment } =
-    useApp();
+  const {
+    environmentId,
+    setEnvironmentId,
+    setSection,
+    selectedEnvironment,
+    openFinding,
+  } = useApp();
   const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
   const [storage, setStorage] = useState<StorageGrowthResponse | null>(null);
   const [trends, setTrends] = useState<FindingsTrendResponse | null>(null);
@@ -194,6 +200,7 @@ export function DashboardPage() {
     null,
   );
   const [scores, setScores] = useState<ScopeAggregate[]>([]);
+  const [priorities, setPriorities] = useState<Finding[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
@@ -230,6 +237,12 @@ export function DashboardPage() {
           setTrends(t);
           setJobs(j);
           setConnections(c.items);
+          const queue = await api.findings({
+            environment_id: environmentId ?? undefined,
+            status: "open",
+            limit: 5,
+          });
+          if (!cancelled) setPriorities(queue.items.slice(0, 5));
         }
         if (environmentId) {
           const runs = await api.auditRuns({
@@ -327,58 +340,110 @@ export function DashboardPage() {
       ) : null}
 
       {!loading && connections ? (
-        <section className="mt-8" aria-labelledby="conn-heading">
-          <h2 id="conn-heading" className="text-sm font-medium text-slate-300">
-            Conexões
-          </h2>
-          {connections.length === 0 ? (
-            <div className="mt-3">
-              <EmptyState
-                title="Nenhum ambiente configurado"
-                description="Configure AUDITOR_TARGET_DSN_* no backend e reinicie a API. Depois valide em Status."
-                action={
-                  <Button type="button" onClick={() => setSection("Status")}>
-                    Ir para Status
-                  </Button>
-                }
-              />
-            </div>
-          ) : (
-            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {connections.map((c) => {
-                const ok = c.dsn_configured && c.reachable;
-                const statusLabel = ok
-                  ? "Conectado"
-                  : c.dsn_configured
-                    ? "Indisponível"
-                    : "DSN ausente";
-                return (
-                  <Card key={c.environment_id}>
-                    <div className="flex items-center justify-between gap-3">
-                      <strong className="min-w-0 truncate text-base font-semibold text-slate-50">
-                        {c.environment_name}
-                      </strong>
-                      <Badge tone={ok ? "success" : "danger"}>
-                        {statusLabel}
-                      </Badge>
-                    </div>
-                    {c.server_version ? (
-                      <p className="mt-2 font-mono text-xs text-slate-400">
-                        PG {c.server_version}
-                        {c.latency_ms != null ? ` · ${c.latency_ms} ms` : ""}
-                      </p>
-                    ) : null}
-                    {c.error ? (
-                      <p className="mt-2 truncate text-xs text-rose-300">
-                        {c.error}
-                      </p>
-                    ) : null}
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </section>
+        <>
+          <section className="mt-8" aria-labelledby="priority-heading">
+            <h2
+              id="priority-heading"
+              className="text-sm font-medium text-slate-300"
+            >
+              Cinco prioridades
+            </h2>
+            {priorities.length === 0 ? (
+              <div className="mt-3">
+                <EmptyState
+                  title="Nenhuma prioridade nesta semana"
+                  description="Não há achado aberto com evidência suficiente. Isso não significa ausência de risco se a coleta estiver parcial."
+                  action={
+                    <Button
+                      type="button"
+                      onClick={() => setSection("Findings")}
+                    >
+                      Abrir achados
+                    </Button>
+                  }
+                />
+              </div>
+            ) : (
+              <ul className="mt-3 grid gap-3">
+                {priorities.map((item) => (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      className="w-full rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-left"
+                      onClick={() => openFinding(item.id)}
+                    >
+                      <span className="text-sm font-medium text-slate-50">
+                        {item.title}
+                      </span>
+                      <span className="mt-1 block text-xs text-slate-400">
+                        {item.severity} · confiança{" "}
+                        {item.confidence != null
+                          ? `${Math.round(item.confidence * 100)}%`
+                          : "baixa"}{" "}
+                        · {item.summary || "impacto não estimado"}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+          <section className="mt-8" aria-labelledby="conn-heading">
+            <h2
+              id="conn-heading"
+              className="text-sm font-medium text-slate-300"
+            >
+              Conexões
+            </h2>
+            {connections.length === 0 ? (
+              <div className="mt-3">
+                <EmptyState
+                  title="Nenhum ambiente configurado"
+                  description="Configure AUDITOR_TARGET_DSN_* no backend e reinicie a API. Depois valide em Status."
+                  action={
+                    <Button type="button" onClick={() => setSection("Status")}>
+                      Ir para Status
+                    </Button>
+                  }
+                />
+              </div>
+            ) : (
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {connections.map((c) => {
+                  const ok = c.dsn_configured && c.reachable;
+                  const statusLabel = ok
+                    ? "Conectado"
+                    : c.dsn_configured
+                      ? "Indisponível"
+                      : "DSN ausente";
+                  return (
+                    <Card key={c.environment_id}>
+                      <div className="flex items-center justify-between gap-3">
+                        <strong className="min-w-0 truncate text-base font-semibold text-slate-50">
+                          {c.environment_name}
+                        </strong>
+                        <Badge tone={ok ? "success" : "danger"}>
+                          {statusLabel}
+                        </Badge>
+                      </div>
+                      {c.server_version ? (
+                        <p className="mt-2 font-mono text-xs text-slate-400">
+                          PG {c.server_version}
+                          {c.latency_ms != null ? ` · ${c.latency_ms} ms` : ""}
+                        </p>
+                      ) : null}
+                      {c.error ? (
+                        <p className="mt-2 truncate text-xs text-rose-300">
+                          {c.error}
+                        </p>
+                      ) : null}
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </>
       ) : null}
 
       {!loading && kpis ? (
