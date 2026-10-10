@@ -108,6 +108,13 @@ type AuditSchedule struct {
 	UpdatedAt     pgtype.Timestamptz
 }
 
+type AuditorLoginAttempt struct {
+	KeyHash      []byte
+	WindowStart  pgtype.Timestamptz
+	Attempts     int32
+	BlockedUntil pgtype.Timestamptz
+}
+
 type AuditorOperationLog struct {
 	ID            int64
 	UserID        pgtype.UUID
@@ -134,10 +141,18 @@ type AuditorPrivilegeSnapshot struct {
 }
 
 type AuditorSession struct {
-	TokenHash []byte
-	UserID    pgtype.UUID
-	ExpiresAt pgtype.Timestamptz
-	CreatedAt pgtype.Timestamptz
+	TokenHash         []byte
+	UserID            pgtype.UUID
+	ExpiresAt         pgtype.Timestamptz
+	CreatedAt         pgtype.Timestamptz
+	LastSeenAt        pgtype.Timestamptz
+	AbsoluteExpiresAt pgtype.Timestamptz
+}
+
+type AuditorSetting struct {
+	Key       string
+	Value     string
+	UpdatedAt pgtype.Timestamptz
 }
 
 type AuditorUser struct {
