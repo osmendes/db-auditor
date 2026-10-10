@@ -36,6 +36,8 @@ func CollectIndexes(ctx context.Context, conn *pgx.Conn, scope config.Scope) ([]
 			&f.IsValid,
 			&f.IsReady,
 			&f.KeyColumns,
+			&f.IncludeColumns,
+			&f.UsageObserved,
 			&f.Predicate,
 		); err != nil {
 			return nil, fmt.Errorf("index collector scan: %w", err)

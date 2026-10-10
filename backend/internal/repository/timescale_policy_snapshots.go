@@ -25,16 +25,18 @@ func (s *Store) SaveTimescalePolicyInventory(
 INSERT INTO continuous_aggregate_snapshot (
   audit_run_id, environment_id, database_name, schema_name, view_name, owner_name,
   materialization_schema, materialization_hypertable, materialized_only,
-  compression_enabled, finalized, view_definition, lag_interval, collected_at
+  compression_enabled, finalized, view_definition, lag_interval,
+  source_hypertable_schema, source_hypertable_name, bucket_interval, collected_at
 ) VALUES (
   $1,$2,$3,$4,$5,$6,
   $7,$8,$9,
-  $10,$11,$12,$13, now()
+  $10,$11,$12,$13,$14,$15,$16, now()
 )
 ON CONFLICT (audit_run_id, database_name, schema_name, view_name) DO NOTHING
 `, auditRunID, environmentID, ca.DatabaseName, ca.SchemaName, ca.ViewName, nullString(ca.Owner),
 			nullString(ca.MaterializationSchema), nullString(ca.MaterializationHypertable), ca.MaterializedOnly,
-			ca.CompressionEnabled, ca.Finalized, ca.ViewDefinition, ca.LagInterval)
+			ca.CompressionEnabled, ca.Finalized, ca.ViewDefinition, ca.LagInterval,
+			nullString(ca.SourceHypertableSchema), nullString(ca.SourceHypertableName), nullString(ca.BucketInterval))
 		if err != nil {
 			return fmt.Errorf("insert continuous_aggregate_snapshot %s.%s.%s: %w", ca.DatabaseName, ca.SchemaName, ca.ViewName, err)
 		}

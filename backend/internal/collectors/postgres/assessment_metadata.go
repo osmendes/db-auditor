@@ -42,7 +42,7 @@ SELECT current_database(), n.nspname, c.relname, r.rolname,
 FROM pg_class c
 JOIN pg_namespace n ON n.oid=c.relnamespace
 CROSS JOIN pg_roles r
-WHERE c.relkind IN ('r','p','f') AND r.rolcanlogin
+WHERE c.relkind IN ('r','p','f','v','m') AND r.rolcanlogin
   AND n.nspname NOT LIKE 'pg\_%' ESCAPE '\'
   AND n.nspname <> 'information_schema'
 ORDER BY n.nspname,c.relname,r.rolname

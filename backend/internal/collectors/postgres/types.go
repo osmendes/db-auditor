@@ -151,6 +151,8 @@ type IndexFacts struct {
 	IsValid         bool       `json:"is_valid"`
 	IsReady         bool       `json:"is_ready"`
 	KeyColumns      []string   `json:"key_columns,omitempty"`
+	IncludeColumns  []string   `json:"include_columns,omitempty"`
+	UsageObserved   bool       `json:"usage_observed"`
 	Predicate       string     `json:"predicate,omitempty"`
 }
 
@@ -176,29 +178,41 @@ type ConstraintFacts struct {
 
 // ViewFacts is one row from the view collector (views and matviews).
 type ViewFacts struct {
-	DatabaseName   string `json:"database_name"`
-	SchemaName     string `json:"schema_name"`
-	ViewName       string `json:"view_name"`
-	Owner          string `json:"owner_name"`
-	Relkind        string `json:"relkind"`
-	ViewDefinition string `json:"view_definition"`
-	SizeBytes      int64  `json:"size_bytes"`
+	DatabaseName    string `json:"database_name"`
+	SchemaName      string `json:"schema_name"`
+	ViewName        string `json:"view_name"`
+	Owner           string `json:"owner_name"`
+	Relkind         string `json:"relkind"`
+	ViewDefinition  string `json:"view_definition"`
+	SizeBytes       int64  `json:"size_bytes"`
+	ColumnsJSON     string `json:"columns_json"`
+	SecurityInvoker *bool  `json:"security_invoker"`
+	SecurityBarrier *bool  `json:"security_barrier"`
+	IsPopulated     *bool  `json:"is_populated"`
 }
 
 // FunctionFacts is one row from the function/procedure collector.
 type FunctionFacts struct {
-	DatabaseName       string `json:"database_name"`
-	SchemaName         string `json:"schema_name"`
-	FunctionName       string `json:"function_name"`
-	IdentityArguments  string `json:"identity_arguments"`
-	Owner              string `json:"owner_name"`
-	LanguageName       string `json:"language_name"`
-	IsSecurityDefiner  bool   `json:"is_security_definer"`
-	Volatility         string `json:"volatility"`
-	ParallelSafety     string `json:"parallel_safety"`
-	Kind               string `json:"kind"`
-	FunctionDefinition string `json:"function_definition"`
-	Proconfig          string `json:"proconfig,omitempty"`
+	DatabaseName       string     `json:"database_name"`
+	SchemaName         string     `json:"schema_name"`
+	FunctionName       string     `json:"function_name"`
+	IdentityArguments  string     `json:"identity_arguments"`
+	Owner              string     `json:"owner_name"`
+	LanguageName       string     `json:"language_name"`
+	IsSecurityDefiner  bool       `json:"is_security_definer"`
+	Volatility         string     `json:"volatility"`
+	ParallelSafety     string     `json:"parallel_safety"`
+	Kind               string     `json:"kind"`
+	FunctionDefinition string     `json:"function_definition"`
+	Proconfig          string     `json:"proconfig,omitempty"`
+	ReturnType         *string    `json:"return_type,omitempty"`
+	SearchPathPinned   bool       `json:"search_path_pinned"`
+	ExecuteRoles       []string   `json:"execute_roles,omitempty"`
+	Calls              int64      `json:"calls"`
+	TotalTimeMS        float64    `json:"total_time_ms"`
+	SelfTimeMS         float64    `json:"self_time_ms"`
+	StatsReset         *time.Time `json:"stats_reset,omitempty"`
+	StatsObserved      bool       `json:"stats_observed"`
 }
 
 // ExtensionFacts is one row from the extension collector.

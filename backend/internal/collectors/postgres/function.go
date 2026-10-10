@@ -34,6 +34,14 @@ func CollectFunctions(ctx context.Context, conn *pgx.Conn, scope config.Scope) (
 			&f.Kind,
 			&f.Proconfig,
 			&definition,
+			&f.ReturnType,
+			&f.SearchPathPinned,
+			&f.ExecuteRoles,
+			&f.Calls,
+			&f.TotalTimeMS,
+			&f.SelfTimeMS,
+			&f.StatsReset,
+			&f.StatsObserved,
 		); err != nil {
 			return nil, fmt.Errorf("function collector scan: %w", err)
 		}

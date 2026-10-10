@@ -87,26 +87,28 @@ FROM sequence_snapshot WHERE environment_id=$1::uuid AND audit_run_id=$2::uuid`,
 		f.Tables[i].RelRowSecurity = rls[f.Tables[i].Database+"/"+f.Tables[i].Schema+"/"+f.Tables[i].Name]
 	}
 
-	rows, err = s.pool.Query(ctx, `SELECT database_name,schema_name,function_name,COALESCE(proconfig,''),COALESCE(function_definition,'') FROM function_snapshot WHERE environment_id=$1::uuid AND audit_run_id=$2::uuid`, environmentID, auditRunID)
+	rows, err = s.pool.Query(ctx, `SELECT database_name,schema_name,function_name,identity_arguments,COALESCE(proconfig,''),search_path_pinned FROM function_snapshot WHERE environment_id=$1::uuid AND audit_run_id=$2::uuid`, environmentID, auditRunID)
 	if err != nil {
 		return err
 	}
-	type fnExtra struct{ config, definition string }
+	type fnExtra struct {
+		config string
+		pinned *bool
+	}
 	fnBy := map[string]fnExtra{}
 	for rows.Next() {
-		var db, schema, name, config, definition string
-		if err = rows.Scan(&db, &schema, &name, &config, &definition); err != nil {
+		var db, schema, name, signature, config string
+		var pinned *bool
+		if err = rows.Scan(&db, &schema, &name, &signature, &config, &pinned); err != nil {
 			rows.Close()
 			return err
 		}
-		fnBy[db+"/"+schema+"/"+name] = fnExtra{config, definition}
+		fnBy[db+"/"+schema+"/"+name+"/"+signature] = fnExtra{config, pinned}
 	}
 	rows.Close()
 	for i := range f.Functions {
-		extra := fnBy[f.Functions[i].Database+"/"+f.Functions[i].Schema+"/"+f.Functions[i].FunctionName]
-		f.Functions[i].Config = extra.config
-		f.Functions[i].FunctionDefinition = extra.definition
-		f.Functions[i].SearchPathPinned = analyzer.SearchPathPinned(extra.config) || strings.Contains(strings.ToLower(extra.definition), "set search_path")
+		extra := fnBy[f.Functions[i].Database+"/"+f.Functions[i].Schema+"/"+f.Functions[i].FunctionName+"/"+f.Functions[i].IdentityArgs]
+		f.Functions[i].SearchPathPinned = extra.pinned != nil && *extra.pinned || analyzer.SearchPathPinned(extra.config)
 	}
 
 	rows, err = s.pool.Query(ctx, `SELECT database_name,schema_name,COALESCE(nspacl,'') FROM schema_snapshot WHERE environment_id=$1::uuid AND audit_run_id=$2::uuid AND schema_name='public'`, environmentID, auditRunID)

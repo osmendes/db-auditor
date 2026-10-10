@@ -20,6 +20,22 @@ export const inventoryDetailTabs: Array<{
   { id: "recommendations", label: "Recomendações" },
 ];
 
+export function nextInventoryTab(
+  current: InventoryDetailTab,
+  key: string,
+): InventoryDetailTab | null {
+  const index = inventoryDetailTabs.findIndex((item) => item.id === current);
+  let next = index;
+  if (key === "ArrowRight") next = (index + 1) % inventoryDetailTabs.length;
+  else if (key === "ArrowLeft")
+    next =
+      (index - 1 + inventoryDetailTabs.length) % inventoryDetailTabs.length;
+  else if (key === "Home") next = 0;
+  else if (key === "End") next = inventoryDetailTabs.length - 1;
+  else return null;
+  return inventoryDetailTabs[next].id;
+}
+
 export type DetailAvailability =
   | "empty"
   | "partial"
@@ -67,18 +83,11 @@ export function InventoryDetailTabs({
 }) {
   const id = useId();
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    const current = inventoryDetailTabs.findIndex((item) => item.id === tab);
-    let next = current;
-    if (event.key === "ArrowRight")
-      next = (current + 1) % inventoryDetailTabs.length;
-    else if (event.key === "ArrowLeft")
-      next =
-        (current - 1 + inventoryDetailTabs.length) % inventoryDetailTabs.length;
-    else if (event.key === "Home") next = 0;
-    else if (event.key === "End") next = inventoryDetailTabs.length - 1;
-    else return;
+    const nextTab = nextInventoryTab(tab, event.key);
+    if (!nextTab) return;
+    const next = inventoryDetailTabs.findIndex((item) => item.id === nextTab);
     event.preventDefault();
-    onTabChange(inventoryDetailTabs[next].id);
+    onTabChange(nextTab);
     const buttons =
       event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]");
     buttons[next]?.focus();

@@ -10,6 +10,8 @@ import type {
   AuditRun,
   AuditRunCoverage,
   BaselineComparison,
+  CAGGHistoryPoint,
+  CAGGRefreshPolicy,
   CAGGSnapshot,
   ChunkSnapshot,
   CollectorRun,
@@ -33,7 +35,13 @@ import type {
   FunctionSnapshot,
   GrantSnapshot,
   HealthResponse,
+  HypertableChunkDetail,
+  HypertableDimensionDetail,
+  HypertableHistoryPoint,
+  HypertableJobDetail,
+  HypertablePolicyDetail,
   HypertableSnapshot,
+  IndexHistoryPoint,
   IndexSnapshot,
   ItemsResponse,
   JobHealthResponse,
@@ -61,10 +69,18 @@ import type {
   TableSnapshot,
   TrackedAction,
   TriggerSnapshot,
+  ViewDetailSnapshot,
   ViewSnapshot,
   WorkloadSnapshot,
 } from "../types";
-import { apiContractVersion, type ScopeScore } from "../types/openapi";
+import {
+  apiContractVersion,
+  type CAGGDetailSnapshot,
+  type FunctionDetailSnapshot,
+  type HypertableDetailSnapshot,
+  type IndexDetailSnapshot,
+  type ScopeScore,
+} from "../types/openapi";
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
 
@@ -244,6 +260,56 @@ function tableScopePath(
   table: string,
 ): string {
   return `/api/v1/environments/${encodeURIComponent(env)}/runs/${encodeURIComponent(run)}/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/tables/${encodeURIComponent(table)}`;
+}
+
+function viewScopePath(
+  env: string,
+  run: string,
+  database: string,
+  schema: string,
+  view: string,
+): string {
+  return `/api/v1/environments/${encodeURIComponent(env)}/runs/${encodeURIComponent(run)}/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/views/${encodeURIComponent(view)}`;
+}
+
+function indexScopePath(
+  env: string,
+  run: string,
+  database: string,
+  schema: string,
+  index: string,
+): string {
+  return `/api/v1/environments/${encodeURIComponent(env)}/runs/${encodeURIComponent(run)}/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/indexes/${encodeURIComponent(index)}`;
+}
+
+function functionScopePath(
+  env: string,
+  run: string,
+  database: string,
+  schema: string,
+  name: string,
+): string {
+  return `/api/v1/environments/${encodeURIComponent(env)}/runs/${encodeURIComponent(run)}/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/functions/${encodeURIComponent(name)}`;
+}
+
+function hypertableScopePath(
+  env: string,
+  run: string,
+  database: string,
+  schema: string,
+  name: string,
+): string {
+  return `/api/v1/environments/${encodeURIComponent(env)}/runs/${encodeURIComponent(run)}/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/hypertables/${encodeURIComponent(name)}`;
+}
+
+function caggScopePath(
+  env: string,
+  run: string,
+  database: string,
+  schema: string,
+  name: string,
+): string {
+  return `/api/v1/environments/${encodeURIComponent(env)}/runs/${encodeURIComponent(run)}/databases/${encodeURIComponent(database)}/schemas/${encodeURIComponent(schema)}/continuous-aggregates/${encodeURIComponent(name)}`;
 }
 
 export type InventoryListParams = {
@@ -487,6 +553,124 @@ export const api = {
     getJSON<PagedResponse<HypertableSnapshot>>(
       `/api/v1/environments/${environmentId}/hypertables/page${qs(params)}`,
     ),
+  hypertableDetail: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+  ) =>
+    getJSON<HypertableDetailSnapshot>(
+      `${hypertableScopePath(env, run, database, schema, name)}/detail`,
+    ),
+  hypertableDimensions: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<HypertableDimensionDetail>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/dimensions${qs({ limit, offset })}`,
+    ),
+  hypertableChunks: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<HypertableChunkDetail>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/chunks${qs({ limit, offset })}`,
+    ),
+  hypertablePolicies: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<HypertablePolicyDetail>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/policies${qs({ limit, offset })}`,
+    ),
+  hypertableJobs: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<HypertableJobDetail>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/jobs${qs({ limit, offset })}`,
+    ),
+  hypertableHistory: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<HypertableHistoryPoint>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/history${qs({ limit, offset })}`,
+    ),
+  hypertableIndexes: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<IndexSnapshot>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/indexes${qs({ limit, offset })}`,
+    ),
+  hypertableGrants: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<GrantSnapshot>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/grants${qs({ limit, offset })}`,
+    ),
+  hypertableRLSPolicies: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<RLSPolicySnapshot>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/rls-policies${qs({ limit, offset })}`,
+    ),
+  hypertableFindings: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<Finding>>(
+      `${hypertableScopePath(env, run, database, schema, name)}/findings${qs({ limit, offset })}`,
+    ),
   dimensions: (environmentId: string) =>
     getJSON<ItemsResponse<DimensionSnapshot>>(
       `/api/v1/environments/${environmentId}/dimensions`,
@@ -505,6 +689,76 @@ export const api = {
   ) =>
     getJSON<PagedResponse<CAGGSnapshot>>(
       `/api/v1/environments/${environmentId}/continuous-aggregates/page${qs(params)}`,
+    ),
+  caggDetail: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+  ) =>
+    getJSON<CAGGDetailSnapshot>(
+      `${caggScopePath(env, run, database, schema, name)}/detail`,
+    ),
+  caggRefreshPolicies: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<CAGGRefreshPolicy>>(
+      `${caggScopePath(env, run, database, schema, name)}/refresh-policies${qs({ limit, offset })}`,
+    ),
+  caggHistory: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<CAGGHistoryPoint>>(
+      `${caggScopePath(env, run, database, schema, name)}/history${qs({ limit, offset })}`,
+    ),
+  caggDependencies: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<DependencySnapshot>>(
+      `${caggScopePath(env, run, database, schema, name)}/dependencies${qs({ limit, offset })}`,
+    ),
+  caggGrants: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<GrantSnapshot>>(
+      `${caggScopePath(env, run, database, schema, name)}/grants${qs({ limit, offset })}`,
+    ),
+  caggFindings: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<Finding>>(
+      `${caggScopePath(env, run, database, schema, name)}/findings${qs({ limit, offset })}`,
     ),
   jobs: (environmentId: string) =>
     getJSON<ItemsResponse<JobSnapshot>>(
@@ -632,13 +886,143 @@ export const api = {
     getJSON<PagedResponse<IndexSnapshot>>(
       `/api/v1/environments/${environmentId}/indexes${qs(params)}`,
     ),
+  indexDetail: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    index: string,
+  ) =>
+    getJSON<IndexDetailSnapshot>(
+      `${indexScopePath(env, run, database, schema, index)}/detail`,
+    ),
+  indexHistory: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    index: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<IndexHistoryPoint>>(
+      `${indexScopePath(env, run, database, schema, index)}/history${qs({ limit, offset })}`,
+    ),
+  indexFindings: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    index: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<Finding>>(
+      `${indexScopePath(env, run, database, schema, index)}/findings${qs({ limit, offset })}`,
+    ),
   views: (environmentId: string, params?: InventoryListParams) =>
     getJSON<PagedResponse<ViewSnapshot>>(
       `/api/v1/environments/${environmentId}/views${qs(params)}`,
     ),
+  viewDetail: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    view: string,
+  ) =>
+    getJSON<ViewDetailSnapshot>(
+      `${viewScopePath(env, run, database, schema, view)}/detail`,
+    ),
+  viewDependencies: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    view: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<DependencySnapshot>>(
+      `${viewScopePath(env, run, database, schema, view)}/dependencies${qs({ limit, offset })}`,
+    ),
+  viewGrants: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    view: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<GrantSnapshot>>(
+      `${viewScopePath(env, run, database, schema, view)}/grants${qs({ limit, offset })}`,
+    ),
+  viewFindings: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    view: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<Finding>>(
+      `${viewScopePath(env, run, database, schema, view)}/findings${qs({ limit, offset })}`,
+    ),
   functions: (environmentId: string, params?: InventoryListParams) =>
     getJSON<PagedResponse<FunctionSnapshot>>(
       `/api/v1/environments/${environmentId}/functions${qs(params)}`,
+    ),
+  functionDetail: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    signature: string,
+  ) =>
+    getJSON<FunctionDetailSnapshot>(
+      `${functionScopePath(env, run, database, schema, name)}/detail${qs({ signature })}`,
+    ),
+  functionDependencies: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    signature: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<DependencySnapshot>>(
+      `${functionScopePath(env, run, database, schema, name)}/dependencies${qs({ signature, limit, offset })}`,
+    ),
+  functionGrants: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    signature: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<GrantSnapshot>>(
+      `${functionScopePath(env, run, database, schema, name)}/grants${qs({ signature, limit, offset })}`,
+    ),
+  functionFindings: (
+    env: string,
+    run: string,
+    database: string,
+    schema: string,
+    name: string,
+    signature: string,
+    limit = 50,
+    offset = 0,
+  ) =>
+    getJSON<PagedResponse<Finding>>(
+      `${functionScopePath(env, run, database, schema, name)}/findings${qs({ signature, limit, offset })}`,
     ),
   auditRuns: (params?: {
     environment_id?: string;

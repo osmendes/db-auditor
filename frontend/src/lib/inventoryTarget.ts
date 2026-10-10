@@ -1,4 +1,4 @@
-import type { InventoryObjectKind } from "../types";
+import type { EnvironmentCapabilities, InventoryObjectKind } from "../types";
 
 export interface InventoryTarget {
   kind: InventoryObjectKind;
@@ -54,11 +54,41 @@ export function inventoryTargetKey(
   ]);
 }
 
+export function matchesInventorySelection(
+  environment: string | null,
+  run: string | null,
+  requested: InventoryTarget | null,
+  selected: InventoryTarget | null,
+  pendingKey: string | null,
+): boolean {
+  if (!environment || !run || !requested || !selected || !pendingKey)
+    return false;
+  return (
+    inventoryTargetKey(environment, run, requested) === pendingKey &&
+    inventoryTargetKey(environment, run, selected) === pendingKey
+  );
+}
+
 export function inventoryRunForSelection(
   requestedRun: string | undefined,
   latestRun: string | undefined,
 ): string | null {
   return requestedRun || latestRun || null;
+}
+
+export function timescaleUnavailableForRun(
+  kind: InventoryObjectKind,
+  run: string | null,
+  capabilities: EnvironmentCapabilities | null,
+): boolean {
+  return (
+    (kind === "hypertables" || kind === "caggs") &&
+    !!run &&
+    capabilities?.audit_run_id === run &&
+    capabilities.items.some(
+      (item) => item.name === "timescale" && !item.applicable,
+    )
+  );
 }
 
 export function inventoryTargetFromParams(

@@ -38,6 +38,8 @@ function tsType(prop: SchemaProp): string {
         if (item === "integer" || item === "number") return "number";
         if (item === "boolean") return "boolean";
         if (item === "null") return "null";
+        if (item === "array") return `${tsType(prop.items ?? { type: "string" })}[]`;
+        if (item === "object") return "Record<string, unknown>";
         return "string";
       })
       .join(" | ");

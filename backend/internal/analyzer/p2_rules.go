@@ -186,6 +186,9 @@ func definerSearchPathFindings(facts SnapshotFacts) []Finding {
 			continue
 		}
 		key := fmt.Sprintf("%s.%s.%s", fn.Database, fn.Schema, fn.FunctionName)
+		if fn.IdentityArgs != "" {
+			key += "(" + fn.IdentityArgs + ")"
+		}
 		title := "Security definer without pinned search_path: " + key
 		out = append(out, Finding{
 			EnvironmentID: facts.EnvironmentID,
@@ -200,7 +203,7 @@ func definerSearchPathFindings(facts SnapshotFacts) []Finding {
 			DatabaseName:  fn.Database,
 			SchemaName:    fn.Schema,
 			ObjectName:    fn.FunctionName,
-			Evidence:      map[string]any{"config": fn.Config},
+			Evidence:      map[string]any{"identity_arguments": fn.IdentityArgs, "search_path_pinned": false},
 			DedupKey:      DedupKey("security.definer_search_path", key, title),
 		})
 	}

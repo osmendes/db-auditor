@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -84,6 +85,27 @@ func TestDefinerSearchPath(t *testing.T) {
 	if n != 1 {
 		t.Fatalf("want 1 definer finding, got %d", n)
 	}
+}
+
+func TestDefinerSearchPathFindingKeepsOverloadAndRedactsConfig(t *testing.T) {
+	facts := SnapshotFacts{Functions: []FunctionSecurityFact{{
+		Database: "db", Schema: "public", FunctionName: "calc", IdentityArgs: "integer",
+		IsSecurityDefiner: true, Config: "application.password=private-value",
+	}}}
+	out, _ := P2Analyzer{}.Analyze(t.Context(), facts)
+	for _, finding := range out {
+		if finding.FindingType != "security.definer_search_path" {
+			continue
+		}
+		if finding.ObjectKey != "db.public.calc(integer)" || finding.Evidence["identity_arguments"] != "integer" {
+			t.Fatalf("overload lost: %#v", finding)
+		}
+		if strings.Contains(fmt.Sprint(finding.Evidence), "private-value") {
+			t.Fatalf("configuration leaked: %#v", finding.Evidence)
+		}
+		return
+	}
+	t.Fatal("expected search_path finding")
 }
 
 func TestLagAndArchive(t *testing.T) {

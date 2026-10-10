@@ -27,6 +27,10 @@ func CollectViews(ctx context.Context, conn *pgx.Conn, scope config.Scope) ([]Vi
 			&f.Relkind,
 			&f.ViewDefinition,
 			&f.SizeBytes,
+			&f.ColumnsJSON,
+			&f.SecurityInvoker,
+			&f.SecurityBarrier,
+			&f.IsPopulated,
 		); err != nil {
 			return nil, fmt.Errorf("view collector scan: %w", err)
 		}

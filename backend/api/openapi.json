@@ -611,6 +611,87 @@
         }
       }
     },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/detail": {
+      "get": {"description":"Metadados de uma visão em uma execução. A definição SQL não é retornada; somente sua impressão digital.","responses":{"200":{"description":"Visão observada","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ViewDetailSnapshot"}}}},"404":{"description":"Objeto ou execução não encontrado"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/dependencies": {
+      "get": {"description":"Dependências coletadas da visão, paginadas e limitadas à execução.","responses":{"200":{"description":"Página de dependências"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/grants": {
+      "get": {"description":"Acessos efetivos observados, paginados e limitados à execução.","responses":{"200":{"description":"Página de acessos"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/findings": {
+      "get": {"description":"Achados observados da visão, paginados e limitados à execução.","responses":{"200":{"description":"Página de achados"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/detail": {
+      "get": {"description":"Estrutura e métricas do índice na execução selecionada, sem SQL bruto.","responses":{"200":{"description":"Índice observado","content":{"application/json":{"schema":{"$ref":"#/components/schemas/IndexDetailSnapshot"}}}},"404":{"description":"Índice ou execução não encontrado"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/history": {
+      "get": {"description":"Métricas históricas do mesmo índice até a execução selecionada, paginadas.","responses":{"200":{"description":"Página de histórico"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/findings": {
+      "get": {"description":"Achados observados para o índice nesta execução, paginados.","responses":{"200":{"description":"Página de achados"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/detail": {
+      "get": {"description":"Detalhe da sobrecarga identificada pelo parâmetro obrigatório signature; corpo SQL e configurações brutas não são retornados.","parameters":[{"name":"signature","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Função observada","content":{"application/json":{"schema":{"$ref":"#/components/schemas/FunctionDetailSnapshot"}}}},"404":{"description":"Função ou execução não encontrada"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/dependencies": {
+      "get": {"description":"Dependências observadas da sobrecarga, paginadas.","parameters":[{"name":"signature","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Página de dependências"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/grants": {
+      "get": {"description":"Papéis com EXECUTE efetivo e USAGE no esquema, paginados para a sobrecarga.","parameters":[{"name":"signature","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Página de acessos"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/findings": {
+      "get": {"description":"Achados específicos da sobrecarga nesta execução, paginados.","parameters":[{"name":"signature","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Página de achados"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/detail": {
+      "get": {"description":"Tabela temporal e cobertura da tabela base nesta execução.","responses":{"200":{"description":"Tabela temporal observada","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HypertableDetailSnapshot"}}}},"404":{"description":"Objeto ou execução não encontrado"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/dimensions": {
+      "get": {"description":"Dimensões da tabela temporal, paginadas.","responses":{"200":{"description":"Página de dimensões"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/chunks": {
+      "get": {"description":"Chunks da tabela temporal, paginados.","responses":{"200":{"description":"Página de chunks"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/policies": {
+      "get": {"description":"Políticas e estado observado dos jobs, paginados.","responses":{"200":{"description":"Página de políticas"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/jobs": {
+      "get": {"description":"Jobs associados à tabela temporal, com status observado, paginados.","responses":{"200":{"description":"Página de jobs"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/history": {
+      "get": {"description":"Evolução de espaço e chunks até a execução selecionada, paginada.","responses":{"200":{"description":"Página de histórico"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/indexes": {
+      "get": {"description":"Índices da tabela base observados na execução, paginados.","responses":{"200":{"description":"Página de índices"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/grants": {
+      "get": {"description":"Acessos efetivos observados da tabela base, paginados.","responses":{"200":{"description":"Página de acessos"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/rls-policies": {
+      "get": {"description":"Políticas RLS observadas da tabela base, paginadas.","responses":{"200":{"description":"Página de RLS"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/findings": {
+      "get": {"description":"Achados da tabela temporal nesta execução, paginados.","responses":{"200":{"description":"Página de achados"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/detail": {
+      "get": {"description":"Detalhe do agregado contínuo na execução selecionada, sem definição SQL bruta.","responses":{"200":{"description":"Agregado observado","content":{"application/json":{"schema":{"$ref":"#/components/schemas/CAGGDetailSnapshot"}}}},"404":{"description":"Objeto ou execução não encontrado"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/refresh-policies": {
+      "get": {"description":"Políticas de atualização do agregado, paginadas.","responses":{"200":{"description":"Página de políticas"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/history": {
+      "get": {"description":"Histórico de atraso e tamanho da materialização até a execução, paginado.","responses":{"200":{"description":"Página de histórico"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/dependencies": {
+      "get": {"description":"Dependências observadas da visão do agregado, paginadas.","responses":{"200":{"description":"Página de dependências"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/grants": {
+      "get": {"description":"Acessos observados da visão do agregado, paginados.","responses":{"200":{"description":"Página de acessos"}}}
+    },
+    "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/findings": {
+      "get": {"description":"Achados específicos do agregado nesta execução, paginados.","responses":{"200":{"description":"Página de achados"}}}
+    },
     "/api/v1/finding-categories/{category}": {
       "get": {
         "responses": {
@@ -882,6 +963,75 @@
   },
   "components": {
     "schemas": {
+      "CAGGDetailSnapshot": {
+        "type":"object",
+        "required":["id","environment_id","audit_run_id","database_name","schema_name","view_name","materialized_only","compression_enabled","lag_interval","definition_fingerprint","collected_at"],
+        "properties":{
+          "id":{"type":"string"},"environment_id":{"type":"string"},"audit_run_id":{"type":"string"},
+          "database_name":{"type":"string"},"schema_name":{"type":"string"},"view_name":{"type":"string"},
+          "owner_name":{"type":["string","null"]},"materialization_schema":{"type":["string","null"]},
+          "materialization_hypertable":{"type":["string","null"]},"materialized_only":{"type":"boolean"},
+          "compression_enabled":{"type":"boolean"},"finalized":{"type":["boolean","null"]},
+          "source_hypertable_schema":{"type":["string","null"]},"source_hypertable_name":{"type":["string","null"]},
+          "bucket_interval":{"type":["string","null"]},
+          "lag_interval":{"type":"string"},"definition_fingerprint":{"type":"string"},
+          "materialization_size_bytes":{"type":["integer","null"]},"collected_at":{"type":"string"}
+        }
+      },
+      "HypertableDetailSnapshot": {
+        "type":"object",
+        "required":["id","audit_run_id","environment_id","database_name","schema_name","hypertable_name","num_dimensions","num_chunks","compression_enabled","is_distributed","total_size_bytes","data_size_bytes","index_size_bytes","collected_at","base_table_observed"],
+        "properties":{
+          "id":{"type":"string"},"audit_run_id":{"type":"string"},"environment_id":{"type":"string"},
+          "database_name":{"type":"string"},"schema_name":{"type":"string"},"hypertable_name":{"type":"string"},
+          "owner_name":{"type":["string","null"]},"num_dimensions":{"type":"integer"},"num_chunks":{"type":"integer"},
+          "compression_enabled":{"type":"boolean"},"is_distributed":{"type":"boolean"},
+          "total_size_bytes":{"type":"integer"},"data_size_bytes":{"type":"integer"},"index_size_bytes":{"type":"integer"},
+          "collected_at":{"type":"string"},"base_table_observed":{"type":"boolean"}
+        }
+      },
+      "FunctionDetailSnapshot": {
+        "type":"object",
+        "required":["id","environment_id","audit_run_id","database_name","schema_name","function_name","identity_arguments","is_security_definer","collected_at"],
+        "properties":{
+          "id":{"type":"string"},"environment_id":{"type":"string"},"audit_run_id":{"type":"string"},
+          "database_name":{"type":"string"},"schema_name":{"type":"string"},"function_name":{"type":"string"},"identity_arguments":{"type":"string"},
+          "owner_name":{"type":["string","null"]},"language_name":{"type":["string","null"]},"is_security_definer":{"type":"boolean"},
+          "volatility":{"type":["string","null"]},"parallel_safety":{"type":["string","null"]},"kind":{"type":["string","null"]},
+          "return_type":{"type":["string","null"]},"search_path_pinned":{"type":["boolean","null"]},
+          "execute_role_count":{"type":["integer","null"]},
+          "calls":{"type":["integer","null"]},"total_time_ms":{"type":["number","null"]},"self_time_ms":{"type":["number","null"]},
+          "stats_reset":{"type":["string","null"]},"stats_observed":{"type":["boolean","null"]},
+          "definition_fingerprint":{"type":"string"},"collected_at":{"type":"string"}
+        }
+      },
+      "IndexDetailSnapshot": {
+        "type": "object",
+        "required": ["id", "environment_id", "audit_run_id", "database_name", "schema_name", "table_name", "index_name", "is_unique", "is_primary", "is_valid", "is_ready", "is_partial", "size_bytes", "idx_scan", "idx_tup_read", "idx_tup_fetch", "collected_at"],
+        "properties": {
+          "id": {"type":"string"}, "environment_id": {"type":"string"}, "audit_run_id": {"type":"string"},
+          "database_name": {"type":"string"}, "schema_name": {"type":"string"}, "table_name": {"type":"string"},
+          "table_owner_name": {"type":["string","null"]}, "index_name": {"type":"string"}, "access_method": {"type":["string","null"]},
+          "is_unique": {"type":"boolean"}, "is_primary": {"type":"boolean"}, "is_valid": {"type":"boolean"}, "is_ready": {"type":"boolean"},
+          "key_columns": {"type":["array","null"],"items":{"type":"string"}}, "include_columns": {"type":["array","null"],"items":{"type":"string"}},
+          "is_partial": {"type":"boolean"}, "definition_fingerprint": {"type":"string"}, "predicate_fingerprint": {"type":"string"},
+          "size_bytes": {"type":"integer"}, "idx_scan": {"type":"integer"}, "idx_tup_read": {"type":"integer"}, "idx_tup_fetch": {"type":"integer"},
+          "stats_reset": {"type":["string","null"]}, "usage_observed": {"type":["boolean","null"]}, "collected_at": {"type":"string"}
+        }
+      },
+      "ViewDetailSnapshot": {
+        "type": "object",
+        "required": ["id", "environment_id", "audit_run_id", "database_name", "schema_name", "view_name", "relkind", "size_bytes", "collected_at"],
+        "properties": {
+          "id": {"type":"string"}, "environment_id": {"type":"string"}, "audit_run_id": {"type":"string"},
+          "database_name": {"type":"string"}, "schema_name": {"type":"string"}, "view_name": {"type":"string"},
+          "owner_name": {"type":["string","null"]}, "relkind": {"type":"string"}, "size_bytes": {"type":"integer"},
+          "columns": {"type":["array","null"],"items":{"type":"object"}},
+          "security_invoker": {"type":["boolean","null"]}, "security_barrier": {"type":["boolean","null"]},
+          "is_populated": {"type":["boolean","null"]}, "definition_fingerprint": {"type":"string"},
+          "collected_at": {"type":"string"}
+        }
+      },
       "ScopeScoreCategory": {
         "type": "object",
         "required": ["category", "weight", "score", "penalty", "positive", "findings"],

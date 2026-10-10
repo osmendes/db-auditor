@@ -317,16 +317,25 @@ export function IndexDetail({ i }: { i: IndexSnapshot }) {
           ]}
         />
       </DetailSection>
-      <DetailSection title="Definição">
-        <pre className="overflow-x-auto rounded-md border border-slate-700 bg-slate-950/60 p-3 text-xs text-slate-300">
-          {i.index_definition || "—"}
-        </pre>
+      <DetailSection title="Definição protegida">
+        <p className="text-sm text-slate-300">
+          A definição SQL pode conter dados sensíveis e não é exibida nesta
+          tela.
+        </p>
       </DetailSection>
     </>
   );
 }
 
 export function ViewDetail({ v }: { v: ViewSnapshot }) {
+  const kindLabel =
+    v.relkind === "m"
+      ? "Visão materializada"
+      : v.relkind === "v"
+        ? "Visão comum"
+        : v.relkind === "cagg"
+          ? "Agregado contínuo"
+          : "Tipo não identificado";
   return (
     <DetailSection title="Identificação">
       <DetailGrid
@@ -335,8 +344,10 @@ export function ViewDetail({ v }: { v: ViewSnapshot }) {
           { label: "Esquema", value: v.schema_name },
           { label: "Visão", value: v.view_name },
           { label: "Responsável", value: v.owner_name ?? "—" },
-          { label: "Tipo interno (relkind)", value: v.relkind },
-          { label: "Tamanho", value: formatBytes(v.size_bytes) },
+          { label: "Tipo", value: kindLabel },
+          ...(v.relkind === "m"
+            ? [{ label: "Espaço ocupado", value: formatBytes(v.size_bytes) }]
+            : []),
           { label: "Coletado em", value: formatDate(v.collected_at) },
         ]}
       />

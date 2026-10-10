@@ -50,7 +50,7 @@ const countIndexesSQL = `SELECT COUNT(*) FROM index_snapshot WHERE ` + indexInve
 
 const listIndexesSQL = `
 SELECT id::text, database_name, schema_name, table_name, index_name,
-  COALESCE(index_definition,''), access_method, is_unique, is_primary,
+  access_method, is_unique, is_primary,
   COALESCE(size_bytes,0), COALESCE(idx_scan,0), collected_at
 FROM index_snapshot
 WHERE ` + indexInventoryWhere + `
@@ -201,7 +201,7 @@ func (s *Store) ListIndexSnapshots(ctx context.Context, f InventoryFilter) ([]In
 		var r IndexSnapshotRow
 		if err := rows.Scan(
 			&r.ID, &r.DatabaseName, &r.SchemaName, &r.TableName, &r.IndexName,
-			&r.IndexDefinition, &r.AccessMethod, &r.IsUnique, &r.IsPrimary,
+			&r.AccessMethod, &r.IsUnique, &r.IsPrimary,
 			&r.SizeBytes, &r.IdxScan, &r.CollectedAt,
 		); err != nil {
 			return nil, 0, err

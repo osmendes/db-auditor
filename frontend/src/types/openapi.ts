@@ -55,6 +55,29 @@ export type ApiPath =
   | "/api/v1/environments/{id}/reports/{job}/retry"
   | "/api/v1/environments/{id}/rules"
   | "/api/v1/environments/{id}/rules/{rule}"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/dependencies"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/detail"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/findings"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/grants"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/history"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/refresh-policies"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/dependencies"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/detail"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/findings"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/grants"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/chunks"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/detail"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/dimensions"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/findings"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/grants"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/history"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/indexes"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/jobs"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/policies"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/rls-policies"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/detail"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/findings"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/history"
   | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/tables/{table}/assessment"
   | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/tables/{table}/dependencies"
   | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/tables/{table}/findings"
@@ -62,6 +85,10 @@ export type ApiPath =
   | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/tables/{table}/graph"
   | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/tables/{table}/rls-policies"
   | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/tables/{table}/triggers"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/dependencies"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/detail"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/findings"
+  | "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/grants"
   | "/api/v1/environments/{id}/runs/{run}/score"
   | "/api/v1/environments/{id}/runs/{run}/score/compare"
   | "/api/v1/environments/{id}/runs/{run}/scores"
@@ -89,6 +116,101 @@ export type ApiPath =
   | "/api/v1/server-compare"
   | "/api/v1/status";
 
+export interface CAGGDetailSnapshot {
+  id: string;
+  environment_id: string;
+  audit_run_id: string;
+  database_name: string;
+  schema_name: string;
+  view_name: string;
+  owner_name?: string | null;
+  materialization_schema?: string | null;
+  materialization_hypertable?: string | null;
+  materialized_only: boolean;
+  compression_enabled: boolean;
+  finalized?: boolean | null;
+  source_hypertable_schema?: string | null;
+  source_hypertable_name?: string | null;
+  bucket_interval?: string | null;
+  lag_interval: string;
+  definition_fingerprint: string;
+  materialization_size_bytes?: number | null;
+  collected_at: string;
+}
+
+export interface FunctionDetailSnapshot {
+  id: string;
+  environment_id: string;
+  audit_run_id: string;
+  database_name: string;
+  schema_name: string;
+  function_name: string;
+  identity_arguments: string;
+  owner_name?: string | null;
+  language_name?: string | null;
+  is_security_definer: boolean;
+  volatility?: string | null;
+  parallel_safety?: string | null;
+  kind?: string | null;
+  return_type?: string | null;
+  search_path_pinned?: boolean | null;
+  execute_role_count?: number | null;
+  calls?: number | null;
+  total_time_ms?: number | null;
+  self_time_ms?: number | null;
+  stats_reset?: string | null;
+  stats_observed?: boolean | null;
+  definition_fingerprint?: string;
+  collected_at: string;
+}
+
+export interface HypertableDetailSnapshot {
+  id: string;
+  audit_run_id: string;
+  environment_id: string;
+  database_name: string;
+  schema_name: string;
+  hypertable_name: string;
+  owner_name?: string | null;
+  num_dimensions: number;
+  num_chunks: number;
+  compression_enabled: boolean;
+  is_distributed: boolean;
+  total_size_bytes: number;
+  data_size_bytes: number;
+  index_size_bytes: number;
+  collected_at: string;
+  base_table_observed: boolean;
+}
+
+export interface IndexDetailSnapshot {
+  id: string;
+  environment_id: string;
+  audit_run_id: string;
+  database_name: string;
+  schema_name: string;
+  table_name: string;
+  table_owner_name?: string | null;
+  index_name: string;
+  access_method?: string | null;
+  is_unique: boolean;
+  is_primary: boolean;
+  is_valid: boolean;
+  is_ready: boolean;
+  key_columns?: string[] | null;
+  include_columns?: string[] | null;
+  is_partial: boolean;
+  definition_fingerprint?: string;
+  predicate_fingerprint?: string;
+  size_bytes: number;
+  idx_scan: number;
+  idx_tup_read: number;
+  idx_tup_fetch: number;
+  stats_reset?: string | null;
+  usage_observed?: boolean | null;
+  collected_at: string;
+}
+
 export interface ScopeScore {
   version: string;
   profile: string;
@@ -114,4 +236,22 @@ export interface ScopeScoreCategory {
   penalty: number;
   positive: number;
   findings: number;
+}
+
+export interface ViewDetailSnapshot {
+  id: string;
+  environment_id: string;
+  audit_run_id: string;
+  database_name: string;
+  schema_name: string;
+  view_name: string;
+  owner_name?: string | null;
+  relkind: string;
+  size_bytes: number;
+  columns?: Record<string, unknown>[] | null;
+  security_invoker?: boolean | null;
+  security_barrier?: boolean | null;
+  is_populated?: boolean | null;
+  definition_fingerprint?: string;
+  collected_at: string;
 }

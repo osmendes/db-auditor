@@ -29,6 +29,9 @@ func TestIndexMetadataIntegration(t *testing.T) {
 	if _, err := conn.Exec(ctx, `CREATE INDEX IF NOT EXISTS sprint16_index_fixture_expr_idx ON sprint16_index_fixture((customer_id + 1),created_at)`); err != nil {
 		t.Fatal(err)
 	}
+	if _, err := conn.Exec(ctx, `CREATE INDEX IF NOT EXISTS sprint16_index_fixture_include_idx ON sprint16_index_fixture(customer_id) INCLUDE (created_at) WHERE customer_id > 0`); err != nil {
+		t.Fatal(err)
+	}
 	items, err := CollectIndexes(ctx, conn, config.Scope{})
 	if err != nil {
 		t.Fatal(err)
@@ -47,8 +50,14 @@ func TestIndexMetadataIntegration(t *testing.T) {
 			}
 			found++
 		}
+		if item.IndexName == "sprint16_index_fixture_include_idx" {
+			if len(item.KeyColumns) != 1 || item.KeyColumns[0] != "customer_id" || len(item.IncludeColumns) != 1 || item.IncludeColumns[0] != "created_at" || item.Predicate == "" || !item.UsageObserved {
+				t.Fatalf("include/partial metadata lost: %#v", item)
+			}
+			found++
+		}
 	}
-	if found != 2 {
+	if found != 3 {
 		t.Fatalf("fixture indexes not collected: %d", found)
 	}
 }

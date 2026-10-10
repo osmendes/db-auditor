@@ -19,6 +19,9 @@ type ContinuousAggregateFacts struct {
 	MaterializedOnly          bool   `json:"materialized_only"`
 	CompressionEnabled        bool   `json:"compression_enabled"`
 	Finalized                 *bool  `json:"finalized,omitempty"`
+	SourceHypertableSchema    string `json:"source_hypertable_schema,omitempty"`
+	SourceHypertableName      string `json:"source_hypertable_name,omitempty"`
+	BucketInterval            string `json:"bucket_interval,omitempty"`
 	ViewDefinition            string `json:"view_definition"`
 	LagInterval               string `json:"lag_interval,omitempty"`
 }
@@ -54,6 +57,9 @@ func CollectContinuousAggregates(ctx context.Context, conn *pgx.Conn, scope conf
 			&f.MaterializedOnly,
 			&f.CompressionEnabled,
 			&finalized,
+			&f.SourceHypertableSchema,
+			&f.SourceHypertableName,
+			&f.BucketInterval,
 			&f.ViewDefinition,
 		); err != nil {
 			return nil, fmt.Errorf("cagg collector scan: %w", err)

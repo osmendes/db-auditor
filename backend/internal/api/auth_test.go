@@ -55,6 +55,8 @@ func TestAuthMiddlewareRoleAndEnvironment(t *testing.T) {
 		want                                  int
 	}{
 		{"viewer_read", "viewer", "GET", "/api/v1/environments/" + allowed + "/tables", "", 200},
+		{"viewer_hypertable_detail", "viewer", "GET", "/api/v1/environments/" + allowed + "/runs/" + resource + "/databases/db/schemas/public/hypertables/metrics/detail", "", 200},
+		{"viewer_cagg_cross_env", "viewer", "GET", "/api/v1/environments/" + other + "/runs/" + resource + "/databases/db/schemas/public/continuous-aggregates/daily/detail", "", 403},
 		{"viewer_write", "viewer", "PATCH", "/api/v1/findings/" + resource, allowed, 403},
 		{"auditor_triage", "auditor", "PATCH", "/api/v1/findings/" + resource, allowed, 200},
 		{"auditor_cross_env", "auditor", "PATCH", "/api/v1/findings/" + resource, other, 403},

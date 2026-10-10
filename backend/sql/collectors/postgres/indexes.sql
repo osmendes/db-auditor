@@ -19,6 +19,11 @@ SELECT
     FROM unnest(ix.indkey) WITH ORDINALITY AS k(attnum, ord)
     LEFT JOIN pg_attribute a ON a.attrelid = ix.indrelid AND a.attnum = k.attnum
     WHERE k.ord <= ix.indnkeyatts), ARRAY[]::text[]) AS key_columns,
+  COALESCE((SELECT array_agg(COALESCE(a.attname, '<expression>') ORDER BY k.ord)
+    FROM unnest(ix.indkey) WITH ORDINALITY AS k(attnum, ord)
+    LEFT JOIN pg_attribute a ON a.attrelid = ix.indrelid AND a.attnum = k.attnum
+    WHERE k.ord > ix.indnkeyatts), ARRAY[]::text[]) AS include_columns,
+  st.indexrelid IS NOT NULL AS usage_observed,
   COALESCE(pg_catalog.pg_get_expr(ix.indpred, ix.indrelid), '') AS predicate
 FROM pg_index ix
 JOIN pg_class i ON i.oid = ix.indexrelid

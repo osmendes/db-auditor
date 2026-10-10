@@ -58,18 +58,17 @@ type ColumnSnapshotRow struct {
 }
 
 type IndexSnapshotRow struct {
-	ID              string    `json:"id"`
-	DatabaseName    string    `json:"database_name"`
-	SchemaName      string    `json:"schema_name"`
-	TableName       string    `json:"table_name"`
-	IndexName       string    `json:"index_name"`
-	IndexDefinition string    `json:"index_definition"`
-	AccessMethod    *string   `json:"access_method"`
-	IsUnique        bool      `json:"is_unique"`
-	IsPrimary       bool      `json:"is_primary"`
-	SizeBytes       int64     `json:"size_bytes"`
-	IdxScan         int64     `json:"idx_scan"`
-	CollectedAt     time.Time `json:"collected_at"`
+	ID           string    `json:"id"`
+	DatabaseName string    `json:"database_name"`
+	SchemaName   string    `json:"schema_name"`
+	TableName    string    `json:"table_name"`
+	IndexName    string    `json:"index_name"`
+	AccessMethod *string   `json:"access_method"`
+	IsUnique     bool      `json:"is_unique"`
+	IsPrimary    bool      `json:"is_primary"`
+	SizeBytes    int64     `json:"size_bytes"`
+	IdxScan      int64     `json:"idx_scan"`
+	CollectedAt  time.Time `json:"collected_at"`
 }
 
 type ViewSnapshotRow struct {

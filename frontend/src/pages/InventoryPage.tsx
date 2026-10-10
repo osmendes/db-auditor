@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { InventoryDetailAvailability } from "../components/InventoryDetailTabs";
 import { PageHeader } from "../components/PageHeader";
 import {
   Button,
@@ -22,6 +23,8 @@ import {
   type InventoryTarget,
   inventoryRunForSelection,
   inventoryTargetKey,
+  matchesInventorySelection,
+  timescaleUnavailableForRun,
 } from "../lib/inventoryTarget";
 import {
   relationClassBadgeClass,
@@ -30,8 +33,10 @@ import {
 import { nextSort, type SortState } from "../lib/sort";
 import { api } from "../services/api";
 import type {
+  CAGGSnapshot,
   ColumnStatSnapshot,
   DatabaseSnapshot,
+  EnvironmentCapabilities,
   FunctionSnapshot,
   HypertableSnapshot,
   IndexSnapshot,
@@ -44,6 +49,10 @@ import type {
   ViewSnapshot,
   WorkloadSnapshot,
 } from "../types";
+import { CAGGAssessmentPanel } from "./CAGGAssessmentPanel";
+import { FunctionAssessmentPanel } from "./FunctionAssessmentPanel";
+import { HypertableAssessmentPanel } from "./HypertableAssessmentPanel";
+import { IndexAssessmentPanel } from "./IndexAssessmentPanel";
 import {
   FunctionDetail,
   HypertableDetail,
@@ -52,11 +61,13 @@ import {
 } from "./InventoryDetails";
 import { InventoryObjectPanel } from "./InventoryObjectPanel";
 import { TableAssessmentPanel } from "./TableAssessmentPanel";
+import { ViewAssessmentPanel } from "./ViewAssessmentPanel";
 
 type SelectedInventoryItem =
   | { kind: "tables"; item: TableSnapshot }
   | { kind: "indexes"; item: IndexSnapshot }
-  | { kind: "views" | "caggs"; item: ViewSnapshot }
+  | { kind: "views"; item: ViewSnapshot }
+  | { kind: "caggs"; item: CAGGSnapshot }
   | { kind: "functions"; item: FunctionSnapshot }
   | { kind: "hypertables"; item: HypertableSnapshot };
 
@@ -72,6 +83,7 @@ function targetFor(item: SelectedInventoryItem): InventoryTarget {
     case "indexes":
       return { ...shared, kind: item.kind, name: item.item.index_name };
     case "views":
+      return { ...shared, kind: item.kind, name: item.item.view_name };
     case "caggs":
       return { ...shared, kind: item.kind, name: item.item.view_name };
     case "functions":
@@ -178,6 +190,7 @@ export function InventoryPage() {
   const [tables, setTables] = useState<TableSnapshot[]>([]);
   const [indexes, setIndexes] = useState<IndexSnapshot[]>([]);
   const [views, setViews] = useState<ViewSnapshot[]>([]);
+  const [caggs, setCaggs] = useState<CAGGSnapshot[]>([]);
   const [functions, setFunctions] = useState<FunctionSnapshot[]>([]);
   const [hypertables, setHypertables] = useState<HypertableSnapshot[]>([]);
   const [selectedItem, setSelectedItem] =
@@ -188,6 +201,8 @@ export function InventoryPage() {
   const [sort, setSort] = useState<SortState | null>(null);
   const [snapshotStatus, setSnapshotStatus] =
     useState<SnapshotCompleteness | null>(null);
+  const [capabilities, setCapabilities] =
+    useState<EnvironmentCapabilities | null>(null);
   const [detailSnapshot, setDetailSnapshot] =
     useState<SnapshotCompleteness | null>(null);
   const [detailHistory, setDetailHistory] = useState<TableHistoryPoint[]>([]);
@@ -204,6 +219,7 @@ export function InventoryPage() {
       setOffset(0);
       setError(null);
       setSnapshotStatus(null);
+      setCapabilities(null);
       return;
     }
     let cancelled = false;
@@ -214,16 +230,19 @@ export function InventoryPage() {
     setOffset(0);
     setError(null);
     setSnapshotStatus(null);
+    setCapabilities(null);
     Promise.all([
       api.databases(envId),
       api.schemas(envId),
       api.snapshotStatus(envId).catch(() => null),
+      api.environmentCapabilities(envId).catch(() => null),
     ])
-      .then(([dbRes, scRes, status]) => {
+      .then(([dbRes, scRes, status, capability]) => {
         if (!cancelled) {
           setDatabases(dbRes.items);
           setSchemas(scRes.items);
           setSnapshotStatus(status);
+          setCapabilities(capability);
         }
       })
       .catch((err: unknown) => {
@@ -249,6 +268,7 @@ export function InventoryPage() {
       setTables([]);
       setIndexes([]);
       setViews([]);
+      setCaggs([]);
       setFunctions([]);
       setHypertables([]);
       setPage(null);
@@ -348,6 +368,7 @@ export function InventoryPage() {
         .then((res) => {
           if (!cancelled) {
             setPage(res.page);
+            setCaggs(res.items);
             setViews(
               res.items.map((c) => ({
                 id: c.id,
@@ -396,6 +417,11 @@ export function InventoryPage() {
   const currentRun = inventoryRunForSelection(
     search.run,
     snapshotStatus?.audit_run_id,
+  );
+  const timescaleNotApplicable = timescaleUnavailableForRun(
+    kind,
+    currentRun,
+    capabilities,
   );
 
   const openRow = (
@@ -544,10 +570,7 @@ export function InventoryPage() {
               value.view_name === inventory.name,
           );
           if (!item) return null;
-          return {
-            kind: "caggs",
-            item: { ...item, relkind: "cagg", size_bytes: 0 },
-          };
+          return { kind: "caggs", item };
         }
         case "functions": {
           const item = await findPage(
@@ -603,8 +626,24 @@ export function InventoryPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [envId, inventory, search.run, snapshotStatus?.audit_run_id]);
 
+  const visibleSelectedItem =
+    selectedItem &&
+    selectedRun === currentRun &&
+    matchesInventorySelection(
+      envId,
+      selectedRun,
+      inventory,
+      targetFor(selectedItem),
+      selectedKeyRef.current,
+    )
+      ? selectedItem
+      : null;
+  const visibleSnapshot =
+    detailSnapshot?.audit_run_id === selectedRun ? detailSnapshot : null;
   const selectedTable =
-    selectedItem?.kind === "tables" ? selectedItem.item : undefined;
+    visibleSelectedItem?.kind === "tables"
+      ? visibleSelectedItem.item
+      : undefined;
 
   const navigateToRelatedTable = (schema: string, table: string) => {
     if (!envId || !selectedTable) return;
@@ -624,15 +663,25 @@ export function InventoryPage() {
       );
   };
   const selectedIndex =
-    selectedItem?.kind === "indexes" ? selectedItem.item : undefined;
+    visibleSelectedItem?.kind === "indexes"
+      ? visibleSelectedItem.item
+      : undefined;
   const selectedView =
-    selectedItem?.kind === "views" || selectedItem?.kind === "caggs"
-      ? selectedItem.item
+    visibleSelectedItem?.kind === "views"
+      ? visibleSelectedItem.item
+      : undefined;
+  const selectedCagg =
+    visibleSelectedItem?.kind === "caggs"
+      ? visibleSelectedItem.item
       : undefined;
   const selectedFn =
-    selectedItem?.kind === "functions" ? selectedItem.item : undefined;
+    visibleSelectedItem?.kind === "functions"
+      ? visibleSelectedItem.item
+      : undefined;
   const selectedHt =
-    selectedItem?.kind === "hypertables" ? selectedItem.item : undefined;
+    visibleSelectedItem?.kind === "hypertables"
+      ? visibleSelectedItem.item
+      : undefined;
 
   useEffect(() => {
     if (!envId || !selectedRun) {
@@ -840,6 +889,11 @@ export function InventoryPage() {
               >
                 {loading ? (
                   <Skeleton className="h-64 w-full" />
+                ) : timescaleNotApplicable ? (
+                  <InventoryDetailAvailability
+                    state="not_applicable"
+                    detail="TimescaleDB não foi observado nesta execução. Tabelas temporais e agregados contínuos não se aplicam a esta coleta."
+                  />
                 ) : kind === "tables" ? (
                   <>
                     <Table
@@ -1036,6 +1090,15 @@ export function InventoryPage() {
                     >
                       {sortedViews.map((v) => {
                         const viewKind = kind === "caggs" ? "caggs" : "views";
+                        const selectedCaggRow =
+                          viewKind === "caggs"
+                            ? caggs.find((item) => item.id === v.id)
+                            : undefined;
+                        if (viewKind === "caggs" && !selectedCaggRow)
+                          return null;
+                        const selection: SelectedInventoryItem = selectedCaggRow
+                          ? { kind: "caggs", item: selectedCaggRow }
+                          : { kind: "views", item: v };
                         return (
                           <tr
                             key={v.id}
@@ -1043,22 +1106,17 @@ export function InventoryPage() {
                               selectedItem?.kind === viewKind &&
                                 selectedItem.item.id === v.id,
                             )}
-                            onClick={() =>
-                              openRow({ kind: viewKind, item: v }, currentRun)
-                            }
+                            onClick={() => openRow(selection, currentRun)}
                           >
                             <td className="px-3 py-2">{v.schema_name}</td>
                             <td className="px-3 py-2">
                               <button
                                 type="button"
                                 className={detailButtonClass}
-                                aria-label={`Abrir detalhes da visão ${v.view_name}`}
+                                aria-label={`Abrir detalhes ${viewKind === "caggs" ? "do agregado contínuo" : "da visão"} ${v.view_name}`}
                                 onClick={(event) => {
                                   event.stopPropagation();
-                                  openRow(
-                                    { kind: viewKind, item: v },
-                                    currentRun,
-                                  );
+                                  openRow(selection, currentRun);
                                 }}
                               >
                                 {v.view_name}
@@ -1066,9 +1124,15 @@ export function InventoryPage() {
                             </td>
                             <td className="px-3 py-2">{v.owner_name ?? "—"}</td>
                             <td className="px-3 py-2">
-                              {formatBytes(v.size_bytes)}
+                              {kind === "caggs"
+                                ? "Não coletado"
+                                : formatBytes(v.size_bytes)}
                             </td>
-                            <td className="px-3 py-2">{v.relkind}</td>
+                            <td className="px-3 py-2">
+                              {kind === "caggs"
+                                ? "Agregado contínuo"
+                                : v.relkind}
+                            </td>
                           </tr>
                         );
                       })}
@@ -1229,8 +1293,8 @@ export function InventoryPage() {
               if (!open) closeSheet();
             }}
             title={
-              selectedItem
-                ? targetFor(selectedItem).name
+              visibleSelectedItem
+                ? targetFor(visibleSelectedItem).name
                 : (inventory?.name ?? "Detalhe")
             }
             wide
@@ -1240,7 +1304,7 @@ export function InventoryPage() {
                 {detailError}
               </p>
             ) : null}
-            {!selectedItem && !detailError && inventory ? (
+            {!visibleSelectedItem && !detailError && inventory ? (
               <p role="status" className="text-sm text-slate-400">
                 Carregando detalhes…
               </p>
@@ -1265,6 +1329,11 @@ export function InventoryPage() {
               </div>
             ) : selectedTable ? (
               <TableAssessmentPanel
+                key={inventoryTargetKey(
+                  envId ?? selectedTable.environment_id,
+                  selectedTable.audit_run_id,
+                  targetFor({ kind: "tables", item: selectedTable }),
+                )}
                 t={selectedTable}
                 env={envId ?? selectedTable.environment_id}
                 history={detailHistory}
@@ -1273,17 +1342,93 @@ export function InventoryPage() {
                 onNavigate={navigateToRelatedTable}
               />
             ) : null}
-            {selectedItem && selectedItem.kind !== "tables" && envId ? (
+            {visibleSelectedItem?.kind === "views" && envId && selectedRun ? (
+              <ViewAssessmentPanel
+                key={inventoryTargetKey(
+                  envId,
+                  selectedRun,
+                  targetFor(visibleSelectedItem),
+                )}
+                view={visibleSelectedItem.item}
+                environment={envId}
+                run={selectedRun}
+                snapshot={visibleSnapshot}
+              />
+            ) : null}
+            {visibleSelectedItem?.kind === "indexes" && envId && selectedRun ? (
+              <IndexAssessmentPanel
+                key={inventoryTargetKey(
+                  envId,
+                  selectedRun,
+                  targetFor(visibleSelectedItem),
+                )}
+                index={visibleSelectedItem.item}
+                environment={envId}
+                run={selectedRun}
+                snapshot={visibleSnapshot}
+              />
+            ) : null}
+            {visibleSelectedItem?.kind === "functions" &&
+            envId &&
+            selectedRun ? (
+              <FunctionAssessmentPanel
+                key={inventoryTargetKey(
+                  envId,
+                  selectedRun,
+                  targetFor(visibleSelectedItem),
+                )}
+                fn={visibleSelectedItem.item}
+                environment={envId}
+                run={selectedRun}
+                snapshot={visibleSnapshot}
+              />
+            ) : null}
+            {visibleSelectedItem?.kind === "hypertables" &&
+            envId &&
+            selectedRun ? (
+              <HypertableAssessmentPanel
+                key={inventoryTargetKey(
+                  envId,
+                  selectedRun,
+                  targetFor(visibleSelectedItem),
+                )}
+                hypertable={visibleSelectedItem.item}
+                environment={envId}
+                run={selectedRun}
+                snapshot={visibleSnapshot}
+              />
+            ) : null}
+            {selectedCagg && envId && selectedRun ? (
+              <CAGGAssessmentPanel
+                key={inventoryTargetKey(
+                  envId,
+                  selectedRun,
+                  targetFor({ kind: "caggs", item: selectedCagg }),
+                )}
+                cagg={selectedCagg}
+                environment={envId}
+                run={selectedRun}
+                snapshot={visibleSnapshot}
+              />
+            ) : null}
+            {visibleSelectedItem &&
+            visibleSelectedItem.kind !== "tables" &&
+            (visibleSelectedItem.kind !== "views" || !selectedRun) &&
+            (visibleSelectedItem.kind !== "indexes" || !selectedRun) &&
+            (visibleSelectedItem.kind !== "functions" || !selectedRun) &&
+            (visibleSelectedItem.kind !== "hypertables" || !selectedRun) &&
+            (visibleSelectedItem.kind !== "caggs" || !selectedRun) &&
+            envId ? (
               <InventoryObjectPanel
                 key={inventoryTargetKey(
                   envId,
                   selectedRun ?? "",
-                  targetFor(selectedItem),
+                  targetFor(visibleSelectedItem),
                 )}
-                target={targetFor(selectedItem)}
+                target={targetFor(visibleSelectedItem)}
                 environment={envId}
                 run={selectedRun}
-                snapshot={detailSnapshot}
+                snapshot={visibleSnapshot}
                 overview={
                   <>
                     {selectedIndex ? <IndexDetail i={selectedIndex} /> : null}
@@ -1299,6 +1444,7 @@ export function InventoryPage() {
             !selectedView &&
             !selectedFn &&
             !selectedHt &&
+            !selectedCagg &&
             !inventory &&
             !detailError ? (
               <p className="text-sm text-slate-400">Nenhum detalhe.</p>

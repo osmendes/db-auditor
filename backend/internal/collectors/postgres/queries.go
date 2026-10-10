@@ -185,6 +185,11 @@ SELECT
     FROM unnest(ix.indkey) WITH ORDINALITY AS k(attnum, ord)
     LEFT JOIN pg_attribute a ON a.attrelid = ix.indrelid AND a.attnum = k.attnum
     WHERE k.ord <= ix.indnkeyatts), ARRAY[]::text[]) AS key_columns,
+  COALESCE((SELECT array_agg(COALESCE(a.attname, '<expression>') ORDER BY k.ord)
+    FROM unnest(ix.indkey) WITH ORDINALITY AS k(attnum, ord)
+    LEFT JOIN pg_attribute a ON a.attrelid = ix.indrelid AND a.attnum = k.attnum
+    WHERE k.ord > ix.indnkeyatts), ARRAY[]::text[]) AS include_columns,
+  st.indexrelid IS NOT NULL AS usage_observed,
   COALESCE(pg_catalog.pg_get_expr(ix.indpred, ix.indrelid), '') AS predicate
 FROM pg_index ix
 JOIN pg_class i ON i.oid = ix.indexrelid
@@ -265,7 +270,15 @@ SELECT
   CASE
     WHEN c.relkind = 'm' THEN COALESCE(pg_total_relation_size(c.oid), 0)
     ELSE 0
-  END AS size_bytes
+  END AS size_bytes,
+  COALESCE((SELECT jsonb_agg(jsonb_build_object(
+    'name', a.attname, 'type', format_type(a.atttypid, a.atttypmod),
+    'position', a.attnum) ORDER BY a.attnum)
+    FROM pg_attribute a WHERE a.attrelid=c.oid AND a.attnum>0 AND NOT a.attisdropped),
+    '[]'::jsonb)::text AS columns_json,
+  CASE WHEN c.relkind='v' AND current_setting('server_version_num')::int>=150000 THEN 'security_invoker=true'=ANY(COALESCE(c.reloptions, '{}'::text[])) ELSE NULL END AS security_invoker,
+  CASE WHEN c.relkind='v' THEN 'security_barrier=true'=ANY(COALESCE(c.reloptions, '{}'::text[])) ELSE NULL END AS security_barrier,
+  CASE WHEN c.relkind='m' THEN c.relispopulated ELSE NULL END AS is_populated
 FROM pg_class c
 JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE c.relkind IN ('v', 'm')
@@ -290,10 +303,21 @@ SELECT
   CASE
     WHEN p.prokind = 'a' THEN NULL
     ELSE pg_catalog.pg_get_functiondef(p.oid)
-  END AS function_definition
+  END AS function_definition,
+  pg_catalog.pg_get_function_result(p.oid) AS return_type,
+  EXISTS (SELECT 1 FROM unnest(p.proconfig) AS setting WHERE setting LIKE 'search_path=%') AS search_path_pinned,
+  ARRAY(SELECT r.rolname FROM pg_roles r WHERE r.rolcanlogin
+    AND has_schema_privilege(r.oid,n.oid,'USAGE')
+    AND has_function_privilege(r.oid,p.oid,'EXECUTE') ORDER BY r.rolname)::text[] AS execute_roles,
+  COALESCE(st.calls,0)::bigint AS calls,
+  COALESCE(st.total_time,0)::double precision AS total_time_ms,
+  COALESCE(st.self_time,0)::double precision AS self_time_ms,
+  (SELECT stats_reset FROM pg_stat_database WHERE datname=current_database()) AS stats_reset,
+  st.funcid IS NOT NULL AS stats_observed
 FROM pg_proc p
 JOIN pg_namespace n ON n.oid = p.pronamespace
 JOIN pg_language l ON l.oid = p.prolang
+LEFT JOIN pg_stat_user_functions st ON st.funcid=p.oid
 WHERE n.nspname NOT LIKE 'pg\_%' ESCAPE '\'
   AND n.nspname <> 'information_schema'
 ORDER BY n.nspname, p.proname, identity_arguments

@@ -309,6 +309,9 @@ type ContinuousAggregateSnapshot struct {
 	CollectedAt               pgtype.Timestamptz
 	ViewDefinition            string
 	LagInterval               string
+	SourceHypertableSchema    pgtype.Text
+	SourceHypertableName      pgtype.Text
+	BucketInterval            pgtype.Text
 }
 
 type DatabaseSnapshot struct {
@@ -479,6 +482,14 @@ type FunctionSnapshot struct {
 	FunctionDefinition pgtype.Text
 	CollectedAt        pgtype.Timestamptz
 	Proconfig          string
+	ReturnType         pgtype.Text
+	SearchPathPinned   pgtype.Bool
+	ExecuteRoles       []string
+	Calls              pgtype.Int8
+	TotalTimeMs        pgtype.Float8
+	SelfTimeMs         pgtype.Float8
+	StatsReset         pgtype.Timestamptz
+	StatsObserved      pgtype.Bool
 }
 
 type GrantSnapshot struct {
@@ -533,6 +544,8 @@ type IndexSnapshot struct {
 	IsReady         bool
 	KeyColumns      []string
 	Predicate       string
+	IncludeColumns  []string
+	UsageObserved   pgtype.Bool
 }
 
 type JobSnapshot struct {
@@ -897,17 +910,21 @@ type TriggerSnapshot struct {
 }
 
 type ViewSnapshot struct {
-	ID             pgtype.UUID
-	AuditRunID     pgtype.UUID
-	EnvironmentID  pgtype.UUID
-	DatabaseName   string
-	SchemaName     string
-	ViewName       string
-	OwnerName      pgtype.Text
-	Relkind        string
-	ViewDefinition string
-	SizeBytes      int64
-	CollectedAt    pgtype.Timestamptz
+	ID              pgtype.UUID
+	AuditRunID      pgtype.UUID
+	EnvironmentID   pgtype.UUID
+	DatabaseName    string
+	SchemaName      string
+	ViewName        string
+	OwnerName       pgtype.Text
+	Relkind         string
+	ViewDefinition  string
+	SizeBytes       int64
+	CollectedAt     pgtype.Timestamptz
+	ColumnsJson     []byte
+	SecurityInvoker pgtype.Bool
+	SecurityBarrier pgtype.Bool
+	IsPopulated     pgtype.Bool
 }
 
 type WorkloadSnapshot struct {
