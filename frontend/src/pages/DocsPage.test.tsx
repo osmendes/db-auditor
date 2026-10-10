@@ -3,16 +3,10 @@ import { describe, expect, it } from "vitest";
 import { DocsPage } from "./DocsPage";
 
 describe("DocsPage", () => {
-  it("covers the current sprint workflows and safe migrations", () => {
+  it("does not embed the guide in the component markup", () => {
     const html = renderToStaticMarkup(<DocsPage />);
-    for (const term of [
-      "Relatórios",
-      "Contas e permissões",
-      "Total de bancos",
-      "cobertura parcial",
-      "Configuração inicial (ops)",
-    ]) {
-      expect(html).toContain(term);
-    }
+    expect(html).toContain("Documentação");
+    expect(html).toContain("Carregando o guia");
+    expect(html).not.toContain("Configuração inicial (ops)");
   });
 });

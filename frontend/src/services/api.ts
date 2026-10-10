@@ -164,12 +164,13 @@ async function reportRequest<T>(
   return response.json() as Promise<T>;
 }
 
-async function getJSON<T>(path: string): Promise<T> {
+async function getJSON<T>(path: string, signal?: AbortSignal): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE}${path}`, {
       headers: authHeaders(),
       credentials: "include",
+      signal,
     });
   } catch (cause) {
     throw networkApiError(path, cause);

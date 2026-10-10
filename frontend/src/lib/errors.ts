@@ -90,6 +90,12 @@ export async function toApiError(
 }
 
 export function networkApiError(path: string, cause?: unknown): ApiError {
+  if (cause instanceof DOMException && cause.name === "AbortError") {
+    return new ApiError(0, path, "");
+  }
+  if (cause instanceof Error && cause.name === "AbortError") {
+    return new ApiError(0, path, "");
+  }
   const detail =
     cause instanceof Error && cause.message ? ` (${cause.message})` : "";
   return new ApiError(0, path, messageForStatus(0) + detail);
@@ -99,6 +105,8 @@ export function formatError(
   err: unknown,
   fallback = "Ocorreu um erro inesperado.",
 ): string {
+  if (err instanceof DOMException && err.name === "AbortError") return "";
+  if (err instanceof Error && err.name === "AbortError") return "";
   if (err instanceof ApiError) {
     return err.message;
   }

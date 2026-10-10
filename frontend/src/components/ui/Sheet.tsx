@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { cn } from "../../lib/cn";
+import { useFocusTrap } from "./useFocusTrap";
 
 export interface SheetProps {
   open: boolean;
@@ -24,6 +25,8 @@ export function Sheet({
 }: SheetProps) {
   const titleId = useId();
   const descId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(open, panelRef);
 
   useEffect(() => {
     if (!open) {
@@ -59,6 +62,7 @@ export function Sheet({
         onClick={() => onOpenChange(false)}
       />
       <div
+        ref={panelRef}
         className={cn(
           "relative z-10 flex h-full w-full flex-col border-slate-700 bg-slate-900 shadow-2xl",
           wide ? "max-w-xl sm:max-w-2xl" : "max-w-md sm:max-w-lg",

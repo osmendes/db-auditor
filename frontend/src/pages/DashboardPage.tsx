@@ -1,4 +1,5 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { lazy, type ReactNode, Suspense, useEffect, useState } from "react";
+import { CoverageBanner } from "../components/CoverageBanner";
 import { PageHeader } from "../components/PageHeader";
 import {
   Badge,
@@ -7,7 +8,6 @@ import {
   EmptyState,
   ErrorBanner,
   Skeleton,
-  StoragePieChart,
   Table,
 } from "../components/ui";
 import { useApp } from "../context/AppContext";
@@ -15,6 +15,13 @@ import { formatError } from "../lib/errors";
 import { labels } from "../lib/labels";
 import { trendEntries } from "../lib/trend-gaps";
 import { api } from "../services/api";
+
+const StoragePieChart = lazy(() =>
+  import("../components/ui/StoragePieChart").then((module) => ({
+    default: module.StoragePieChart,
+  })),
+);
+
 import type {
   ConnectionStatus,
   DashboardKPIs,
@@ -438,10 +445,13 @@ export function DashboardPage() {
             <Card subtitle="Políticas" title={String(kpis.policies)} />
           </KpiGroup>
           {kpis.inventory_status !== "complete" ? (
+            <CoverageBanner
+              kind={kpis.inventory_status === "partial" ? "partial" : null}
+            />
+          ) : null}
+          {kpis.inventory_status === "empty" ? (
             <p className="text-sm text-amber-300" role="status">
-              {kpis.inventory_status === "empty"
-                ? "Ainda não há inventário concluído para o ambiente selecionado."
-                : "Inventário parcial: os totais exibidos podem estar incompletos."}
+              Ainda não há inventário concluído para o ambiente selecionado.
             </p>
           ) : null}
           <KpiGroup title="Operação">
@@ -463,7 +473,9 @@ export function DashboardPage() {
           {storage ? (
             <Card title="Storage por ambiente" className="min-h-[22rem]">
               <div className="mt-2 flex flex-1 flex-col">
-                <StoragePieChart items={storage.by_environment} />
+                <Suspense fallback={<p role="status">Carregando gráfico…</p>}>
+                  <StoragePieChart items={storage.by_environment} />
+                </Suspense>
               </div>
             </Card>
           ) : null}
