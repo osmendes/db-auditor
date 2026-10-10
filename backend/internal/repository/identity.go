@@ -189,15 +189,18 @@ func (s *Store) loadAuditorEnvironments(ctx context.Context, user *AuditorUser) 
 }
 
 func (s *Store) CreateAuditorSession(ctx context.Context, userID string, tokenHash []byte, expiry time.Time) error {
-	_, err := s.pool.Exec(ctx, `INSERT INTO auditor_session(token_hash,user_id,expires_at) VALUES($1,$2,$3)`, tokenHash, userID, expiry)
+	_, err := s.pool.Exec(ctx, `INSERT INTO auditor_session(token_hash,user_id,expires_at,last_seen_at,absolute_expires_at)
+		VALUES($1,$2,$3,now(),$3)`, tokenHash, userID, expiry)
 	return err
 }
 
 func (s *Store) GetAuditorSession(ctx context.Context, tokenHash []byte) (*AuditorUser, error) {
 	user := &AuditorUser{}
-	err := s.pool.QueryRow(ctx, `SELECT u.id::text,u.username,u.role,u.active,u.password_hash
-		FROM auditor_session s JOIN auditor_user u ON u.id=s.user_id
-		WHERE s.token_hash=$1 AND s.expires_at>now() AND u.active`, tokenHash).
+	err := s.pool.QueryRow(ctx, `UPDATE auditor_session s SET last_seen_at=now(),
+		expires_at=LEAST(s.absolute_expires_at, now()+interval '45 minutes')
+		FROM auditor_user u
+		WHERE s.user_id=u.id AND s.token_hash=$1 AND s.expires_at>now() AND s.absolute_expires_at>now() AND u.active
+		RETURNING u.id::text,u.username,u.role,u.active,u.password_hash`, tokenHash).
 		Scan(&user.ID, &user.Username, &user.Role, &user.Active, &user.PasswordHash)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil

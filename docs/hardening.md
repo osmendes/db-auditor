@@ -30,3 +30,14 @@
 
 - Fluxos críticos cobertos por testes Go/Vitest e smoke `make smoke`
 - Relatórios JSON em `/api/v1/reports/*` para exportação posterior CSV se necessário
+
+## Sessão
+
+O cookie permanece `SameSite=Lax` e `HttpOnly`. Lax preserva a entrada por um link compartilhado; `Strict` exigiria um novo login nessa navegação. Mutações continuam exigindo o token CSRF, então um site externo não as dispara só com o cookie.
+
+A sessão ociosa dura 45 minutos. Um GET autenticado renova `last_seen_at` sem ultrapassar o teto absoluto de 8 horas gravado na criação. Logout apaga a linha.
+
+## Hosts inseguros do alvo
+
+`AUDITOR_TARGET_INSECURE_HOSTS` começa vazio. Sem um nome nessa lista, o auditor recusa TLS sem verificação no banco analisado. O padrão é verificar a cadeia completa.
+

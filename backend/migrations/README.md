@@ -17,6 +17,7 @@ O diretório contém o baseline, o seed local e migrações incrementais. O Post
 - `13_index_detail.sql`: registra colunas incluídas e se as estatísticas de uso do índice estavam disponíveis. Em snapshots anteriores, esses campos ficam ausentes até uma nova coleta; os índices históricos permanecem preservados.
 - `14_function_detail.sql`: registra retorno, configuração segura do caminho de busca, papéis com EXECUTE observado e estatísticas agregadas das funções. Execuções antigas mantêm esses campos como não coletados; o corpo SQL permanece protegido na API.
 - `15_cagg_source.sql`: acrescenta origem e intervalo de bucket do agregado contínuo quando o catálogo Timescale os fornece. Snapshots antigos mantêm esses campos ausentes; uma nova coleta pode preenchê-los.
+- `16_identity.sql`: garante usuário, sessão e tentativas de login em volumes antigos, com ociosidade e prazo absoluto da sessão. `IF NOT EXISTS` não apaga sessões já gravadas.
 
 Não reintroduza arquivos `.down.sql`: o entrypoint executaria todos os `.sql`.
 
