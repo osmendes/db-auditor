@@ -1,6 +1,6 @@
 # DB Auditor
 
-**Comece pelo [guia do usuário](docs/guia-do-usuario.md)** para aprender a usar inventário, achados, histórico, ações assistidas, qualidade de dados e relatórios em linguagem simples.
+**Comece pelo [guia do usuário](docs/guia-do-usuario.md).** Operação, backup e retenção ficam no [guia operacional](docs/ops.md). Estes dois são a documentação canônica; os demais arquivos em `docs/` são notas de apoio.
 
 O [registro de verificação do backlog](docs/verificacao-do-backlog.md) reúne os testes executados e os aceites que dependem da infraestrutura e de usuários em homologação.
 
