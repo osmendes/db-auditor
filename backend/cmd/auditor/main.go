@@ -10,17 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
-	"github.com/osmendes/db-auditor/internal/api"
-	"github.com/osmendes/db-auditor/internal/audit"
-	"github.com/osmendes/db-auditor/internal/buildinfo"
-	"github.com/osmendes/db-auditor/internal/config"
-	"github.com/osmendes/db-auditor/internal/database"
-	"github.com/osmendes/db-auditor/internal/migrate"
-	"github.com/osmendes/db-auditor/internal/observability"
-	"github.com/osmendes/db-auditor/internal/reportworker"
-	"github.com/osmendes/db-auditor/internal/repository"
-	"github.com/osmendes/db-auditor/internal/scheduler"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/api"
+	"github.com/mayconmendes-qc/db-auditor/internal/audit"
+	"github.com/mayconmendes-qc/db-auditor/internal/buildinfo"
+	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/mayconmendes-qc/db-auditor/internal/database"
+	"github.com/mayconmendes-qc/db-auditor/internal/migrate"
+	"github.com/mayconmendes-qc/db-auditor/internal/observability"
+	"github.com/mayconmendes-qc/db-auditor/internal/reportworker"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/scheduler"
 )
 
 func main() {
@@ -123,10 +123,11 @@ func main() {
 	}
 	registry := audit.NewLiveRegistry(liveOpts)
 	audit.AttachStructuralCollectors(registry, liveOpts)
-	analysisService := analyzer.NewService(store, store, "1.0.0")
+	binaryVersion := buildinfo.String()
+	analysisService := analyzer.NewService(store, store, binaryVersion)
 	runner := audit.NewRunner(registry, runStore, audit.RunnerOptions{
-		ServiceVersion:           buildinfo.String(),
-		CollectorVersion:         "1.1.0",
+		ServiceVersion:           binaryVersion,
+		CollectorVersion:         binaryVersion,
 		MaxWorkers:               cfg.MaxCollectorWorkers,
 		MaxDatabaseConnections:   cfg.MaxDatabaseConnections,
 		OptionalCollectorTimeout: cfg.OptionalCollectorTimeout,

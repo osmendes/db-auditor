@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/osmendes/db-auditor/internal/report"
+	"github.com/mayconmendes-qc/db-auditor/internal/report"
 )
 
 func (s *Store) LoadReportDocument(ctx context.Context, job ReportJob) (report.Document, error) {

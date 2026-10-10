@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/buildinfo"
-	"github.com/osmendes/db-auditor/internal/observability"
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/buildinfo"
+	"github.com/mayconmendes-qc/db-auditor/internal/observability"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 type readinessChecker interface {

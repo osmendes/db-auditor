@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/osmendes/db-auditor/internal/fingerprint"
+	"github.com/mayconmendes-qc/db-auditor/internal/fingerprint"
 )
 
 // ObjectItem is a generic comparable inventory object.

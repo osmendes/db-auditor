@@ -1,6 +1,6 @@
 package audit
 
-import "github.com/osmendes/db-auditor/internal/config"
+import "github.com/mayconmendes-qc/db-auditor/internal/config"
 
 // NewDefaultRegistry builds the production collector set (live SQL against target DSNs).
 // Without AUDITOR_TARGET_DSN_<uuid>, collectors fail with a clear configuration error

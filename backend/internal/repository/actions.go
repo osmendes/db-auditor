@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/osmendes/db-auditor/internal/actions"
-	"github.com/osmendes/db-auditor/internal/guidance"
+	"github.com/mayconmendes-qc/db-auditor/internal/actions"
+	"github.com/mayconmendes-qc/db-auditor/internal/guidance"
 )
 
 var ErrActionNotFound = errors.New("finding action source not found")

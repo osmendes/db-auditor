@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/osmendes/db-auditor/internal/database/sqlc"
+	"github.com/mayconmendes-qc/db-auditor/internal/database/sqlc"
 )
 
 // inventoryOrder accepts only known snapshot columns. The final id tie breaker

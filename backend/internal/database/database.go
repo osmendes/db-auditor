@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/osmendes/db-auditor/internal/config"
+	"github.com/mayconmendes-qc/db-auditor/internal/config"
 )
 
 func NewPool(ctx context.Context, settings config.Database) (*pgxpool.Pool, error) {

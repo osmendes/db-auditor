@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 // FindingStore exposes finding persistence.

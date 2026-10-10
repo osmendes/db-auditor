@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/osmendes/db-auditor/internal/capabilities"
+	"github.com/mayconmendes-qc/db-auditor/internal/capabilities"
 )
 
 // Runner executes all registered analyzers against snapshot facts.

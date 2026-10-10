@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/osmendes/db-auditor/internal/collectors/timescale"
+	"github.com/mayconmendes-qc/db-auditor/internal/collectors/timescale"
 )
 
 // SaveTimescalePolicyInventory persists CAGG/jobs/policies for an audit run.

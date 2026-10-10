@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 func (s *Store) enrichP2Facts(ctx context.Context, environmentID, auditRunID string, f *analyzer.SnapshotFacts) error {

@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/osmendes/db-auditor/internal/config"
-	"github.com/osmendes/db-auditor/internal/quality"
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/mayconmendes-qc/db-auditor/internal/quality"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 type qualityStore interface {

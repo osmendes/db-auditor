@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/osmendes/db-auditor/internal/config"
+	"github.com/mayconmendes-qc/db-auditor/internal/config"
 )
 
 // PolicyInventoryResult holds CAGG/jobs/policies for one database.

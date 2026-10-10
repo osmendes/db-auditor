@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 type ruleReader interface {

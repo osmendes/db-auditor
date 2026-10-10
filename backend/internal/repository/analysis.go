@@ -8,7 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 type AnalysisRun struct {

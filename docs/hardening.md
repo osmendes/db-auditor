@@ -14,10 +14,11 @@
 | Conceito | Valor |
 |----------|--------|
 | Produto / UI | **DB Auditor** |
-| Repositório GitHub | `osmendes/db-auditor` |
+| Repositório canônico | `mayconmendes-qc/db-auditor` |
+| Fork de desenvolvimento | `osmendes/db-auditor` |
 | Banco interno (default) | `POSTGRES_DB=db_auditor` |
 | `application_name` | `db-auditor` |
-| Module path Go | `github.com/osmendes/db-auditor` (após rename #82) |
+| Module path Go | `github.com/mayconmendes-qc/db-auditor` |
 
 ## Frontend
 

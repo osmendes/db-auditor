@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/osmendes/db-auditor/internal/collectors/postgres"
+	"github.com/mayconmendes-qc/db-auditor/internal/collectors/postgres"
 )
 
 func (s *Store) SaveAssessmentMetadata(ctx context.Context, environmentID, auditRunID pgtype.UUID, grants []postgres.GrantFacts, dependencies []postgres.DependencyFacts) error {

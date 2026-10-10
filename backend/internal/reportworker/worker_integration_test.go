@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/osmendes/db-auditor/internal/report"
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/report"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 func TestReportJobLifecycleIntegration(t *testing.T) {

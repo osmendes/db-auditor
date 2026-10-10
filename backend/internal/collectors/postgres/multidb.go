@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/osmendes/db-auditor/internal/config"
+	"github.com/mayconmendes-qc/db-auditor/internal/config"
 )
 
 // DatabaseVisitor is called once per connectable user database.

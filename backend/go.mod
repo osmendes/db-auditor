@@ -1,4 +1,4 @@
-module github.com/osmendes/db-auditor
+module github.com/mayconmendes-qc/db-auditor
 
 go 1.27
 

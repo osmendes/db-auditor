@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/actions"
-	"github.com/osmendes/db-auditor/internal/guidance"
+	"github.com/mayconmendes-qc/db-auditor/internal/actions"
+	"github.com/mayconmendes-qc/db-auditor/internal/guidance"
 )
 
 // Document is the renderer-independent, run-scoped report representation.

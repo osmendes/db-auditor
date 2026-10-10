@@ -8,7 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/osmendes/db-auditor/internal/database/sqlc"
+	"github.com/mayconmendes-qc/db-auditor/internal/database/sqlc"
 )
 
 type Store struct {
