@@ -94,7 +94,11 @@ function FilterChip({
   );
 }
 
-export function FindingsPage() {
+export function FindingsPage({
+  presetCategory,
+}: {
+  presetCategory?: "performance" | "security";
+} = {}) {
   const {
     environmentId,
     setSection,
@@ -192,7 +196,33 @@ export function FindingsPage() {
         overdue: overdueOnly ? "1" : undefined,
       };
       let count = 0;
-      if (pageSize === "all") {
+      if (presetCategory) {
+        const categoryFilters = {
+          environment_id: environmentId || undefined,
+          status: statusFilter || undefined,
+        };
+        if (pageSize === "all") {
+          const rows = await fetchAllPages((pageOffset, limit) =>
+            api.findingsCategoryPage(presetCategory, {
+              ...categoryFilters,
+              offset: pageOffset,
+              limit,
+            }),
+          );
+          setItems(rows);
+          setTotal(rows.length);
+          count = rows.length;
+        } else {
+          const res = await api.findingsCategoryPage(presetCategory, {
+            ...categoryFilters,
+            offset,
+            limit: pageSize,
+          });
+          setItems(res.items);
+          setTotal(res.page.total);
+          count = res.page.total;
+        }
+      } else if (pageSize === "all") {
         const rows = await fetchAllPages((pageOffset, limit) =>
           api.findingsPage({ ...filters, offset: pageOffset, limit }),
         );
@@ -248,6 +278,7 @@ export function FindingsPage() {
     pageSize,
     mine,
     overdueOnly,
+    presetCategory,
   ]);
 
   useEffect(() => {
