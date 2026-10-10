@@ -8,8 +8,9 @@ import {
   useState,
 } from "react";
 import { navigationSections, Shell } from "./components/layout/Shell";
+import { Button, Input } from "./components/ui";
 import { AppProvider, useApp } from "./context/AppContext";
-import { ThemeProvider } from "./context/ThemeContext";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import { formatError } from "./lib/errors";
 import { api } from "./services/api";
 import type { NavigationSection } from "./types";
@@ -110,7 +111,7 @@ function AppRoutes({ onLogout }: { onLogout: () => void }) {
   );
 }
 
-export function App() {
+function SessionApp() {
   const [user, setUser] = useState<{ username: string; role: string } | null>(
     null,
   );
@@ -181,62 +182,98 @@ export function App() {
   }
   if (!user) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-slate-100">
-        <form
-          onSubmit={(event) => void login(event)}
-          className="w-full max-w-sm space-y-4 rounded-xl border border-slate-700 bg-slate-900 p-7"
-        >
-          <h1 className="text-xl font-semibold">Entrar no DB Auditor</h1>
-          <p className="text-sm text-slate-400">
-            Sua sessão pode ser usada em outras abas deste site por até 8 horas.
-            Use Sair ao terminar.
-          </p>
-          <label className="block text-sm">
-            Usuário
-            <input
-              required
-              autoComplete="username"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              className="mt-1 w-full rounded border border-slate-600 bg-slate-950 p-2"
-            />
-          </label>
-          <label className="block text-sm">
-            Senha
-            <input
-              required
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="mt-1 w-full rounded border border-slate-600 bg-slate-950 p-2"
-            />
-          </label>
-          {error ? (
-            <p role="alert" className="text-sm text-rose-300">
-              {error}
-            </p>
-          ) : null}
-          <button
-            disabled={busy}
-            className="w-full rounded bg-cyan-600 px-4 py-2 font-medium disabled:opacity-50"
-            type="submit"
-          >
-            {busy ? "Entrando…" : "Entrar"}
-          </button>
-        </form>
-      </main>
+      <LoginScreen
+        username={username}
+        password={password}
+        error={error}
+        busy={busy}
+        onUsername={setUsername}
+        onPassword={setPassword}
+        onSubmit={(event) => void login(event)}
+      />
     );
   }
   return (
-    <ThemeProvider>
-      <AppProvider>
-        <AppRoutes
-          onLogout={() => {
-            void api.logout().finally(() => setUser(null));
-          }}
+    <AppProvider>
+      <AppRoutes
+        onLogout={() => {
+          void api.logout().finally(() => setUser(null));
+        }}
+      />
+    </AppProvider>
+  );
+}
+
+function LoginScreen({
+  username,
+  password,
+  error,
+  busy,
+  onUsername,
+  onPassword,
+  onSubmit,
+}: {
+  username: string;
+  password: string;
+  error: string;
+  busy: boolean;
+  onUsername: (value: string) => void;
+  onPassword: (value: string) => void;
+  onSubmit: (event: FormEvent) => void;
+}) {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-slate-100">
+      <form
+        onSubmit={onSubmit}
+        className="w-full max-w-sm space-y-4 rounded-xl border border-slate-700 bg-slate-900 p-7"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-xl font-semibold">Entrar no DB Auditor</h1>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="text-xs text-slate-300 underline"
+          >
+            {theme === "dark" ? "Tema claro" : "Tema escuro"}
+          </button>
+        </div>
+        <p className="text-sm text-slate-400">
+          Sua sessão pode ser usada em outras abas deste site por até 8 horas.
+          Use Sair ao terminar.
+        </p>
+        <Input
+          label="Usuário"
+          required
+          autoComplete="username"
+          value={username}
+          onChange={(event) => onUsername(event.target.value)}
         />
-      </AppProvider>
+        <Input
+          label="Senha"
+          required
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(event) => onPassword(event.target.value)}
+        />
+        {error ? (
+          <p role="alert" className="text-sm text-rose-300">
+            {error}
+          </p>
+        ) : null}
+        <Button disabled={busy} className="w-full" type="submit">
+          {busy ? "Entrando…" : "Entrar"}
+        </Button>
+      </form>
+    </main>
+  );
+}
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <SessionApp />
     </ThemeProvider>
   );
 }

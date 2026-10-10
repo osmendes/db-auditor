@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { CoverageBanner } from "../components/CoverageBanner";
 import { PageHeader } from "../components/PageHeader";
 import {
   Badge,
@@ -83,6 +84,9 @@ export function ReportsPage() {
     "none",
   );
   const [jobs, setJobs] = useState<ReportJob[]>([]);
+  const [coverageKind, setCoverageKind] = useState<
+    "partial" | "gap" | "permission" | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -102,6 +106,11 @@ export function ReportsPage() {
           (run) => run.status === "success" || run.status === "partial_success",
         );
         setRuns(completed);
+        setCoverageKind(
+          completed.some((run) => run.status === "partial_success")
+            ? "partial"
+            : null,
+        );
         setRunId((current) =>
           completed.some((run) => run.id === current)
             ? current
@@ -334,6 +343,7 @@ export function ReportsPage() {
         {error ? (
           <ErrorBanner message={error} onRetry={() => void refresh()} />
         ) : null}
+        <CoverageBanner kind={coverageKind} />
         {jobs.length === 0 ? (
           <EmptyState
             title="Sem relatórios"

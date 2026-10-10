@@ -14,6 +14,12 @@ describe("formatError", () => {
   it("falls back for unknown values", () => {
     expect(formatError(null, "padrão")).toBe("padrão");
   });
+
+  it("returns empty text when the request was aborted", () => {
+    const abort = new DOMException("The operation was aborted.", "AbortError");
+    expect(formatError(abort)).toBe("");
+    expect(networkApiError("/api/v1/findings", abort).message).toBe("");
+  });
 });
 
 describe("networkApiError", () => {

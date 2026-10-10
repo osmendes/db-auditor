@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { CoverageBanner } from "../components/CoverageBanner";
 import { PageHeader } from "../components/PageHeader";
 import {
   Badge,
@@ -113,9 +114,12 @@ export function FindingsPage({
   const [offset, setOffset] = useState(0);
   const [pageSize, setPageSize] = useState<PageSize>(20);
   const [error, setError] = useState<string | null>(null);
-  const [emptyMessage, setEmptyMessage] = useState(
-    "Nenhum achado observado nesta execução.",
-  );
+  const [emptyKind, setEmptyKind] = useState<
+    "never" | "zero" | "filter" | "dsn" | null
+  >(null);
+  const [coverageKind, setCoverageKind] = useState<
+    "partial" | "gap" | "permission" | null
+  >(null);
   const [busy, setBusy] = useState(false);
   const [bulkBusy, setBulkBusy] = useState(false);
   const [selected, setSelected] = useState<Finding | null>(null);
@@ -246,22 +250,32 @@ export function FindingsPage({
           limit: 1,
         });
         if (unfiltered.page.total > 0) {
-          setEmptyMessage(
-            "Nenhum achado corresponde aos filtros. Limpe os filtros para ver os demais.",
-          );
+          setEmptyKind("filter");
         } else {
-          const runs = await api.auditRuns({
-            environment_id: environmentId || undefined,
-          });
-          setEmptyMessage(
-            runs.items.some(
-              (run) =>
-                run.status === "success" || run.status === "partial_success",
-            )
-              ? "Nenhum achado observado. Confira a cobertura e a análise da execução antes de concluir que não há riscos."
-              : "Ainda não há coleta concluída. Execute uma auditoria para gerar diagnósticos.",
+          const [runs, connections] = await Promise.all([
+            api.auditRuns({ environment_id: environmentId || undefined }),
+            api.connectionStatus(),
+          ]);
+          const scoped = environmentId
+            ? connections.items.filter(
+                (item) => item.environment_id === environmentId,
+              )
+            : connections.items;
+          const missingDsn =
+            scoped.length > 0 && scoped.every((item) => !item.dsn_configured);
+          const collected = runs.items.some(
+            (run) =>
+              run.status === "success" || run.status === "partial_success",
+          );
+          setEmptyKind(missingDsn ? "dsn" : collected ? "zero" : "never");
+          setCoverageKind(
+            runs.items.some((run) => run.status === "partial_success")
+              ? "partial"
+              : null,
           );
         }
+      } else {
+        setEmptyKind(null);
       }
       setSelectedIds(new Set());
     } catch (err: unknown) {
@@ -690,20 +704,52 @@ export function FindingsPage({
         {error ? (
           <ErrorBanner message={error} onRetry={() => void load()} />
         ) : null}
+        <CoverageBanner kind={coverageKind} />
         {busy ? <Skeleton className="h-40 w-full" /> : null}
 
-        {!busy && !error && items.length === 0 ? (
+        {!busy && !error && items.length === 0 && emptyKind ? (
           <EmptyState
-            title="Nenhum achado para mostrar"
-            description={emptyMessage}
+            title={
+              emptyKind === "filter"
+                ? "Nenhum achado neste filtro"
+                : emptyKind === "zero"
+                  ? "Nenhum achado observado"
+                  : emptyKind === "dsn"
+                    ? "Ambiente sem conexão configurada"
+                    : "Nenhuma coleta concluída"
+            }
+            description={
+              emptyKind === "filter"
+                ? "Os filtros atuais não correspondem a nenhum achado. Limpe os filtros para ver os demais."
+                : emptyKind === "zero"
+                  ? "A coleta terminou sem achados. Isso não prova ausência de risco se a cobertura estiver parcial."
+                  : emptyKind === "dsn"
+                    ? "O ambiente não tem DSN configurado. Peça a um operador para concluir a conexão antes de auditar."
+                    : "Ainda não há coleta concluída. Execute uma auditoria para gerar diagnósticos."
+            }
             action={
               <div className="flex flex-wrap justify-center gap-2">
-                <Button
-                  variant="secondary"
-                  onClick={() => setSection("Execuções")}
-                >
-                  Ir para Execuções
-                </Button>
+                {emptyKind === "filter" ? (
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setSeverityFilter("");
+                      setStatusFilter("");
+                      setMine(false);
+                      setOverdueOnly(false);
+                    }}
+                  >
+                    Limpar filtros
+                  </Button>
+                ) : emptyKind === "dsn" ? (
+                  <Button onClick={() => setSection("Ambientes")}>
+                    Abrir Ambientes
+                  </Button>
+                ) : (
+                  <Button onClick={() => setSection("Execuções")}>
+                    Ir para Execuções
+                  </Button>
+                )}
               </div>
             }
           />
