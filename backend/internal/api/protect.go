@@ -8,7 +8,7 @@ import (
 const maxAPIBody = 1 << 20
 
 func protectPublic(next http.Handler) http.Handler {
-	mutations := &loginLimiter{byIP: make(map[string]attemptWindow), max: 20}
+	mutations := &apiWindow{byKey: make(map[string]attemptWindow), max: 20}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/metrics" {
 			writeError(w, http.StatusNotFound, CodeNotFound, "Métricas não são publicadas neste endpoint.")
