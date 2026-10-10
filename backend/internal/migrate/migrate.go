@@ -91,7 +91,7 @@ func Apply(ctx context.Context, pool *pgxpool.Pool, dir string) error {
 		case Skip:
 			continue
 		case Execute:
-			if _, err = conn.Conn().PgConn().Exec(ctx, string(body)).ReadAll(); err != nil {
+			if err = applyFile(ctx, conn, string(body)); err != nil {
 				return fmt.Errorf("apply %s: %w", name, err)
 			}
 			present = true
@@ -106,6 +106,25 @@ func Apply(ctx context.Context, pool *pgxpool.Pool, dir string) error {
 		applied[name] = sum
 	}
 	return nil
+}
+
+// applyFile runs one migration. CREATE INDEX CONCURRENTLY cannot sit inside a
+// transaction; every other file commits or rolls back as a unit, so a failure
+// never leaves schema_migration recorded for that version.
+func applyFile(ctx context.Context, conn *pgxpool.Conn, body string) error {
+	if strings.Contains(strings.ToUpper(body), "CONCURRENTLY") {
+		_, err := conn.Conn().PgConn().Exec(ctx, body).ReadAll()
+		return err
+	}
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	if _, err = tx.Exec(ctx, body); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }
 
 func listSQL(dir string) ([]string, error) {
