@@ -12,6 +12,8 @@ Escolha um ambiente no seletor. Cada ambiente representa um banco ou conjunto de
 
 Os endereços e credenciais dos bancos analisados ficam na configuração do servidor. Eles não são digitados na interface nem aparecem nos relatórios.
 
+A navegação fica no fragmento da URL (`#/dashboard`, `#/findings/<id>?env=<ambiente>`), não num caminho do servidor. Recarregar a página, voltar no navegador ou enviar o link abre a mesma seção, o mesmo ambiente e o mesmo achado. Uma sessão expirada pede login de novo e, depois dele, o fragmento continua na barra de endereço.
+
 ## 2. Fazer uma coleta e entender a cobertura
 
 Em **Execuções**, selecione o ambiente e inicie uma auditoria quando seu papel permitir. Escolha o perfil de coleta adequado: perfis mais amplos observam mais aspectos e podem levar mais tempo. A tela mostra a execução, os coletores, avisos e falhas.

@@ -1,6 +1,7 @@
 import {
   type FormEvent,
   lazy,
+  type ReactNode,
   Suspense,
   useCallback,
   useEffect,
@@ -11,6 +12,7 @@ import { AppProvider, useApp } from "./context/AppContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { formatError } from "./lib/errors";
 import { api } from "./services/api";
+import type { NavigationSection } from "./types";
 
 // Keep the login and navigation shell small. Each section loads when opened.
 const AccountsPage = lazy(() =>
@@ -79,46 +81,30 @@ export { navigationSections };
 
 function AppRoutes({ onLogout }: { onLogout: () => void }) {
   const { section, setSection } = useApp();
-
-  let content = <DashboardPage />;
-  if (section === "Documentação") {
-    content = <DocsPage onNavigate={setSection} />;
-  } else if (section === "Ambientes") {
-    content = <EnvironmentsPage onNavigate={setSection} />;
-  } else if (section === "Inventário") {
-    content = <InventoryPage />;
-  } else if (section === "Execuções") {
-    content = <AuditRunsPage />;
-  } else if (section === "Relatórios") {
-    content = <ReportsPage />;
-  } else if (section === "Mapeamentos") {
-    content = <MappingsPage />;
-  } else if (section === "Desvio de schema") {
-    content = <SchemaDriftPage />;
-  } else if (section === "Comparar") {
-    content = <ServerComparePage />;
-  } else if (section === "Findings") {
-    content = <FindingsPage />;
-  } else if (section === "Performance") {
-    content = <PerformancePage />;
-  } else if (section === "Segurança") {
-    content = <SecurityPage />;
-  } else if (section === "Regras") {
-    content = <RulesPage />;
-  } else if (section === "Status") {
-    content = <StatusPage />;
-  } else if (section === "Contas") {
-    content = <AccountsPage />;
-  } else if (section === "Acompanhamento") {
-    content = <MonitoringPage />;
-  } else if (section === "Ações assistidas") {
-    content = <AssistedActionsPage />;
-  }
+  const pages: Record<NavigationSection, ReactNode> = {
+    Dashboard: <DashboardPage />,
+    Documentação: <DocsPage onNavigate={setSection} />,
+    Ambientes: <EnvironmentsPage onNavigate={setSection} />,
+    Inventário: <InventoryPage />,
+    Execuções: <AuditRunsPage />,
+    Relatórios: <ReportsPage />,
+    Mapeamentos: <MappingsPage />,
+    "Desvio de schema": <SchemaDriftPage />,
+    Comparar: <ServerComparePage />,
+    Findings: <FindingsPage />,
+    Performance: <PerformancePage />,
+    Segurança: <SecurityPage />,
+    Regras: <RulesPage />,
+    Status: <StatusPage />,
+    Contas: <AccountsPage />,
+    Acompanhamento: <MonitoringPage />,
+    "Ações assistidas": <AssistedActionsPage />,
+  };
 
   return (
     <Shell activeSection={section} onNavigate={setSection} onLogout={onLogout}>
       <Suspense fallback={<p role="status">Carregando seção…</p>}>
-        {content}
+        {pages[section] ?? <DashboardPage />}
       </Suspense>
     </Shell>
   );

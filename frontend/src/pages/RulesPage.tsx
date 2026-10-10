@@ -13,6 +13,7 @@ import { useApp } from "../context/AppContext";
 import { formatError } from "../lib/errors";
 import { api } from "../services/api";
 import type { EffectiveRule } from "../types";
+import { FindingsPage } from "./FindingsPage";
 
 export function RulesPage() {
   const { environmentId, selectedEnvironment } = useApp();
@@ -152,6 +153,7 @@ export function RulesPage() {
           </div>
         </div>
       )}
+      <FindingsPage />
     </>
   );
 }
