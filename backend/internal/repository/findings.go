@@ -111,15 +111,11 @@ ON CONFLICT (environment_id, dedup_key, rule_version) DO UPDATE SET
   validation = EXCLUDED.validation,
   reference_urls = EXCLUDED.reference_urls,
   rule_parameters = EXCLUDED.rule_parameters,
-  status = CASE
-    WHEN finding.status = 'resolved' THEN 'open'
-    WHEN finding.status = 'suppressed' AND finding.suppressed_until <= now() AND finding.evidence IS DISTINCT FROM EXCLUDED.evidence THEN 'open'
-    ELSE finding.status
-  END,
+  status = CASE WHEN finding.status = 'resolved' OR (finding.status = 'suppressed' AND finding.suppressed_until <= now()) THEN 'open' ELSE finding.status END,
   recurrence_count = finding.recurrence_count + CASE WHEN finding.status = 'resolved' THEN 1 ELSE 0 END,
   resolved_at = CASE WHEN finding.status = 'resolved' THEN NULL ELSE finding.resolved_at END,
-  suppression_reason = CASE WHEN finding.status = 'suppressed' AND finding.suppressed_until <= now() AND finding.evidence IS DISTINCT FROM EXCLUDED.evidence THEN NULL ELSE finding.suppression_reason END,
-  suppressed_until = CASE WHEN finding.status = 'suppressed' AND finding.suppressed_until <= now() AND finding.evidence IS DISTINCT FROM EXCLUDED.evidence THEN NULL ELSE finding.suppressed_until END,
+  suppression_reason = CASE WHEN finding.status = 'suppressed' AND finding.suppressed_until <= now() THEN NULL ELSE finding.suppression_reason END,
+  suppressed_until = CASE WHEN finding.status = 'suppressed' AND finding.suppressed_until <= now() THEN NULL ELSE finding.suppressed_until END,
   updated_at = now()
 RETURNING id::text, environment_id::text, audit_run_id::text,
   finding_type, severity, status, title, summary,

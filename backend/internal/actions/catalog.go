@@ -159,6 +159,7 @@ func init() {
 		"A consulta lista constraints primárias. Zero linhas confirma a ausência nesta relação.",
 		"não estimado: ausência de chave não tem tamanho nem latência nesta coleta.",
 		"Valide duplicatas e o identificador da aplicação antes de propor uma chave."))
+	put("model.no_primary_key", rulePlans["integrity.missing_primary_key"])
 	put("index.unused", narrate(rulePlans["index.unused"],
 		"O índice não teve uso observado na janela das estatísticas.",
 		"A consulta mostra definição e validade. O uso vem de idx_scan da coleta.",

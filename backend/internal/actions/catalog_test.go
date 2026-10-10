@@ -10,6 +10,7 @@ import (
 func TestActionCatalogCoversMajorDatabaseDecisions(t *testing.T) {
 	cases := []struct{ rule, category string }{
 		{"integrity.missing_primary_key", "structure"},
+		{"model.no_primary_key", "structure"},
 		{"index.invalid", "structure"},
 		{"performance.workload_scan", "query_and_index"},
 		{"vacuum.high_dead_tuples", "maintenance"},
