@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/osmendes/db-auditor/internal/collectors/postgres"
+	"github.com/mayconmendes-qc/db-auditor/internal/collectors/postgres"
 )
 
 func (s *Store) SaveAuditorPrivilege(ctx context.Context, environmentID, auditRunID pgtype.UUID, role postgres.AuditorRole) error {

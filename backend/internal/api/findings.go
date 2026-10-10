@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 // FindingStore exposes finding persistence.
@@ -37,6 +37,7 @@ type AnalysisRunner interface {
 }
 
 func registerFindingRoutes(mux *http.ServeMux, store FindingStore, analysis AnalysisRunner) {
+	registerFindingDiffRoutes(mux, store)
 	mux.HandleFunc("GET /api/v1/findings", listFindings(store))
 	mux.HandleFunc("GET /api/v1/finding-categories/{category}", func(w http.ResponseWriter, r *http.Request) {
 		backend, ok := store.(interface {

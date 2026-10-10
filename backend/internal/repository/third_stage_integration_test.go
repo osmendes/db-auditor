@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/osmendes/db-auditor/internal/quality"
+	"github.com/mayconmendes-qc/db-auditor/internal/quality"
 )
 
 func TestThirdStageHistoryAndMeasurementIntegration(t *testing.T) {

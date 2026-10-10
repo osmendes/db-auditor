@@ -9,10 +9,43 @@
       "get": {
         "description": "Contagens atuais exatas e série de achados observados na última execução analisada de cada período. Pontos parciais são identificados; períodos sem análise não viram zero.",
         "parameters": [
-          {"name": "environment_id", "in": "query", "schema": {"type": "string", "format": "uuid"}},
-          {"name": "from", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "to", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "granularity", "in": "query", "schema": {"type": "string", "enum": ["hour", "day", "week", "month"]}}
+          {
+            "name": "environment_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "granularity",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "hour",
+                "day",
+                "week",
+                "month"
+              ]
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -33,7 +66,16 @@
     "/api/v1/analytics/kpis": {
       "get": {
         "description": "Contagens agregadas sem limite de lista. Cada ambiente usa uma execução de inventário coerente; inventory_status e notes indicam ausência ou coleta parcial.",
-        "parameters": [{"name":"environment_id","in":"query","schema":{"type":"string","format":"uuid"}}],
+        "parameters": [
+          {
+            "name": "environment_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "ok"
@@ -45,10 +87,43 @@
       "get": {
         "description": "Distribuição atual e série de armazenamento da última execução por ambiente e período UTC. from/to aceitam RFC3339; janela máxima de 366 dias, ou 7 dias para hora.",
         "parameters": [
-          {"name": "environment_id", "in": "query", "schema": {"type": "string", "format": "uuid"}},
-          {"name": "from", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "to", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "granularity", "in": "query", "schema": {"type": "string", "enum": ["hour", "day", "week", "month"]}}
+          {
+            "name": "environment_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "granularity",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "hour",
+                "day",
+                "week",
+                "month"
+              ]
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -167,10 +242,27 @@
       }
     },
     "/api/v1/auth/password": {
-      "post": {"description":"Troca a senha da própria conta e revoga todas as sessões.","responses":{"200":{"description":"Senha alterada; novo login necessário"},"403":{"description":"Senha atual incorreta"}}}
+      "post": {
+        "description": "Troca a senha da própria conta e revoga todas as sessões.",
+        "responses": {
+          "200": {
+            "description": "Senha alterada; novo login necessário"
+          },
+          "403": {
+            "description": "Senha atual incorreta"
+          }
+        }
+      }
     },
     "/api/v1/auth/users": {
-      "get": {"description":"Lista contas e escopos; somente operador.","responses":{"200":{"description":"Contas"}}},
+      "get": {
+        "description": "Lista contas e escopos; somente operador.",
+        "responses": {
+          "200": {
+            "description": "Contas"
+          }
+        }
+      },
       "post": {
         "responses": {
           "200": {
@@ -180,10 +272,27 @@
       }
     },
     "/api/v1/auth/users/{id}": {
-      "patch": {"description":"Atualiza papel, ativação, ambientes e opcionalmente senha; revoga sessões e preserva ao menos um operador ativo.","responses":{"200":{"description":"Conta atualizada"},"409":{"description":"Último operador ativo"}}}
+      "patch": {
+        "description": "Atualiza papel, ativação, ambientes e opcionalmente senha; revoga sessões e preserva ao menos um operador ativo.",
+        "responses": {
+          "200": {
+            "description": "Conta atualizada"
+          },
+          "409": {
+            "description": "Último operador ativo"
+          }
+        }
+      }
     },
     "/api/v1/auth/users/{id}/sessions/revoke": {
-      "post": {"description":"Revoga todas as sessões da conta.","responses":{"200":{"description":"Sessões revogadas"}}}
+      "post": {
+        "description": "Revoga todas as sessões da conta.",
+        "responses": {
+          "200": {
+            "description": "Sessões revogadas"
+          }
+        }
+      }
     },
     "/api/v1/compare": {
       "post": {
@@ -245,8 +354,22 @@
       }
     },
     "/api/v1/environments/{id}/annotations": {
-      "get":{"description":"Lista eventos operacionais anotados no ambiente.","responses":{"200":{"description":"Anotações"}}},
-      "post":{"description":"Registra implantação, manutenção, incidente ou nota; exige auditor.","responses":{"201":{"description":"Anotação registrada"}}}
+      "get": {
+        "description": "Lista eventos operacionais anotados no ambiente.",
+        "responses": {
+          "200": {
+            "description": "Anotações"
+          }
+        }
+      },
+      "post": {
+        "description": "Registra implantação, manutenção, incidente ou nota; exige auditor.",
+        "responses": {
+          "201": {
+            "description": "Anotação registrada"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/chunks": {
       "get": {
@@ -287,8 +410,21 @@
     "/api/v1/environments/{id}/continuous-aggregates/page": {
       "get": {
         "description": "Lista paginada e filtrável dos agregados contínuos do último snapshot elegível.",
-        "parameters": [{"name":"order_by","in":"query","description":"Ordenação estável antes da paginação.","schema":{"type":"string"}}],
-        "responses": {"200": {"description": "Página com items e page.total"}}
+        "parameters": [
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Ordenação estável antes da paginação.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página com items e page.total"
+          }
+        }
       }
     },
     "/api/v1/environments/{id}/databases": {
@@ -311,7 +447,16 @@
     },
     "/api/v1/environments/{id}/functions": {
       "get": {
-        "parameters": [{"name":"order_by","in":"query","description":"Ordenação permitida pela API antes da paginação.","schema":{"type":"string"}}],
+        "parameters": [
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Ordenação permitida pela API antes da paginação.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "ok"
@@ -340,13 +485,35 @@
     "/api/v1/environments/{id}/hypertables/page": {
       "get": {
         "description": "Lista paginada e filtrável das hypertables do último snapshot elegível.",
-        "parameters": [{"name":"order_by","in":"query","description":"Ordenação estável antes da paginação.","schema":{"type":"string"}}],
-        "responses": {"200": {"description": "Página com items e page.total"}}
+        "parameters": [
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Ordenação estável antes da paginação.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página com items e page.total"
+          }
+        }
       }
     },
     "/api/v1/environments/{id}/indexes": {
       "get": {
-        "parameters": [{"name":"order_by","in":"query","description":"Ordenação permitida pela API antes da paginação.","schema":{"type":"string"}}],
+        "parameters": [
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Ordenação permitida pela API antes da paginação.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "ok"
@@ -373,10 +540,24 @@
       }
     },
     "/api/v1/environments/{id}/regressions": {
-      "get":{"description":"Lista alertas persistentes calculados somente com execuções completas e analisadas.","responses":{"200":{"description":"Alertas"}}}
+      "get": {
+        "description": "Lista alertas persistentes calculados somente com execuções completas e analisadas.",
+        "responses": {
+          "200": {
+            "description": "Alertas"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/regressions/{alert}/acknowledge": {
-      "post":{"description":"Reconhece alerta com motivo e ator; exige auditor.","responses":{"200":{"description":"Alerta reconhecido"}}}
+      "post": {
+        "description": "Reconhece alerta com motivo e ator; exige auditor.",
+        "responses": {
+          "200": {
+            "description": "Alerta reconhecido"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/reports": {
       "post": {
@@ -518,7 +699,9 @@
             "description": "ok",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ScopeScore" }
+                "schema": {
+                  "$ref": "#/components/schemas/ScopeScore"
+                }
               }
             }
           }
@@ -526,7 +709,14 @@
       }
     },
     "/api/v1/environments/{id}/runs/{run}/score/compare": {
-      "get":{"description":"Compara o score scope-v3 com baseline aprovado quando cobertura, análise e versão são compatíveis.","responses":{"200":{"description":"Comparação ou motivo de indisponibilidade"}}}
+      "get": {
+        "description": "Compara o score scope-v3 com baseline aprovado quando cobertura, análise e versão são compatíveis.",
+        "responses": {
+          "200": {
+            "description": "Comparação ou motivo de indisponibilidade"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/scores": {
       "get": {
@@ -573,7 +763,16 @@
     },
     "/api/v1/environments/{id}/tables": {
       "get": {
-        "parameters": [{"name":"order_by","in":"query","description":"Ordenação estável antes da paginação; valores: database, schema, name, type, cols, rows, size, owner ou pk, seguidos de :asc ou :desc.","schema":{"type":"string"}}],
+        "parameters": [
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Ordenação estável antes da paginação; valores: database, schema, name, type, cols, rows, size, owner ou pk, seguidos de :asc ou :desc.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "ok"
@@ -610,7 +809,16 @@
     },
     "/api/v1/environments/{id}/views": {
       "get": {
-        "parameters": [{"name":"order_by","in":"query","description":"Ordenação permitida pela API antes da paginação.","schema":{"type":"string"}}],
+        "parameters": [
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Ordenação permitida pela API antes da paginação.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "ok"
@@ -619,85 +827,364 @@
       }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/detail": {
-      "get": {"description":"Metadados de uma visão em uma execução. A definição SQL não é retornada; somente sua impressão digital.","responses":{"200":{"description":"Visão observada","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ViewDetailSnapshot"}}}},"404":{"description":"Objeto ou execução não encontrado"}}}
+      "get": {
+        "description": "Metadados de uma visão em uma execução. A definição SQL não é retornada; somente sua impressão digital.",
+        "responses": {
+          "200": {
+            "description": "Visão observada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViewDetailSnapshot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Objeto ou execução não encontrado"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/dependencies": {
-      "get": {"description":"Dependências coletadas da visão, paginadas e limitadas à execução.","responses":{"200":{"description":"Página de dependências"}}}
+      "get": {
+        "description": "Dependências coletadas da visão, paginadas e limitadas à execução.",
+        "responses": {
+          "200": {
+            "description": "Página de dependências"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/grants": {
-      "get": {"description":"Acessos efetivos observados, paginados e limitados à execução.","responses":{"200":{"description":"Página de acessos"}}}
+      "get": {
+        "description": "Acessos efetivos observados, paginados e limitados à execução.",
+        "responses": {
+          "200": {
+            "description": "Página de acessos"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/views/{view}/findings": {
-      "get": {"description":"Achados observados da visão, paginados e limitados à execução.","responses":{"200":{"description":"Página de achados"}}}
+      "get": {
+        "description": "Achados observados da visão, paginados e limitados à execução.",
+        "responses": {
+          "200": {
+            "description": "Página de achados"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/detail": {
-      "get": {"description":"Estrutura e métricas do índice na execução selecionada, sem SQL bruto.","responses":{"200":{"description":"Índice observado","content":{"application/json":{"schema":{"$ref":"#/components/schemas/IndexDetailSnapshot"}}}},"404":{"description":"Índice ou execução não encontrado"}}}
+      "get": {
+        "description": "Estrutura e métricas do índice na execução selecionada, sem SQL bruto.",
+        "responses": {
+          "200": {
+            "description": "Índice observado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexDetailSnapshot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Índice ou execução não encontrado"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/history": {
-      "get": {"description":"Métricas históricas do mesmo índice até a execução selecionada, paginadas.","responses":{"200":{"description":"Página de histórico"}}}
+      "get": {
+        "description": "Métricas históricas do mesmo índice até a execução selecionada, paginadas.",
+        "responses": {
+          "200": {
+            "description": "Página de histórico"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/indexes/{index}/findings": {
-      "get": {"description":"Achados observados para o índice nesta execução, paginados.","responses":{"200":{"description":"Página de achados"}}}
+      "get": {
+        "description": "Achados observados para o índice nesta execução, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de achados"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/detail": {
-      "get": {"description":"Detalhe da sobrecarga identificada pelo parâmetro obrigatório signature; corpo SQL e configurações brutas não são retornados.","parameters":[{"name":"signature","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Função observada","content":{"application/json":{"schema":{"$ref":"#/components/schemas/FunctionDetailSnapshot"}}}},"404":{"description":"Função ou execução não encontrada"}}}
+      "get": {
+        "description": "Detalhe da sobrecarga identificada pelo parâmetro obrigatório signature; corpo SQL e configurações brutas não são retornados.",
+        "parameters": [
+          {
+            "name": "signature",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Função observada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FunctionDetailSnapshot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Função ou execução não encontrada"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/dependencies": {
-      "get": {"description":"Dependências observadas da sobrecarga, paginadas.","parameters":[{"name":"signature","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Página de dependências"}}}
+      "get": {
+        "description": "Dependências observadas da sobrecarga, paginadas.",
+        "parameters": [
+          {
+            "name": "signature",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de dependências"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/grants": {
-      "get": {"description":"Papéis com EXECUTE efetivo e USAGE no esquema, paginados para a sobrecarga.","parameters":[{"name":"signature","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Página de acessos"}}}
+      "get": {
+        "description": "Papéis com EXECUTE efetivo e USAGE no esquema, paginados para a sobrecarga.",
+        "parameters": [
+          {
+            "name": "signature",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de acessos"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/functions/{function}/findings": {
-      "get": {"description":"Achados específicos da sobrecarga nesta execução, paginados.","parameters":[{"name":"signature","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Página de achados"}}}
+      "get": {
+        "description": "Achados específicos da sobrecarga nesta execução, paginados.",
+        "parameters": [
+          {
+            "name": "signature",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de achados"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/detail": {
-      "get": {"description":"Tabela temporal e cobertura da tabela base nesta execução.","responses":{"200":{"description":"Tabela temporal observada","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HypertableDetailSnapshot"}}}},"404":{"description":"Objeto ou execução não encontrado"}}}
+      "get": {
+        "description": "Tabela temporal e cobertura da tabela base nesta execução.",
+        "responses": {
+          "200": {
+            "description": "Tabela temporal observada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HypertableDetailSnapshot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Objeto ou execução não encontrado"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/dimensions": {
-      "get": {"description":"Dimensões da tabela temporal, paginadas.","responses":{"200":{"description":"Página de dimensões"}}}
+      "get": {
+        "description": "Dimensões da tabela temporal, paginadas.",
+        "responses": {
+          "200": {
+            "description": "Página de dimensões"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/chunks": {
-      "get": {"description":"Chunks da tabela temporal, paginados.","responses":{"200":{"description":"Página de chunks"}}}
+      "get": {
+        "description": "Chunks da tabela temporal, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de chunks"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/policies": {
-      "get": {"description":"Políticas e estado observado dos jobs, paginados.","responses":{"200":{"description":"Página de políticas"}}}
+      "get": {
+        "description": "Políticas e estado observado dos jobs, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de políticas"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/jobs": {
-      "get": {"description":"Jobs associados à tabela temporal, com status observado, paginados.","responses":{"200":{"description":"Página de jobs"}}}
+      "get": {
+        "description": "Jobs associados à tabela temporal, com status observado, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de jobs"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/history": {
-      "get": {"description":"Evolução de espaço e chunks até a execução selecionada, paginada.","responses":{"200":{"description":"Página de histórico"}}}
+      "get": {
+        "description": "Evolução de espaço e chunks até a execução selecionada, paginada.",
+        "responses": {
+          "200": {
+            "description": "Página de histórico"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/indexes": {
-      "get": {"description":"Índices da tabela base observados na execução, paginados.","responses":{"200":{"description":"Página de índices"}}}
+      "get": {
+        "description": "Índices da tabela base observados na execução, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de índices"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/grants": {
-      "get": {"description":"Acessos efetivos observados da tabela base, paginados.","responses":{"200":{"description":"Página de acessos"}}}
+      "get": {
+        "description": "Acessos efetivos observados da tabela base, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de acessos"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/rls-policies": {
-      "get": {"description":"Políticas RLS observadas da tabela base, paginadas.","responses":{"200":{"description":"Página de RLS"}}}
+      "get": {
+        "description": "Políticas RLS observadas da tabela base, paginadas.",
+        "responses": {
+          "200": {
+            "description": "Página de RLS"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/hypertables/{hypertable}/findings": {
-      "get": {"description":"Achados da tabela temporal nesta execução, paginados.","responses":{"200":{"description":"Página de achados"}}}
+      "get": {
+        "description": "Achados da tabela temporal nesta execução, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de achados"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/detail": {
-      "get": {"description":"Detalhe do agregado contínuo na execução selecionada, sem definição SQL bruta.","responses":{"200":{"description":"Agregado observado","content":{"application/json":{"schema":{"$ref":"#/components/schemas/CAGGDetailSnapshot"}}}},"404":{"description":"Objeto ou execução não encontrado"}}}
+      "get": {
+        "description": "Detalhe do agregado contínuo na execução selecionada, sem definição SQL bruta.",
+        "responses": {
+          "200": {
+            "description": "Agregado observado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAGGDetailSnapshot"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Objeto ou execução não encontrado"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/refresh-policies": {
-      "get": {"description":"Políticas de atualização do agregado, paginadas.","responses":{"200":{"description":"Página de políticas"}}}
+      "get": {
+        "description": "Políticas de atualização do agregado, paginadas.",
+        "responses": {
+          "200": {
+            "description": "Página de políticas"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/history": {
-      "get": {"description":"Histórico de atraso e tamanho da materialização até a execução, paginado.","responses":{"200":{"description":"Página de histórico"}}}
+      "get": {
+        "description": "Histórico de atraso e tamanho da materialização até a execução, paginado.",
+        "responses": {
+          "200": {
+            "description": "Página de histórico"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/dependencies": {
-      "get": {"description":"Dependências observadas da visão do agregado, paginadas.","responses":{"200":{"description":"Página de dependências"}}}
+      "get": {
+        "description": "Dependências observadas da visão do agregado, paginadas.",
+        "responses": {
+          "200": {
+            "description": "Página de dependências"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/grants": {
-      "get": {"description":"Acessos observados da visão do agregado, paginados.","responses":{"200":{"description":"Página de acessos"}}}
+      "get": {
+        "description": "Acessos observados da visão do agregado, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de acessos"
+          }
+        }
+      }
     },
     "/api/v1/environments/{id}/runs/{run}/databases/{database}/schemas/{schema}/continuous-aggregates/{cagg}/findings": {
-      "get": {"description":"Achados específicos do agregado nesta execução, paginados.","responses":{"200":{"description":"Página de achados"}}}
+      "get": {
+        "description": "Achados específicos do agregado nesta execução, paginados.",
+        "responses": {
+          "200": {
+            "description": "Página de achados"
+          }
+        }
+      }
     },
     "/api/v1/finding-categories/{category}": {
       "get": {
@@ -743,11 +1230,32 @@
       }
     },
     "/api/v1/findings/{id}/action": {
-      "get":{"description":"Plano de investigação e ação assistida, nunca executada pelo auditor.","responses":{"200":{"description":"Plano e estado"}}},
-      "patch":{"description":"Registra decisão, responsável e resultado; exige auditor.","responses":{"200":{"description":"Estado salvo"}}}
+      "get": {
+        "description": "Plano de investigação e ação assistida, nunca executada pelo auditor.",
+        "responses": {
+          "200": {
+            "description": "Plano e estado"
+          }
+        }
+      },
+      "patch": {
+        "description": "Registra decisão, responsável e resultado; exige auditor.",
+        "responses": {
+          "200": {
+            "description": "Estado salvo"
+          }
+        }
+      }
     },
     "/api/v1/findings/{id}/action/events": {
-      "get":{"description":"Histórico auditável das decisões da ação.","responses":{"200":{"description":"Eventos"}}}
+      "get": {
+        "description": "Histórico auditável das decisões da ação.",
+        "responses": {
+          "200": {
+            "description": "Eventos"
+          }
+        }
+      }
     },
     "/api/v1/findings/{id}/timeline": {
       "get": {
@@ -927,8 +1435,31 @@
     "/api/v1/environments/{id}/actions/export": {
       "get": {
         "description": "Exporta todo o histórico de ações e medições em CSV ou JSONL por streaming, sem limite de 100 registros. Exige acesso ao ambiente.",
-        "parameters": [{"name":"format","in":"query","required":true,"schema":{"type":"string","enum":["csv","jsonl"]}}],
-        "responses": {"200":{"description":"Arquivo para download"},"400":{"description":"Formato ou ambiente inválido"},"403":{"description":"Sem permissão"}}
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "csv",
+                "jsonl"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arquivo para download"
+          },
+          "400": {
+            "description": "Formato ou ambiente inválido"
+          },
+          "403": {
+            "description": "Sem permissão"
+          }
+        }
       }
     },
     "/api/v1/findings/{id}/action/measurements": {
@@ -966,115 +1497,856 @@
           }
         }
       }
+    },
+    "/api/v1/auth/totp": {
+      "post": {
+        "description": "Segundo passo do login TOTP ou código de recuperação.",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/totp/enroll": {
+      "post": {
+        "description": "Inicia TOTP e devolve segredo e códigos de recuperação uma vez.",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/totp/confirm": {
+      "post": {
+        "description": "Confirma o TOTP da sessão.",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/totp/require": {
+      "post": {
+        "description": "Operador exige TOTP na própria conta.",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/totp/disable": {
+      "post": {
+        "description": "Desativa TOTP depois da senha e do código.",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    },
+    "/api/v1/environments/{id}/findings-diff": {
+      "get": {
+        "description": "Diff added/removed/unchanged entre duas execuções do snapshot store.",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
       "CAGGDetailSnapshot": {
-        "type":"object",
-        "required":["id","environment_id","audit_run_id","database_name","schema_name","view_name","materialized_only","compression_enabled","lag_interval","definition_fingerprint","collected_at"],
-        "properties":{
-          "id":{"type":"string"},"environment_id":{"type":"string"},"audit_run_id":{"type":"string"},
-          "database_name":{"type":"string"},"schema_name":{"type":"string"},"view_name":{"type":"string"},
-          "owner_name":{"type":["string","null"]},"materialization_schema":{"type":["string","null"]},
-          "materialization_hypertable":{"type":["string","null"]},"materialized_only":{"type":"boolean"},
-          "compression_enabled":{"type":"boolean"},"finalized":{"type":["boolean","null"]},
-          "source_hypertable_schema":{"type":["string","null"]},"source_hypertable_name":{"type":["string","null"]},
-          "bucket_interval":{"type":["string","null"]},
-          "lag_interval":{"type":"string"},"definition_fingerprint":{"type":"string"},
-          "materialization_size_bytes":{"type":["integer","null"]},"collected_at":{"type":"string"}
+        "type": "object",
+        "required": [
+          "id",
+          "environment_id",
+          "audit_run_id",
+          "database_name",
+          "schema_name",
+          "view_name",
+          "materialized_only",
+          "compression_enabled",
+          "lag_interval",
+          "definition_fingerprint",
+          "collected_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string"
+          },
+          "audit_run_id": {
+            "type": "string"
+          },
+          "database_name": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "view_name": {
+            "type": "string"
+          },
+          "owner_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "materialization_schema": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "materialization_hypertable": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "materialized_only": {
+            "type": "boolean"
+          },
+          "compression_enabled": {
+            "type": "boolean"
+          },
+          "finalized": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "source_hypertable_schema": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_hypertable_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "bucket_interval": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "lag_interval": {
+            "type": "string"
+          },
+          "definition_fingerprint": {
+            "type": "string"
+          },
+          "materialization_size_bytes": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "collected_at": {
+            "type": "string"
+          }
         }
       },
       "HypertableDetailSnapshot": {
-        "type":"object",
-        "required":["id","audit_run_id","environment_id","database_name","schema_name","hypertable_name","num_dimensions","num_chunks","compression_enabled","is_distributed","total_size_bytes","data_size_bytes","index_size_bytes","collected_at","base_table_observed"],
-        "properties":{
-          "id":{"type":"string"},"audit_run_id":{"type":"string"},"environment_id":{"type":"string"},
-          "database_name":{"type":"string"},"schema_name":{"type":"string"},"hypertable_name":{"type":"string"},
-          "owner_name":{"type":["string","null"]},"num_dimensions":{"type":"integer"},"num_chunks":{"type":"integer"},
-          "compression_enabled":{"type":"boolean"},"is_distributed":{"type":"boolean"},
-          "total_size_bytes":{"type":"integer"},"data_size_bytes":{"type":"integer"},"index_size_bytes":{"type":"integer"},
-          "collected_at":{"type":"string"},"base_table_observed":{"type":"boolean"}
+        "type": "object",
+        "required": [
+          "id",
+          "audit_run_id",
+          "environment_id",
+          "database_name",
+          "schema_name",
+          "hypertable_name",
+          "num_dimensions",
+          "num_chunks",
+          "compression_enabled",
+          "is_distributed",
+          "total_size_bytes",
+          "data_size_bytes",
+          "index_size_bytes",
+          "collected_at",
+          "base_table_observed"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "audit_run_id": {
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string"
+          },
+          "database_name": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "hypertable_name": {
+            "type": "string"
+          },
+          "owner_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "num_dimensions": {
+            "type": "integer"
+          },
+          "num_chunks": {
+            "type": "integer"
+          },
+          "compression_enabled": {
+            "type": "boolean"
+          },
+          "is_distributed": {
+            "type": "boolean"
+          },
+          "total_size_bytes": {
+            "type": "integer"
+          },
+          "data_size_bytes": {
+            "type": "integer"
+          },
+          "index_size_bytes": {
+            "type": "integer"
+          },
+          "collected_at": {
+            "type": "string"
+          },
+          "base_table_observed": {
+            "type": "boolean"
+          }
         }
       },
       "FunctionDetailSnapshot": {
-        "type":"object",
-        "required":["id","environment_id","audit_run_id","database_name","schema_name","function_name","identity_arguments","is_security_definer","collected_at"],
-        "properties":{
-          "id":{"type":"string"},"environment_id":{"type":"string"},"audit_run_id":{"type":"string"},
-          "database_name":{"type":"string"},"schema_name":{"type":"string"},"function_name":{"type":"string"},"identity_arguments":{"type":"string"},
-          "owner_name":{"type":["string","null"]},"language_name":{"type":["string","null"]},"is_security_definer":{"type":"boolean"},
-          "volatility":{"type":["string","null"]},"parallel_safety":{"type":["string","null"]},"kind":{"type":["string","null"]},
-          "return_type":{"type":["string","null"]},"search_path_pinned":{"type":["boolean","null"]},
-          "execute_role_count":{"type":["integer","null"]},
-          "calls":{"type":["integer","null"]},"total_time_ms":{"type":["number","null"]},"self_time_ms":{"type":["number","null"]},
-          "stats_reset":{"type":["string","null"]},"stats_observed":{"type":["boolean","null"]},
-          "definition_fingerprint":{"type":"string"},"collected_at":{"type":"string"}
+        "type": "object",
+        "required": [
+          "id",
+          "environment_id",
+          "audit_run_id",
+          "database_name",
+          "schema_name",
+          "function_name",
+          "identity_arguments",
+          "is_security_definer",
+          "collected_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string"
+          },
+          "audit_run_id": {
+            "type": "string"
+          },
+          "database_name": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "function_name": {
+            "type": "string"
+          },
+          "identity_arguments": {
+            "type": "string"
+          },
+          "owner_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "language_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "is_security_definer": {
+            "type": "boolean"
+          },
+          "volatility": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "parallel_safety": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kind": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "return_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "search_path_pinned": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "execute_role_count": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "calls": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total_time_ms": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "self_time_ms": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "stats_reset": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "stats_observed": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "definition_fingerprint": {
+            "type": "string"
+          },
+          "collected_at": {
+            "type": "string"
+          }
         }
       },
       "IndexDetailSnapshot": {
         "type": "object",
-        "required": ["id", "environment_id", "audit_run_id", "database_name", "schema_name", "table_name", "index_name", "is_unique", "is_primary", "is_valid", "is_ready", "is_partial", "size_bytes", "idx_scan", "idx_tup_read", "idx_tup_fetch", "collected_at"],
+        "required": [
+          "id",
+          "environment_id",
+          "audit_run_id",
+          "database_name",
+          "schema_name",
+          "table_name",
+          "index_name",
+          "is_unique",
+          "is_primary",
+          "is_valid",
+          "is_ready",
+          "is_partial",
+          "size_bytes",
+          "idx_scan",
+          "idx_tup_read",
+          "idx_tup_fetch",
+          "collected_at"
+        ],
         "properties": {
-          "id": {"type":"string"}, "environment_id": {"type":"string"}, "audit_run_id": {"type":"string"},
-          "database_name": {"type":"string"}, "schema_name": {"type":"string"}, "table_name": {"type":"string"},
-          "table_owner_name": {"type":["string","null"]}, "index_name": {"type":"string"}, "access_method": {"type":["string","null"]},
-          "is_unique": {"type":"boolean"}, "is_primary": {"type":"boolean"}, "is_valid": {"type":"boolean"}, "is_ready": {"type":"boolean"},
-          "key_columns": {"type":["array","null"],"items":{"type":"string"}}, "include_columns": {"type":["array","null"],"items":{"type":"string"}},
-          "is_partial": {"type":"boolean"}, "definition_fingerprint": {"type":"string"}, "predicate_fingerprint": {"type":"string"},
-          "size_bytes": {"type":"integer"}, "idx_scan": {"type":"integer"}, "idx_tup_read": {"type":"integer"}, "idx_tup_fetch": {"type":"integer"},
-          "stats_reset": {"type":["string","null"]}, "usage_observed": {"type":["boolean","null"]}, "collected_at": {"type":"string"}
+          "id": {
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string"
+          },
+          "audit_run_id": {
+            "type": "string"
+          },
+          "database_name": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "table_name": {
+            "type": "string"
+          },
+          "table_owner_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "index_name": {
+            "type": "string"
+          },
+          "access_method": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "is_unique": {
+            "type": "boolean"
+          },
+          "is_primary": {
+            "type": "boolean"
+          },
+          "is_valid": {
+            "type": "boolean"
+          },
+          "is_ready": {
+            "type": "boolean"
+          },
+          "key_columns": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "include_columns": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "is_partial": {
+            "type": "boolean"
+          },
+          "definition_fingerprint": {
+            "type": "string"
+          },
+          "predicate_fingerprint": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "integer"
+          },
+          "idx_scan": {
+            "type": "integer"
+          },
+          "idx_tup_read": {
+            "type": "integer"
+          },
+          "idx_tup_fetch": {
+            "type": "integer"
+          },
+          "stats_reset": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "usage_observed": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "collected_at": {
+            "type": "string"
+          }
         }
       },
       "ViewDetailSnapshot": {
         "type": "object",
-        "required": ["id", "environment_id", "audit_run_id", "database_name", "schema_name", "view_name", "relkind", "size_bytes", "collected_at"],
+        "required": [
+          "id",
+          "environment_id",
+          "audit_run_id",
+          "database_name",
+          "schema_name",
+          "view_name",
+          "relkind",
+          "size_bytes",
+          "collected_at"
+        ],
         "properties": {
-          "id": {"type":"string"}, "environment_id": {"type":"string"}, "audit_run_id": {"type":"string"},
-          "database_name": {"type":"string"}, "schema_name": {"type":"string"}, "view_name": {"type":"string"},
-          "owner_name": {"type":["string","null"]}, "relkind": {"type":"string"}, "size_bytes": {"type":"integer"},
-          "columns": {"type":["array","null"],"items":{"type":"object"}},
-          "security_invoker": {"type":["boolean","null"]}, "security_barrier": {"type":["boolean","null"]},
-          "is_populated": {"type":["boolean","null"]}, "definition_fingerprint": {"type":"string"},
-          "collected_at": {"type":"string"}
+          "id": {
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string"
+          },
+          "audit_run_id": {
+            "type": "string"
+          },
+          "database_name": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "view_name": {
+            "type": "string"
+          },
+          "owner_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "relkind": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "integer"
+          },
+          "columns": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object"
+            }
+          },
+          "security_invoker": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "security_barrier": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "is_populated": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "definition_fingerprint": {
+            "type": "string"
+          },
+          "collected_at": {
+            "type": "string"
+          }
         }
       },
       "ScopeScoreCategory": {
         "type": "object",
-        "required": ["category", "weight", "score", "penalty", "positive", "findings"],
+        "required": [
+          "category",
+          "weight",
+          "score",
+          "penalty",
+          "positive",
+          "findings"
+        ],
         "properties": {
-          "category": { "type": "string" },
-          "weight": { "type": "integer" },
-          "score": { "type": "integer" },
-          "penalty": { "type": "integer" },
-          "positive": { "type": "integer", "description": "Pontos por evidência positiva verificada no escopo." },
-          "findings": { "type": "integer" }
+          "category": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "integer"
+          },
+          "score": {
+            "type": "integer"
+          },
+          "penalty": {
+            "type": "integer"
+          },
+          "positive": {
+            "type": "integer",
+            "description": "Pontos por evidência positiva verificada no escopo."
+          },
+          "findings": {
+            "type": "integer"
+          }
         }
       },
       "ScopeScore": {
         "type": "object",
-        "required": ["version", "profile", "collector_version", "rule_version", "environment_id", "audit_run_id", "status", "score", "confidence", "categories", "missing_collectors", "explanation"],
+        "required": [
+          "version",
+          "profile",
+          "collector_version",
+          "rule_version",
+          "environment_id",
+          "audit_run_id",
+          "status",
+          "score",
+          "confidence",
+          "categories",
+          "missing_collectors",
+          "explanation"
+        ],
         "properties": {
-          "version": { "type": "string" },
-          "profile": { "type": "string" },
-          "collector_version": { "type": "string" },
-          "rule_version": { "type": "string" },
-          "environment_id": { "type": "string" },
-          "audit_run_id": { "type": "string" },
-          "database_name": { "type": "string" },
-          "schema_name": { "type": "string" },
-          "table_name": { "type": "string" },
-          "status": { "type": "string" },
-          "score": { "type": ["integer", "null"] },
-          "confidence": { "type": "number" },
-          "explanation": { "type": "string" },
+          "version": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string"
+          },
+          "collector_version": {
+            "type": "string"
+          },
+          "rule_version": {
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string"
+          },
+          "audit_run_id": {
+            "type": "string"
+          },
+          "database_name": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "table_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "score": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "confidence": {
+            "type": "number"
+          },
+          "explanation": {
+            "type": "string"
+          },
           "categories": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/ScopeScoreCategory" }
+            "items": {
+              "$ref": "#/components/schemas/ScopeScoreCategory"
+            }
           },
           "missing_collectors": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Finding": {
+        "type": "object",
+        "required": [
+          "id",
+          "environment_id",
+          "finding_type",
+          "severity",
+          "status",
+          "title",
+          "summary",
+          "dedup_key",
+          "first_seen_at",
+          "last_seen_at",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string"
+          },
+          "audit_run_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "finding_type": {
+            "type": "string"
+          },
+          "rule_id": {
+            "type": "string"
+          },
+          "rule_version": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number"
+          },
+          "impact": {
+            "type": "string"
+          },
+          "risk": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          },
+          "friendly_meaning": {
+            "type": "string"
+          },
+          "friendly_next": {
+            "type": "string"
+          },
+          "validation": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "object_type": {
+            "type": "string"
+          },
+          "object_key": {
+            "type": "string"
+          },
+          "database_name": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "object_name": {
+            "type": "string"
+          },
+          "dedup_key": {
+            "type": "string"
+          },
+          "first_seen_at": {
+            "type": "string"
+          },
+          "last_seen_at": {
+            "type": "string"
+          },
+          "resolved_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recurrence_count": {
+            "type": "number"
+          },
+          "suppression_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "suppressed_until": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "assignee": {
+            "type": "string"
+          },
+          "due_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "superseded_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "object"
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rule_parameters": {
+            "type": "object"
+          }
+        }
+      },
+      "FindingChange": {
+        "type": "object",
+        "required": [
+          "change",
+          "object_key",
+          "title",
+          "severity"
+        ],
+        "properties": {
+          "change": {
+            "type": "string"
+          },
+          "object_key": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "finding_id": {
+            "type": "string"
           }
         }
       }

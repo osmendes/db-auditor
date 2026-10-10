@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"os"
 
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 func registerCapabilityRoutes(mux *http.ServeMux, store InventoryStore) {
@@ -30,6 +31,11 @@ func registerCapabilityRoutes(mux *http.ServeMux, store InventoryStore) {
 			writeError(w, http.StatusNotFound, CodeNotFound, "Ambiente não encontrado.")
 			return
 		}
-		writeJSON(w, http.StatusOK, item)
+		payload, err := json.Marshal(item)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao consultar capacidades.")
+			return
+		}
+		writePrivateJSON(w, r, http.StatusOK, payload)
 	})
 }

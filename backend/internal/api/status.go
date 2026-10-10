@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/buildinfo"
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/buildinfo"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 // StatusResponse is the operational snapshot for the Status page.

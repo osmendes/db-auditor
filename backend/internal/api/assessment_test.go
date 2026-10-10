@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 const (

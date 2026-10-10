@@ -8,9 +8,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/osmendes/db-auditor/internal/analyzer"
-	"github.com/osmendes/db-auditor/internal/capabilities"
-	"github.com/osmendes/db-auditor/internal/collectors/postgres"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/capabilities"
+	"github.com/mayconmendes-qc/db-auditor/internal/collectors/postgres"
 )
 
 // Run only against an explicitly supplied disposable database.

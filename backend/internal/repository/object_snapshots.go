@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/osmendes/db-auditor/internal/collectors/postgres"
+	"github.com/mayconmendes-qc/db-auditor/internal/collectors/postgres"
 )
 
 // SaveObjectInventory persists table/column/index facts for an audit run.

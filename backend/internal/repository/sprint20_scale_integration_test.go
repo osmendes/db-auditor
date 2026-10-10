@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -70,7 +71,12 @@ func TestSprint20LargeInventoryPagingIntegration(t *testing.T) {
 		latencies[i] = time.Since(started)
 	}
 	sort.Slice(latencies, func(i, j int) bool { return latencies[i] < latencies[j] })
-	t.Logf("10k synthetic inventory, sorted 50-row pages: p95=%s", latencies[18])
+	p95 := latencies[18]
+	t.Logf("10k synthetic inventory, sorted 50-row pages: p95=%s", p95)
+	// CI budget for this fixed 10k-row mass. It is not a production SLO.
+	if p95 > 750*time.Millisecond {
+		t.Errorf("inventory page p95 %s exceeds the 750ms CI budget", p95)
+	}
 	if _, err := pool.Exec(ctx, `ANALYZE table_snapshot`); err != nil {
 		t.Fatal(err)
 	}
@@ -79,14 +85,19 @@ func TestSprint20LargeInventoryPagingIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer rows.Close()
+	plan := ""
 	for rows.Next() {
 		var line string
 		if err := rows.Scan(&line); err != nil {
 			t.Fatal(err)
 		}
+		plan += line + "\n"
 		t.Log(line)
 	}
 	if err := rows.Err(); err != nil {
 		t.Fatal(err)
+	}
+	if strings.Contains(plan, "Seq Scan") && !strings.Contains(plan, "Index") {
+		t.Fatalf("inventory page plan is an unjustified sequential scan:\n%s", plan)
 	}
 }

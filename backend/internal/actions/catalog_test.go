@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 func TestActionCatalogCoversMajorDatabaseDecisions(t *testing.T) {

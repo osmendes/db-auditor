@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
-	"github.com/osmendes/db-auditor/internal/guidance"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/guidance"
 )
 
 func TestEveryActiveRuleHasPortugueseGuidance(t *testing.T) {

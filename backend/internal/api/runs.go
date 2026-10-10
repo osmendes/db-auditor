@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/osmendes/db-auditor/internal/audit"
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/audit"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 // RunService exposes audit run operations to HTTP handlers.

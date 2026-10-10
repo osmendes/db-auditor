@@ -10,9 +10,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/notify"
-	"github.com/osmendes/db-auditor/internal/report"
-	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/mayconmendes-qc/db-auditor/internal/notify"
+	"github.com/mayconmendes-qc/db-auditor/internal/report"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
 )
 
 type Worker struct{ Store *repository.Store }
@@ -70,9 +71,11 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 	document.RedactMetadata(os.Getenv("AUDITOR_REPORT_REDACT_METADATA"))
 	document.RedactSensitive(job.Filters.Redaction)
 	pdf, err := report.RenderPDF(document)
+	document = report.Document{}
 	if err != nil {
 		return w.fail(workCtx, job.ID, err)
 	}
+	slog.Info("report pdf rendered", "job_id", job.ID, "bytes", len(pdf))
 	if err = report.ValidatePDF(pdf); err != nil {
 		return w.fail(workCtx, job.ID, err)
 	}
@@ -105,8 +108,9 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 func (w Worker) fail(ctx context.Context, id string, cause error) error {
 	finishCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
 	defer cancel()
-	if err := w.Store.FailReportJob(finishCtx, id, cause); err != nil {
-		return fmt.Errorf("report %s failed: %v; status update: %w", id, cause, err)
+	sanitized := fmt.Errorf("%s", config.SanitizeError(cause))
+	if err := w.Store.FailReportJob(finishCtx, id, sanitized); err != nil {
+		return fmt.Errorf("report %s failed: %s; status update: %s", id, config.SanitizeError(cause), config.SanitizeError(err))
 	}
-	return fmt.Errorf("report %s failed: %w", id, cause)
+	return fmt.Errorf("report %s failed: %s", id, config.SanitizeError(cause))
 }

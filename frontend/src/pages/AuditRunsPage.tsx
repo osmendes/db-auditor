@@ -1,20 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PageHeader } from "../components/PageHeader";
-import {
-  Badge,
-  Button,
-  Card,
-  ConfirmDialog,
-  EmptyState,
-  ErrorBanner,
-  Select,
-  Skeleton,
-  Table,
-} from "../components/ui";
-import {
-  type PageSize,
-  PaginationControls,
-} from "../components/ui/PaginationControls";
+import type { PageSize } from "../components/ui/PaginationControls";
 import { useApp } from "../context/AppContext";
 import { formatError } from "../lib/errors";
 import { labels } from "../lib/labels";
@@ -30,141 +15,8 @@ import type {
   Finding,
   ScopeScore,
 } from "../types";
-
-const POLL_MS = 2500;
-
-const STATUS_OPTIONS = [
-  { value: "", label: "Todos os status" },
-  { value: "running", label: "Em execução" },
-  { value: "success", label: "Sucesso" },
-  { value: "partial_success", label: "Sucesso parcial" },
-  { value: "failed", label: "Falhou" },
-  { value: "cancelled", label: "Cancelado" },
-  { value: "skipped", label: "Ignorado" },
-];
-
-const PROFILE_OPTIONS = [
-  { value: "", label: "Todos os perfis" },
-  { value: "manual", label: "Manual" },
-  { value: "fast", label: "Rápido" },
-  { value: "daily", label: "Diário" },
-  { value: "weekly", label: "Semanal" },
-  { value: "monthly", label: "Mensal" },
-];
-
-const SCHEDULE_PROFILES = [
-  { value: "fast", label: "Rápido (15 min)" },
-  { value: "daily", label: "Diário" },
-  { value: "weekly", label: "Semanal" },
-  { value: "monthly", label: "Mensal" },
-];
-
-function nextRunLabel(value?: string): string {
-  if (!value) {
-    return "—";
-  }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "—";
-  }
-  return date.toLocaleString("pt-BR");
-}
-
-function statusTone(
-  status: string,
-): "success" | "warning" | "danger" | "neutral" {
-  if (status === "success") {
-    return "success";
-  }
-  if (status === "partial_success" || status === "running") {
-    return "warning";
-  }
-  if (status === "failed") {
-    return "danger";
-  }
-  return "neutral";
-}
-
-function envLabel(run: AuditRun): string {
-  if (run.environment_name?.trim()) {
-    return run.environment_name;
-  }
-  return `${run.environment_id.slice(0, 8)}…`;
-}
-
-function isTerminal(status: string): boolean {
-  return (
-    status === "success" ||
-    status === "partial_success" ||
-    status === "failed" ||
-    status === "cancelled" ||
-    status === "skipped"
-  );
-}
-
-function durationLabel(start: string, end?: string | null): string {
-  const a = new Date(start).getTime();
-  const b = end ? new Date(end).getTime() : Date.now();
-  if (Number.isNaN(a) || Number.isNaN(b) || b < a) {
-    return "—";
-  }
-  const sec = Math.round((b - a) / 1000);
-  if (sec < 60) {
-    return `${sec}s`;
-  }
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  return `${m}m ${s}s`;
-}
-
-function CollectorProgress({
-  collectors,
-  runStatus,
-}: {
-  collectors: CollectorRun[];
-  runStatus: string;
-}) {
-  const total = collectors.length;
-  const done = collectors.filter((c) => isTerminal(c.status)).length;
-  const running = collectors.filter((c) => c.status === "running").length;
-  const failed = collectors.filter((c) => c.status === "failed").length;
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  const live = runStatus === "running" || running > 0;
-
-  return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
-        <span>
-          {done}/{total || "…"} collectors
-          {running > 0 ? ` · ${running} em execução` : ""}
-          {failed > 0 ? ` · ${failed} falha(s)` : ""}
-        </span>
-        <span className="font-mono text-slate-400">
-          {total > 0 ? `${pct}%` : live ? "…" : "—"}
-          {live ? " · ao vivo" : ""}
-        </span>
-      </div>
-      <div
-        className="h-2 overflow-hidden rounded-full bg-slate-800"
-        role="progressbar"
-        aria-valuenow={pct}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      >
-        <div
-          className={`h-full rounded-full transition-all duration-500 ${
-            failed > 0
-              ? "bg-rose-500/80"
-              : live
-                ? "bg-amber-400/90"
-                : "bg-emerald-500/80"
-          }`}
-          style={{ width: `${total > 0 ? pct : live ? 8 : 0}%` }}
-        />
-      </div>
-    </div>
-  );
-}
+import { AuditRunsView } from "./parts/AuditRunsView";
+import { type AuditScheduleRow, POLL_MS } from "./parts/auditRunUi";
 
 export function AuditRunsPage() {
   const { environments, environmentId, runId, openRun, openFinding } = useApp();
@@ -193,14 +45,7 @@ export function AuditRunsPage() {
   const [busy, setBusy] = useState(false);
   const [polling, setPolling] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [schedules, setSchedules] = useState<
-    {
-      profile: string;
-      enabled: boolean;
-      next_run_at?: string;
-      last_status?: string;
-    }[]
-  >([]);
+  const [schedules, setSchedules] = useState<AuditScheduleRow[]>([]);
   const [scheduleMsg, setScheduleMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -463,521 +308,53 @@ export function AuditRunsPage() {
   };
 
   return (
-    <>
-      <PageHeader
-        eyebrow="Execuções"
-        title="Execuções de auditoria"
-        description="Dispare coletas, acompanhe o progresso por collector e revise erros."
-        actions={
-          polling ? (
-            <span className="inline-flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-200">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" />
-              Atualizando…
-            </span>
-          ) : null
-        }
-      />
-
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Disparar auditoria manual"
-        description={
-          <>
-            Será iniciada uma coleta somente leitura no ambiente{" "}
-            <strong className="text-slate-100">{triggerEnvName}</strong>.
-            Nenhuma alteração é aplicada nos bancos auditados.
-          </>
-        }
-        confirmLabel="Executar agora"
-        cancelLabel="Cancelar"
-        busy={busy}
-        onCancel={() => {
-          if (!busy) {
-            setConfirmOpen(false);
-          }
-        }}
-        onConfirm={() => {
-          void executeTrigger();
-        }}
-      />
-
-      <div className="mt-8 space-y-6">
-        {api.hasRole("operator") ? (
-          <Card title="Disparo manual">
-            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
-              <div className="min-w-0 flex-1">
-                <Select
-                  label="Ambiente"
-                  options={environments.map((e) => ({
-                    value: e.id,
-                    label: e.name,
-                  }))}
-                  value={triggerEnv}
-                  onChange={(e) => setTriggerEnv(e.target.value)}
-                />
-              </div>
-              <Button onClick={onTriggerClick} disabled={busy || !triggerEnv}>
-                {busy ? "Executando…" : "Executar agora"}
-              </Button>
-            </div>
-            {triggerMsg ? (
-              <p className="mt-3 text-sm text-slate-300">{triggerMsg}</p>
-            ) : null}
-          </Card>
-        ) : null}
-
-        {triggerEnv ? (
-          <Card title="Agenda">
-            <p className="mt-1 text-sm text-slate-400">
-              A agenda fica no snapshot store. Reiniciar a API não desliga o
-              perfil.
-            </p>
-            <ul className="mt-4 space-y-3">
-              {SCHEDULE_PROFILES.map((profile) => {
-                const row = schedules.find(
-                  (item) => item.profile === profile.value,
-                );
-                return (
-                  <li
-                    key={profile.value}
-                    className="flex flex-wrap items-center justify-between gap-3 text-sm"
-                  >
-                    <label className="flex items-center gap-2 text-slate-100">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(row?.enabled)}
-                        disabled={!api.hasRole("operator") || busy}
-                        onChange={(event) => {
-                          const enabled = event.target.checked;
-                          setBusy(true);
-                          setScheduleMsg(null);
-                          void api
-                            .saveSchedule(triggerEnv, profile.value, enabled)
-                            .then((saved) => {
-                              setSchedules((current) => {
-                                const next = current.filter(
-                                  (item) => item.profile !== profile.value,
-                                );
-                                next.push(saved);
-                                return next;
-                              });
-                            })
-                            .catch((cause: unknown) =>
-                              setScheduleMsg(formatError(cause)),
-                            )
-                            .finally(() => setBusy(false));
-                        }}
-                      />
-                      {profile.label}
-                    </label>
-                    <span className="text-slate-400">
-                      Próxima: {nextRunLabel(row?.next_run_at)}
-                      {row?.last_status ? ` · última ${row.last_status}` : ""}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-            {scheduleMsg ? (
-              <p className="mt-3 text-sm text-rose-300">{scheduleMsg}</p>
-            ) : null}
-          </Card>
-        ) : null}
-
-        <div className="grid w-full gap-3 sm:grid-cols-2">
-          <Select
-            label="Status"
-            options={STATUS_OPTIONS}
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setRunOffset(0);
-            }}
-          />
-          <Select
-            label="Perfil"
-            options={PROFILE_OPTIONS}
-            value={profileFilter}
-            onChange={(e) => {
-              setProfileFilter(e.target.value);
-              setRunOffset(0);
-            }}
-          />
-        </div>
-
-        {error ? (
-          <ErrorBanner message={error} onRetry={() => void loadRuns()} />
-        ) : null}
-
-        {runs === null ? (
-          <Skeleton className="h-40 w-full" />
-        ) : runs.length === 0 ? (
-          <EmptyState
-            title="Nenhuma execução"
-            description="Dispare uma auditoria manual acima ou aguarde o scheduler. Ambientes demo vêm do seed local."
-            action={
-              <Button onClick={onTriggerClick} disabled={busy || !triggerEnv}>
-                Executar agora
-              </Button>
-            }
-          />
-        ) : (
-          <>
-            <Table
-              dense
-              pagination={false}
-              headers={["Perfil", "Status", "Duração", "Ambiente"]}
-            >
-              {runs.map((r) => (
-                <tr
-                  key={r.id}
-                  className={`cursor-pointer border-t border-slate-800 hover:bg-slate-900/50 ${
-                    selectedId === r.id ? "bg-slate-900/80" : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedId(r.id);
-                    openRun(r.id);
-                  }}
-                >
-                  <td className="px-3 py-1.5 text-slate-100">{r.profile}</td>
-                  <td className="px-3 py-1.5">
-                    <Badge tone={statusTone(r.status)}>
-                      {labels.runStatus(r.status)}
-                    </Badge>
-                  </td>
-                  <td className="px-3 py-1.5 text-xs text-slate-400">
-                    {durationLabel(r.started_at, r.finished_at)}
-                    <span className="mt-0.5 block font-mono text-[10px] text-slate-500">
-                      {new Date(r.started_at).toLocaleString()}
-                    </span>
-                  </td>
-                  <td className="px-3 py-1.5 text-slate-200">{envLabel(r)}</td>
-                </tr>
-              ))}
-            </Table>
-            <PaginationControls
-              total={runTotal}
-              offset={runPageSize === "all" ? 0 : runOffset}
-              size={runPageSize}
-              onSizeChange={(next) => {
-                setRunPageSize(next);
-                setRunOffset(0);
-              }}
-              onOffsetChange={setRunOffset}
-              label="Execuções"
-            />
-          </>
-        )}
-
-        {selected ? (
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold text-slate-100">Detalhe</h2>
-            <Card
-              title={`${selected.profile} · ${labels.runStatus(selected.status)}`}
-              subtitle={`${envLabel(selected)} · ${selected.id.slice(0, 8)}…`}
-            >
-              {selected.status === "running" ? (
-                <Button
-                  variant="secondary"
-                  onClick={() =>
-                    void api
-                      .cancelAuditRun(selected.id)
-                      .then(() => loadRuns())
-                      .catch((cause: unknown) =>
-                        setError(
-                          formatError(
-                            cause,
-                            "Não foi possível cancelar a execução",
-                          ),
-                        ),
-                      )
-                  }
-                >
-                  Cancelar execução
-                </Button>
-              ) : null}
-              <ul className="mt-1 space-y-1 text-sm text-slate-300">
-                <li>
-                  Início: {new Date(selected.started_at).toLocaleString()}
-                </li>
-                <li>
-                  Fim:{" "}
-                  {selected.finished_at
-                    ? new Date(selected.finished_at).toLocaleString()
-                    : "—"}
-                </li>
-                <li>
-                  Duração:{" "}
-                  {durationLabel(selected.started_at, selected.finished_at)}
-                </li>
-                <li>Avisos: {selected.warnings.length}</li>
-                <li>Erros: {selected.errors.length}</li>
-              </ul>
-              {selected.errors.length > 0 ? (
-                <ul className="mt-3 list-inside list-disc text-xs text-rose-300">
-                  {selected.errors.slice(0, 8).map((e) => (
-                    <li key={e}>{e}</li>
-                  ))}
-                </ul>
-              ) : null}
-            </Card>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Card
-                title="Baseline aprovado"
-                subtitle={
-                  baseline
-                    ? `Execução ${baseline.audit_run_id.slice(0, 8)}…`
-                    : "Ainda não definido"
-                }
-              >
-                <p className="mt-2 text-xs text-slate-400">
-                  A seleção é registrada no histórico e exige cobertura
-                  completa.
-                </p>
-                {!api.hasSession() && (
-                  <input
-                    aria-label="Token para aprovar baseline"
-                    type="password"
-                    autoComplete="off"
-                    placeholder="Token de operação protegida"
-                    value={baselineToken}
-                    onChange={(event) => setBaselineToken(event.target.value)}
-                    className="mt-2 w-full rounded border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                  />
-                )}
-                {selected.status === "success" ? (
-                  <div className="mt-3">
-                    <Button
-                      disabled={!api.hasRole("operator") && !baselineToken}
-                      onClick={() => void chooseBaseline()}
-                    >
-                      Aprovar esta execução
-                    </Button>
-                  </div>
-                ) : null}
-                {comparison ? (
-                  <p className="mt-2 text-sm text-slate-300">
-                    Comparação {comparison.status}: +{comparison.added_tables} /
-                    −{comparison.removed_tables} tabelas;{" "}
-                    {comparison.changed_tables} alteradas.
-                  </p>
-                ) : null}
-              </Card>
-              <Card
-                title="Score por escopo"
-                subtitle={scopeScore?.version ?? "Aguardando"}
-              >
-                <p className="mt-2 text-sm text-slate-300">
-                  {scopeScore?.score == null
-                    ? "Indisponível por cobertura insuficiente"
-                    : `${scopeScore.score}/100`}{" "}
-                  · confiança {Math.round((scopeScore?.confidence ?? 0) * 100)}%
-                </p>
-                {scopeScore?.categories.map((category) => (
-                  <p key={category.category} className="text-xs text-slate-400">
-                    {category.category}: {category.score}/100 (
-                    {category.findings} findings)
-                  </p>
-                ))}
-              </Card>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Card
-                title="Análise automática"
-                subtitle={
-                  analysis ? labels.runStatus(analysis.status) : "Aguardando"
-                }
-              >
-                <p className="mt-2 text-sm text-slate-300">
-                  {analysis
-                    ? `${analysis.findings_saved}/${analysis.findings_produced} findings persistidos`
-                    : "A análise será executada após a coleta."}
-                </p>
-                {analysis?.error ? (
-                  <p className="mt-2 text-xs text-rose-300">{analysis.error}</p>
-                ) : null}
-              </Card>
-              <Card
-                title="Cobertura"
-                subtitle={
-                  coverage === null
-                    ? "Carregando…"
-                    : `${coverage.filter((item) => item.database_name).length} combinações collector/database`
-                }
-              >
-                <p className="mt-2 text-sm text-slate-300">
-                  {coverage
-                    ? `${coverage.filter((item) => item.status === "failed").length} falha(s) registradas`
-                    : "—"}
-                </p>
-              </Card>
-            </div>
-
-            {coverage?.some((item) => item.database_name) ? (
-              <Card title="Progresso por database">
-                <Table dense headers={["Banco", "Coletor", "Estado", "Ação"]}>
-                  {coverage
-                    .filter((item) => item.database_name)
-                    .map((item) => (
-                      <tr key={`${item.collector_name}:${item.database_name}`}>
-                        <td className="px-3 py-2">{item.database_name}</td>
-                        <td className="px-3 py-2">{item.collector_name}</td>
-                        <td className="px-3 py-2">{item.status}</td>
-                        <td className="px-3 py-2">
-                          {selected.status === "running" &&
-                          api.hasRole("operator") &&
-                          item.database_name &&
-                          item.status === "attempted" ? (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                void api
-                                  .cancelAuditDatabase(
-                                    selected.id,
-                                    item.database_name ?? "",
-                                  )
-                                  .then(() => loadRunDiagnostics(selected.id))
-                                  .catch((cause: unknown) =>
-                                    setError(
-                                      formatError(
-                                        cause,
-                                        "Falha ao cancelar database",
-                                      ),
-                                    ),
-                                  )
-                              }
-                              className="text-rose-300 hover:underline"
-                            >
-                              Cancelar database
-                            </button>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </Table>
-              </Card>
-            ) : null}
-
-            {coverage?.some((item) => item.status === "failed") ? (
-              <Card title="Falhas de cobertura">
-                <ul className="mt-2 space-y-1 text-xs text-rose-300">
-                  {coverage
-                    .filter((item) => item.status === "failed")
-                    .slice(0, 12)
-                    .map((item) => (
-                      <li
-                        key={`${item.collector_name}:${item.database_name ?? "all"}`}
-                      >
-                        {item.collector_name}
-                        {item.database_name ? ` · ${item.database_name}` : ""}
-                        {item.error ? ` — ${item.error}` : ""}
-                      </li>
-                    ))}
-                </ul>
-              </Card>
-            ) : null}
-
-            <Card
-              title="Achados desta execução"
-              subtitle="O conjunto observado neste run, não a fila de hoje"
-            >
-              {runFindings === null ? (
-                <Skeleton className="mt-2 h-16 w-full" />
-              ) : runFindings.length === 0 ? (
-                <p className="mt-2 text-sm text-slate-400">
-                  Nenhum finding foi observado nesta execução.
-                </p>
-              ) : (
-                <ul className="mt-2 space-y-1 text-sm text-slate-300">
-                  {runFindings.slice(0, 30).map((finding) => (
-                    <li key={finding.id}>
-                      <button
-                        type="button"
-                        className="text-left hover:underline"
-                        onClick={() => openFinding(finding.id)}
-                      >
-                        {finding.severity} · {finding.title}
-                      </button>
-                    </li>
-                  ))}
-                  {runFindings.length > 30 ? (
-                    <li className="text-xs text-slate-500">
-                      {runFindings.length - 30} a mais nesta execução.
-                    </li>
-                  ) : null}
-                </ul>
-              )}
-            </Card>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-medium text-slate-200">
-                  Collectors
-                </h3>
-                <Button
-                  variant="ghost"
-                  onClick={() => void loadCollectors(selected.id)}
-                >
-                  Atualizar
-                </Button>
-              </div>
-
-              {collectors === null ? (
-                <Skeleton className="h-24 w-full" />
-              ) : collectors.length === 0 ? (
-                <EmptyState
-                  title="Sem collectors ainda"
-                  description={
-                    selected.status === "running"
-                      ? "A execução ainda está iniciando os collectors…"
-                      : "Nenhum registro de collector para esta execução."
-                  }
-                />
-              ) : (
-                <>
-                  <CollectorProgress
-                    collectors={collectors}
-                    runStatus={selected.status}
-                  />
-                  <Table dense headers={["Nome", "Status", "Rows", "Duração"]}>
-                    {collectors.map((c) => (
-                      <tr key={c.id} className="border-t border-slate-800">
-                        <td className="px-3 py-1.5 text-xs text-slate-100">
-                          {c.collector_name}
-                          {c.error ? (
-                            <span className="mt-0.5 block truncate text-[10px] text-rose-300">
-                              {c.error}
-                            </span>
-                          ) : c.warning ? (
-                            <span className="mt-0.5 block truncate text-[10px] text-amber-300">
-                              {c.warning}
-                            </span>
-                          ) : null}
-                        </td>
-                        <td className="px-3 py-1.5">
-                          <Badge tone={statusTone(c.status)}>
-                            {labels.runStatus(c.status)}
-                          </Badge>
-                        </td>
-                        <td className="px-3 py-1.5 font-mono text-xs text-slate-300">
-                          {c.rows_collected}
-                        </td>
-                        <td className="px-3 py-1.5 font-mono text-xs text-slate-400">
-                          {durationLabel(c.started_at, c.finished_at)}
-                        </td>
-                      </tr>
-                    ))}
-                  </Table>
-                </>
-              )}
-            </div>
-          </section>
-        ) : null}
-      </div>
-    </>
+    <AuditRunsView
+      polling={polling}
+      confirmOpen={confirmOpen}
+      setConfirmOpen={setConfirmOpen}
+      triggerEnvName={triggerEnvName}
+      busy={busy}
+      executeTrigger={executeTrigger}
+      environments={environments}
+      triggerEnv={triggerEnv}
+      setTriggerEnv={setTriggerEnv}
+      onTriggerClick={onTriggerClick}
+      triggerMsg={triggerMsg}
+      schedules={schedules}
+      setBusy={setBusy}
+      setScheduleMsg={setScheduleMsg}
+      setSchedules={setSchedules}
+      scheduleMsg={scheduleMsg}
+      statusFilter={statusFilter}
+      setStatusFilter={setStatusFilter}
+      profileFilter={profileFilter}
+      setProfileFilter={setProfileFilter}
+      setRunOffset={setRunOffset}
+      error={error}
+      loadRuns={loadRuns}
+      runs={runs}
+      selectedId={selectedId}
+      setSelectedId={setSelectedId}
+      openRun={openRun}
+      runTotal={runTotal}
+      runPageSize={runPageSize}
+      runOffset={runOffset}
+      setRunPageSize={setRunPageSize}
+      selected={selected}
+      setError={setError}
+      baseline={baseline}
+      baselineToken={baselineToken}
+      setBaselineToken={setBaselineToken}
+      chooseBaseline={chooseBaseline}
+      comparison={comparison}
+      scopeScore={scopeScore}
+      coverage={coverage}
+      analysis={analysis}
+      loadRunDiagnostics={loadRunDiagnostics}
+      runFindings={runFindings}
+      openFinding={openFinding}
+      collectors={collectors}
+      loadCollectors={loadCollectors}
+    />
   );
 }

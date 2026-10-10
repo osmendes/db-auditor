@@ -10,17 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
-	"github.com/osmendes/db-auditor/internal/api"
-	"github.com/osmendes/db-auditor/internal/audit"
-	"github.com/osmendes/db-auditor/internal/buildinfo"
-	"github.com/osmendes/db-auditor/internal/config"
-	"github.com/osmendes/db-auditor/internal/database"
-	"github.com/osmendes/db-auditor/internal/migrate"
-	"github.com/osmendes/db-auditor/internal/observability"
-	"github.com/osmendes/db-auditor/internal/reportworker"
-	"github.com/osmendes/db-auditor/internal/repository"
-	"github.com/osmendes/db-auditor/internal/scheduler"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/api"
+	"github.com/mayconmendes-qc/db-auditor/internal/audit"
+	"github.com/mayconmendes-qc/db-auditor/internal/buildinfo"
+	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/mayconmendes-qc/db-auditor/internal/database"
+	"github.com/mayconmendes-qc/db-auditor/internal/migrate"
+	"github.com/mayconmendes-qc/db-auditor/internal/observability"
+	"github.com/mayconmendes-qc/db-auditor/internal/reportworker"
+	"github.com/mayconmendes-qc/db-auditor/internal/repository"
+	"github.com/mayconmendes-qc/db-auditor/internal/scheduler"
 )
 
 func main() {
@@ -49,6 +49,11 @@ func main() {
 	if err := config.ValidateTargetDSNs(targets); err != nil {
 		slog.Error("unsafe target configuration", "error", err)
 		os.Exit(1)
+	}
+	if hosts := config.InsecureTargetHosts(); len(hosts) > 0 {
+		slog.Warn("weak TLS allowlist is explicit and empty by default; these hosts may skip verify-full", "hosts", hosts)
+	} else {
+		slog.Info("target TLS default is verify-full; AUDITOR_TARGET_INSECURE_HOSTS is empty")
 	}
 	if err := config.ValidateMongoTargetURIs(mongoTargets); err != nil {
 		slog.Error("unsafe MongoDB target configuration", "error", err)

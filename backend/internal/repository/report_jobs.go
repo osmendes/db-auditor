@@ -234,8 +234,12 @@ func (s *Store) GetReportArtifact(ctx context.Context, environmentID, id string)
 	return &a, err
 }
 
+const deleteExpiredArtifactsSQL = `DELETE FROM report_artifact WHERE report_job_id IN (SELECT id FROM report_job WHERE expires_at<=now())`
+
+const requeueInterruptedReportsSQL = `UPDATE report_job SET status=CASE WHEN attempts<3 THEN 'queued' ELSE 'failed' END,error=CASE WHEN attempts<3 THEN NULL ELSE 'worker interrupted after three attempts' END,started_at=NULL WHERE status='running' AND started_at<now()-interval '3 minutes'`
+
 func (s *Store) CleanupExpiredReports(ctx context.Context) (int64, error) {
-	cmd, err := s.pool.Exec(ctx, `DELETE FROM report_artifact WHERE report_job_id IN (SELECT id FROM report_job WHERE expires_at<=now())`)
+	cmd, err := s.pool.Exec(ctx, deleteExpiredArtifactsSQL)
 	if err != nil {
 		return 0, err
 	}
@@ -245,6 +249,6 @@ func (s *Store) CleanupExpiredReports(ctx context.Context) (int64, error) {
 }
 
 func (s *Store) RequeueInterruptedReports(ctx context.Context) error {
-	_, err := s.pool.Exec(ctx, `UPDATE report_job SET status=CASE WHEN attempts<3 THEN 'queued' ELSE 'failed' END,error=CASE WHEN attempts<3 THEN NULL ELSE 'worker interrupted after three attempts' END,started_at=NULL WHERE status='running' AND started_at<now()-interval '3 minutes'`)
+	_, err := s.pool.Exec(ctx, requeueInterruptedReportsSQL)
 	return err
 }

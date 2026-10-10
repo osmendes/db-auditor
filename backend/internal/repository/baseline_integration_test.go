@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 func TestBaselineCoverageAndFindingLifecycleIntegration(t *testing.T) {

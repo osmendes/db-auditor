@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/scheduler"
+	"github.com/mayconmendes-qc/db-auditor/internal/scheduler"
 )
 
 func (s *Store) ListSchedules(ctx context.Context) ([]scheduler.Entry, error) {

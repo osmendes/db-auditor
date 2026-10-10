@@ -19,6 +19,7 @@ O diretório contém o baseline, o seed local e migrações incrementais. O Post
 - `15_cagg_source.sql`: acrescenta origem e intervalo de bucket do agregado contínuo quando o catálogo Timescale os fornece. Snapshots antigos mantêm esses campos ausentes; uma nova coleta pode preenchê-los.
 - `16_identity.sql`: garante usuário, sessão e tentativas de login em volumes antigos, com ociosidade e prazo absoluto da sessão. `IF NOT EXISTS` não apaga sessões já gravadas.
 - `17_report_retention.sql`: guarda o prazo de retenção do PDF. Um artefato vencido deixa de ser baixado; execuções, achados e o job permanecem.
+- `18_totp_discard_retention.sql`: TOTP opcional, assinatura de descarte e a linha de política de retenção. Não apaga dados existentes.
 
 Não reintroduza arquivos `.down.sql`: o entrypoint executaria todos os `.sql`.
 

@@ -175,6 +175,15 @@ func init() {
 		"Grants efetivos gravados na coleta. A API não executa SQL no alvo.",
 		"não estimado: exposição não vira nota sem o privilégio e o papel.",
 		"Confirme se o privilégio é operacional antes de qualquer revogação."))
+	growth := base("maintenance")
+	growth.Meaning = "Duas coletas completas mostram mudança de tamanho."
+	growth.Evidence = "Tamanhos das duas coletas, janela e stats_reset. Tuplas mortas são estimativa."
+	growth.Impact = "não estimado sem duas coletas completas, denominador e janela."
+	growth.Next = "Confirme tendência, janela e backup. Não há DROP, DELETE nem retenção automática."
+	growth.Confirmation = "SELECT c.oid::regclass, pg_total_relation_size(c.oid), s.n_live_tup, s.n_dead_tup FROM pg_class c LEFT JOIN pg_stat_user_tables s ON s.relid=c.oid WHERE c.oid=$1::regclass;"
+	growth.ReadOnlyQuery = growth.Confirmation
+	growth.FalsePositive = "Carga atípica, reset de estatísticas ou coleta parcial."
+	put("maintenance.growth_trend", growth)
 }
 
 // For returns the plan registered for rule. Anything else is the single investigation fallback.

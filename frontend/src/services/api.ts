@@ -383,15 +383,64 @@ export const api = {
     ] >= { auditor: 2, operator: 3 }[minimum],
   login: async (username: string, password: string) => {
     const result = await postJSON<{
+      user?: { username: string; role: string };
+      csrf_token?: string;
+      mfa_required?: boolean;
+      mfa_token?: string;
+    }>("/api/v1/auth/login?mode=cookie", { username, password });
+    if (result.mfa_required) {
+      return { mfa_required: true as const, mfa_token: result.mfa_token ?? "" };
+    }
+    sessionActive = true;
+    csrfToken = result.csrf_token ?? "";
+    sessionRole = result.user?.role ?? "";
+    sessionUser = result.user?.username ?? "";
+    return result.user ?? { username, role: "" };
+  },
+  confirmTotp: async (mfaToken: string, code: string) => {
+    const result = await postJSON<{
       user: { username: string; role: string };
       csrf_token: string;
-    }>("/api/v1/auth/login?mode=cookie", { username, password });
+    }>("/api/v1/auth/totp?mode=cookie", { mfa_token: mfaToken, code });
     sessionActive = true;
     csrfToken = result.csrf_token;
     sessionRole = result.user.role;
     sessionUser = result.user.username;
     return result.user;
   },
+  enrollTotp: () =>
+    postJSON<{ secret: string; otpauth_uri: string; recovery_codes: string[] }>(
+      "/api/v1/auth/totp/enroll",
+      {},
+    ),
+  confirmTotpEnrollment: (code: string) =>
+    postJSON<{ totp_enabled: boolean }>("/api/v1/auth/totp/confirm", { code }),
+  requireTotp: (required: boolean) =>
+    postJSON<{ totp_required: boolean }>("/api/v1/auth/totp/require", {
+      required,
+    }),
+  disableTotp: (password: string, code: string) =>
+    postJSON<{ totp_enabled: boolean }>("/api/v1/auth/totp/disable", {
+      password,
+      code,
+    }),
+  findingsDiff: (
+    environmentId: string,
+    from: string,
+    to: string,
+    change = "",
+  ) =>
+    getJSON<{
+      items: {
+        change: string;
+        object_key: string;
+        title: string;
+        severity: string;
+        finding_id?: string;
+      }[];
+    }>(
+      `/api/v1/environments/${environmentId}/findings-diff?from=${from}&to=${to}${change ? `&change=${change}` : ""}`,
+    ),
   logout: async () => {
     try {
       if (sessionActive) await postJSON("/api/v1/auth/logout", {});

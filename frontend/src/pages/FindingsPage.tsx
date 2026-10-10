@@ -1,26 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CoverageBanner } from "../components/CoverageBanner";
-import { PageHeader } from "../components/PageHeader";
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  ErrorBanner,
-  Select,
-  Skeleton,
-  Table,
-} from "../components/ui";
-import {
-  type PageSize,
-  PaginationControls,
-} from "../components/ui/PaginationControls";
+import type { PageSize } from "../components/ui/PaginationControls";
 import { useApp } from "../context/AppContext";
 import { formatError } from "../lib/errors";
-import { downloadCSV, downloadJSON } from "../lib/export";
 import { labels } from "../lib/labels";
-import { fetchAllPages } from "../lib/pagination";
-import { nextSort, type SortState, sortBy } from "../lib/sort";
+import { type SortState, sortBy } from "../lib/sort";
 import { api } from "../services/api";
 import type {
   ActionEvent,
@@ -28,71 +11,11 @@ import type {
   FindingAction,
   FindingEvent,
 } from "../types";
-
-function severityTone(
-  severity: string,
-): "success" | "warning" | "danger" | "neutral" {
-  if (severity === "critical" || severity === "high") {
-    return "danger";
-  }
-  if (severity === "medium") {
-    return "warning";
-  }
-  return "neutral";
-}
-
-function statusTone(
-  status: string,
-): "success" | "warning" | "danger" | "neutral" {
-  if (status === "open") {
-    return "danger";
-  }
-  if (status === "acknowledged") {
-    return "warning";
-  }
-  if (status === "resolved" || status === "suppressed") {
-    return "success";
-  }
-  return "neutral";
-}
-
-const SEVERITY_OPTIONS = [
-  { value: "", label: "Todas as severidades" },
-  { value: "critical", label: "Crítica" },
-  { value: "high", label: "Alta" },
-  { value: "medium", label: "Média" },
-  { value: "low", label: "Baixa" },
-  { value: "info", label: "Informativo" },
-];
-
-const STATUS_OPTIONS = [
-  { value: "", label: "Todos os status" },
-  { value: "open", label: "Aberto" },
-  { value: "acknowledged", label: "Reconhecido" },
-  { value: "resolved", label: "Resolvido" },
-  { value: "suppressed", label: "Suprimido" },
-];
-
-function FilterChip({
-  label,
-  onClear,
-}: {
-  label: string;
-  onClear: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClear}
-      className="inline-flex items-center gap-1 rounded-full border border-slate-600 bg-slate-800/80 px-2.5 py-0.5 text-[11px] text-slate-200 hover:border-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50"
-    >
-      {label}
-      <span className="text-slate-400" aria-hidden>
-        ×
-      </span>
-    </button>
-  );
-}
+import { FindingDetailCard } from "./parts/FindingDetailCard";
+import { FindingsBrowser } from "./parts/FindingsBrowser";
+import { fetchFindingsList } from "./parts/fetchFindingsList";
+import { bulkTriageFindings } from "./parts/findingsBulk";
+import { exportFindingsCSV, exportFindingsJSON } from "./parts/findingsExport";
 
 export function FindingsPage({
   presetCategory,
@@ -191,90 +114,21 @@ export function FindingsPage({
     setBusy(true);
     setError(null);
     try {
-      const filters = {
-        severity: severityFilter || undefined,
-        status: statusFilter || undefined,
-        environment_id: environmentId || undefined,
-        assignee: mine ? "me" : undefined,
-        overdue: overdueOnly ? "1" : undefined,
-      };
-      let count = 0;
-      if (presetCategory) {
-        const categoryFilters = {
-          environment_id: environmentId || undefined,
-          status: statusFilter || undefined,
-        };
-        if (pageSize === "all") {
-          const rows = await fetchAllPages((pageOffset, limit) =>
-            api.findingsCategoryPage(presetCategory, {
-              ...categoryFilters,
-              offset: pageOffset,
-              limit,
-            }),
-          );
-          setItems(rows);
-          setTotal(rows.length);
-          count = rows.length;
-        } else {
-          const res = await api.findingsCategoryPage(presetCategory, {
-            ...categoryFilters,
-            offset,
-            limit: pageSize,
-          });
-          setItems(res.items);
-          setTotal(res.page.total);
-          count = res.page.total;
-        }
-      } else if (pageSize === "all") {
-        const rows = await fetchAllPages((pageOffset, limit) =>
-          api.findingsPage({ ...filters, offset: pageOffset, limit }),
-        );
-        setItems(rows);
-        setTotal(rows.length);
-        count = rows.length;
-      } else {
-        const res = await api.findingsPage({
-          ...filters,
-          offset,
-          limit: pageSize,
-        });
-        setItems(res.items);
-        setTotal(res.page.total);
-        count = res.page.total;
-      }
-      if (count === 0) {
-        const unfiltered = await api.findingsPage({
-          environment_id: environmentId || undefined,
-          offset: 0,
-          limit: 1,
-        });
-        if (unfiltered.page.total > 0) {
-          setEmptyKind("filter");
-        } else {
-          const [runs, connections] = await Promise.all([
-            api.auditRuns({ environment_id: environmentId || undefined }),
-            api.connectionStatus(),
-          ]);
-          const scoped = environmentId
-            ? connections.items.filter(
-                (item) => item.environment_id === environmentId,
-              )
-            : connections.items;
-          const missingDsn =
-            scoped.length > 0 && scoped.every((item) => !item.dsn_configured);
-          const collected = runs.items.some(
-            (run) =>
-              run.status === "success" || run.status === "partial_success",
-          );
-          setEmptyKind(missingDsn ? "dsn" : collected ? "zero" : "never");
-          setCoverageKind(
-            runs.items.some((run) => run.status === "partial_success")
-              ? "partial"
-              : null,
-          );
-        }
-      } else {
-        setEmptyKind(null);
+      const result = await fetchFindingsList({
+        presetCategory,
+        severityFilter,
+        statusFilter,
+        environmentId,
+        mine,
+        overdueOnly,
+        pageSize,
+        offset,
+      });
+      setItems(result.items);
+      setTotal(result.total);
+      setEmptyKind(result.emptyKind);
+      if (result.coverageKind !== undefined) {
+        setCoverageKind(result.coverageKind);
       }
       setSelectedIds(new Set());
     } catch (err: unknown) {
@@ -404,43 +258,16 @@ export function FindingsPage({
     }
   };
 
-  const bulkTriage = async (status: string) => {
-    const ids = Array.from(selectedIds);
-    if (ids.length === 0) {
-      return;
-    }
-    setBulkBusy(true);
-    setError(null);
-    let failed = 0;
-    const updatedMap = new Map<string, Finding>();
-    await Promise.all(
-      ids.map(async (id) => {
-        try {
-          const updated = await api.updateFindingStatus(id, status);
-          updatedMap.set(id, updated);
-        } catch {
-          failed += 1;
-        }
-      }),
+  const bulkTriage = (status: string) => {
+    void bulkTriageFindings(
+      status,
+      selectedIds,
+      setItems,
+      setSelected,
+      setSelectedIds,
+      setBulkBusy,
+      setError,
     );
-    setItems((prev) =>
-      prev.map((f) => {
-        const next = updatedMap.get(f.id);
-        return next ?? f;
-      }),
-    );
-    setSelected((cur) => {
-      if (!cur) {
-        return cur;
-      }
-      return updatedMap.get(cur.id) ?? cur;
-    });
-    setSelectedIds(new Set());
-    setBulkBusy(false);
-    if (failed > 0) {
-      const ok = ids.length - failed;
-      setError(`Triagem em lote parcial: ${ok} ok, ${failed} falha(s).`);
-    }
   };
 
   const toggleOne = (id: string) => {
@@ -481,731 +308,84 @@ export function FindingsPage({
   );
 
   const exportRows = () => {
-    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
-    const rows = sortedItems.map((f) => ({
-      id: f.id,
-      finding_type: f.finding_type,
-      severity: f.severity,
-      status: f.status,
-      title: f.title,
-      summary: f.summary,
-      object_key: f.object_key ?? "",
-      environment_id: f.environment_id ?? "",
-      last_seen_at: f.last_seen_at ?? "",
-    }));
-    downloadCSV(
-      `findings-${stamp}.csv`,
-      [
-        "id",
-        "finding_type",
-        "severity",
-        "status",
-        "title",
-        "summary",
-        "object_key",
-        "environment_id",
-        "last_seen_at",
-      ],
-      rows,
-    );
+    exportFindingsCSV(sortedItems);
   };
 
   const exportJson = () => {
-    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
-    downloadJSON(`findings-${stamp}.json`, {
-      exported_at: new Date().toISOString(),
-      filters: {
-        environment_id: environmentId || null,
-        severity: severityFilter || null,
-        status: statusFilter || null,
-      },
-      total: sortedItems.length,
-      items: sortedItems,
+    exportFindingsJSON(sortedItems, {
+      environment_id: environmentId || null,
+      severity: severityFilter || null,
+      status: statusFilter || null,
     });
   };
 
-  const health = useMemo(() => {
-    const open = items.filter((f) => f.status === "open");
-    const byPrefix = (prefix: string) =>
-      open.filter((f) => f.finding_type.startsWith(prefix)).length;
-    return {
-      open: open.length,
-      cagg: byPrefix("cagg."),
-      policy: byPrefix("policy.") + byPrefix("job."),
-      inactivity: byPrefix("inactivity."),
-    };
-  }, [items]);
-
-  const activeChips: Array<{ key: string; label: string; clear: () => void }> =
-    [];
-  if (severityFilter) {
-    activeChips.push({
-      key: "sev",
-      label: `Severidade: ${labels.severity(severityFilter)}`,
-      clear: () => {
-        setSeverityFilter("");
-        setOffset(0);
-      },
-    });
-  }
-  if (statusFilter) {
-    activeChips.push({
-      key: "status",
-      label: `Status: ${labels.findingStatus(statusFilter)}`,
-      clear: () => {
-        setStatusFilter("");
-        setOffset(0);
-      },
-    });
-  }
-
   const selectionCount = selectedIds.size;
-
   return (
-    <>
-      <PageHeader
-        eyebrow="ACHADOS"
-        title="Achados"
-        description="Sinais de risco em armazenamento, índices, manutenção e segurança. Confirme cada hipótese antes de mudar o banco; o auditor não exclui objetos automaticamente."
-        actions={
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="secondary"
-              onClick={exportRows}
-              disabled={busy || items.length === 0}
-            >
-              Exportar CSV
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={exportJson}
-              disabled={busy || items.length === 0}
-            >
-              Exportar JSON
-            </Button>
-          </div>
-        }
+    <FindingsBrowser
+      exportRows={exportRows}
+      exportJson={exportJson}
+      busy={busy}
+      items={items}
+      mine={mine}
+      setMine={setMine}
+      setOffset={setOffset}
+      overdueOnly={overdueOnly}
+      setOverdueOnly={setOverdueOnly}
+      setSeverityFilter={setSeverityFilter}
+      setStatusFilter={setStatusFilter}
+      severityFilter={severityFilter}
+      statusFilter={statusFilter}
+      load={load}
+      bulkBusy={bulkBusy}
+      selectionCount={selectionCount}
+      bulkTriage={bulkTriage}
+      error={error}
+      coverageKind={coverageKind}
+      emptyKind={emptyKind}
+      setSection={setSection}
+      sortedItems={sortedItems}
+      sort={sort}
+      setSort={setSort}
+      allSelected={allSelected}
+      toggleAll={toggleAll}
+      selectedIds={selectedIds}
+      toggleOne={toggleOne}
+      setSelected={setSelected}
+      openFinding={openFinding}
+      total={total}
+      pageSize={pageSize}
+      offset={offset}
+      setPageSize={setPageSize}
+      environmentId={environmentId}
+    >
+      <FindingDetailCard
+        selected={selected}
+        action={action}
+        openInventory={openInventory}
+        setSection={setSection}
+        actionStatus={actionStatus}
+        setActionStatus={setActionStatus}
+        actionOwner={actionOwner}
+        setActionOwner={setActionOwner}
+        actionJustification={actionJustification}
+        setActionJustification={setActionJustification}
+        actionResult={actionResult}
+        setActionResult={setActionResult}
+        saveAction={saveAction}
+        actionEvents={actionEvents}
+        triage={triage}
+        assignee={assignee}
+        setAssignee={setAssignee}
+        dueAt={dueAt}
+        setDueAt={setDueAt}
+        saveWorkflow={saveWorkflow}
+        suppressionReason={suppressionReason}
+        setSuppressionReason={setSuppressionReason}
+        suppressedUntil={suppressedUntil}
+        setSuppressedUntil={setSuppressedUntil}
+        suppressSelected={suppressSelected}
+        timeline={timeline}
       />
-
-      <div className="mt-8 space-y-6">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Card title={String(health.open)} subtitle="Abertos" />
-          <Card title={String(health.cagg)} subtitle="CAGG" />
-          <Card title={String(health.policy)} subtitle="Policies/Jobs" />
-          <Card title={String(health.inactivity)} subtitle="Inatividade" />
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant={mine ? "primary" : "secondary"}
-            onClick={() => {
-              setMine((value) => !value);
-              setOffset(0);
-            }}
-          >
-            Meus
-          </Button>
-          <Button
-            variant={overdueOnly ? "primary" : "secondary"}
-            onClick={() => {
-              setOverdueOnly((value) => !value);
-              setOffset(0);
-            }}
-          >
-            Atrasados
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setSeverityFilter("critical");
-              setStatusFilter("open");
-              setOffset(0);
-            }}
-          >
-            Críticos
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setStatusFilter("suppressed");
-              setSeverityFilter("");
-              setOffset(0);
-            }}
-          >
-            Suprimidos
-          </Button>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Select
-            label="Severidade"
-            options={SEVERITY_OPTIONS}
-            value={severityFilter}
-            onChange={(e) => {
-              setSeverityFilter(e.target.value);
-              setOffset(0);
-            }}
-          />
-          <Select
-            label="Status"
-            options={STATUS_OPTIONS}
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setOffset(0);
-            }}
-          />
-        </div>
-
-        {activeChips.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {activeChips.map((c) => (
-              <FilterChip key={c.key} label={c.label} onClear={c.clear} />
-            ))}
-          </div>
-        ) : null}
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={() => void load()} disabled={busy || bulkBusy}>
-            Atualizar
-          </Button>
-          {selectionCount > 0 && api.hasRole("auditor") ? (
-            <>
-              <span className="text-xs text-slate-400">
-                {selectionCount} selecionado(s)
-              </span>
-              <Button
-                disabled={bulkBusy}
-                onClick={() => void bulkTriage("acknowledged")}
-              >
-                Reconhecer
-              </Button>
-              <Button
-                disabled={bulkBusy}
-                onClick={() => void bulkTriage("resolved")}
-              >
-                Resolver
-              </Button>
-              <Button
-                variant="secondary"
-                disabled={bulkBusy}
-                onClick={() => void bulkTriage("open")}
-              >
-                Reabrir
-              </Button>
-            </>
-          ) : null}
-          {bulkBusy ? (
-            <span className="text-xs text-slate-400">Aplicando triagem…</span>
-          ) : null}
-        </div>
-
-        {error ? (
-          <ErrorBanner message={error} onRetry={() => void load()} />
-        ) : null}
-        <CoverageBanner kind={coverageKind} />
-        {busy ? <Skeleton className="h-40 w-full" /> : null}
-
-        {!busy && !error && items.length === 0 && emptyKind ? (
-          <EmptyState
-            title={
-              emptyKind === "filter"
-                ? "Nenhum achado neste filtro"
-                : emptyKind === "zero"
-                  ? "Nenhum achado observado"
-                  : emptyKind === "dsn"
-                    ? "Ambiente sem conexão configurada"
-                    : "Nenhuma coleta concluída"
-            }
-            description={
-              emptyKind === "filter"
-                ? "Os filtros atuais não correspondem a nenhum achado. Limpe os filtros para ver os demais."
-                : emptyKind === "zero"
-                  ? "A coleta terminou sem achados. Isso não prova ausência de risco se a cobertura estiver parcial."
-                  : emptyKind === "dsn"
-                    ? "O ambiente não tem DSN configurado. Peça a um operador para concluir a conexão antes de auditar."
-                    : "Ainda não há coleta concluída. Execute uma auditoria para gerar diagnósticos."
-            }
-            action={
-              <div className="flex flex-wrap justify-center gap-2">
-                {emptyKind === "filter" ? (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setSeverityFilter("");
-                      setStatusFilter("");
-                      setMine(false);
-                      setOverdueOnly(false);
-                    }}
-                  >
-                    Limpar filtros
-                  </Button>
-                ) : emptyKind === "dsn" ? (
-                  <Button onClick={() => setSection("Ambientes")}>
-                    Abrir Ambientes
-                  </Button>
-                ) : (
-                  <Button onClick={() => setSection("Execuções")}>
-                    Ir para Execuções
-                  </Button>
-                )}
-              </div>
-            }
-          />
-        ) : null}
-
-        {!busy && sortedItems.length > 0 ? (
-          <>
-            <Table
-              dense
-              pagination={false}
-              virtualize
-              headers={[
-                { id: "sel", label: "Sel." },
-                { id: "type", label: "Tipo", sortable: true },
-                { id: "severity", label: "Severidade", sortable: true },
-                { id: "status", label: "Status", sortable: true },
-                { id: "title", label: "Título", sortable: true },
-                { id: "object", label: "Objeto", sortable: true },
-                { id: "last_seen", label: "Última vez", sortable: true },
-              ]}
-              sortKey={sort?.key}
-              sortDir={sort?.dir}
-              onSort={(id) => {
-                if (id === "sel") {
-                  return;
-                }
-                setSort((prev) => nextSort(prev, id));
-              }}
-            >
-              <tr className="border-t border-slate-800 bg-slate-900/40">
-                <td className="px-3 py-1.5">
-                  <input
-                    type="checkbox"
-                    disabled={!api.hasRole("auditor")}
-                    checked={allSelected}
-                    onChange={toggleAll}
-                    aria-label="Selecionar todos"
-                    className="rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-emerald-400/50"
-                  />
-                </td>
-                <td className="px-3 py-1.5 text-xs text-slate-500" colSpan={6}>
-                  Selecionar todos na página ({sortedItems.length})
-                </td>
-              </tr>
-              {sortedItems.map((f) => (
-                <tr
-                  key={f.id}
-                  tabIndex={0}
-                  aria-label={`Abrir achado: ${f.friendly_meaning ?? f.title}`}
-                  className="cursor-pointer border-t border-slate-800 hover:bg-slate-900/50"
-                  onClick={() => {
-                    setSelected(f);
-                    openFinding(f.id);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setSelected(f);
-                      openFinding(f.id);
-                    }
-                  }}
-                >
-                  <td className="px-3 py-1.5">
-                    <input
-                      type="checkbox"
-                      disabled={!api.hasRole("auditor")}
-                      checked={selectedIds.has(f.id)}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      onChange={() => {
-                        toggleOne(f.id);
-                      }}
-                      aria-label={`Selecionar achado em ${f.object_key || "objeto não informado"}`}
-                      className="rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-emerald-400/50"
-                    />
-                  </td>
-                  <td className="px-3 py-1.5 font-mono text-xs text-slate-300">
-                    {labels.findingCategory(
-                      f.category || f.finding_type.split(".")[0],
-                    )}
-                  </td>
-                  <td className="px-3 py-1.5">
-                    <Badge tone={severityTone(f.severity)}>
-                      {labels.severity(f.severity)}
-                    </Badge>
-                  </td>
-                  <td className="px-3 py-1.5">
-                    <Badge tone={statusTone(f.status)}>
-                      {labels.findingStatus(f.status)}
-                    </Badge>
-                  </td>
-                  <td className="px-3 py-1.5 text-slate-100">{f.title}</td>
-                  <td className="px-3 py-1.5 font-mono text-xs text-slate-400">
-                    {f.object_key || "—"}
-                  </td>
-                  <td className="px-3 py-1.5 text-xs text-slate-400">
-                    {f.last_seen_at
-                      ? new Date(f.last_seen_at).toLocaleString()
-                      : "—"}
-                  </td>
-                </tr>
-              ))}
-            </Table>
-            <PaginationControls
-              total={total}
-              offset={pageSize === "all" ? 0 : offset}
-              size={pageSize}
-              onSizeChange={(next) => {
-                setPageSize(next);
-                setOffset(0);
-              }}
-              onOffsetChange={setOffset}
-              label="Achados"
-            />
-          </>
-        ) : null}
-
-        {selected ? (
-          <Card
-            title={`Detalhe · ${labels.severity(selected.severity)}`}
-            subtitle={action?.plan.meaning ?? selected.title}
-          >
-            <ul className="mt-3 space-y-1 text-sm text-slate-300">
-              <li>Status: {labels.findingStatus(selected.status)}</li>
-              <li>
-                Primeira observação:{" "}
-                {new Date(selected.first_seen_at).toLocaleString()}
-              </li>
-              <li>
-                Última observação:{" "}
-                {new Date(selected.last_seen_at).toLocaleString()}
-              </li>
-              <li>Recorrências: {selected.recurrence_count ?? 0}</li>
-              {selected.resolved_at ? (
-                <li>
-                  Resolução: {new Date(selected.resolved_at).toLocaleString()}
-                </li>
-              ) : null}
-              {selected.superseded_by ? (
-                <li>Substituído por: {selected.superseded_by}</li>
-              ) : null}
-              {selected.suppression_reason ? (
-                <li>
-                  Supressão: {selected.suppression_reason} (até{" "}
-                  {selected.suppressed_until
-                    ? new Date(selected.suppressed_until).toLocaleString()
-                    : "—"}
-                  )
-                </li>
-              ) : null}
-              <li>Objeto: {selected.object_key || "—"}</li>
-              <li>
-                Confiança:{" "}
-                {selected.confidence != null
-                  ? `${Math.round(selected.confidence * 100)}%`
-                  : "não informada"}
-              </li>
-              <li>
-                Próximo passo:{" "}
-                {action?.plan.next ??
-                  "Abra a ação para ver o plano desta regra."}
-              </li>
-              {action?.plan.impact ? (
-                <li>Impacto: {action.plan.impact}</li>
-              ) : null}
-              {action?.plan.effort ? (
-                <li>Esforço: {action.plan.effort}</li>
-              ) : null}
-              {selected.audit_run_id ? (
-                <li>Execução de origem: {selected.audit_run_id}</li>
-              ) : null}
-            </ul>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {selected.object_type === "table" &&
-              selected.database_name &&
-              selected.schema_name &&
-              selected.object_name ? (
-                <Button
-                  variant="secondary"
-                  onClick={() =>
-                    openInventory({
-                      database: selected.database_name ?? "",
-                      schema: selected.schema_name ?? "",
-                      table: selected.object_name ?? "",
-                    })
-                  }
-                >
-                  Abrir objeto no inventário
-                </Button>
-              ) : null}
-              <Button variant="secondary" onClick={() => setSection("Regras")}>
-                Ver catálogo de regras
-              </Button>
-            </div>
-            {action ? (
-              <section
-                className="mt-5 rounded border border-slate-700 bg-slate-950/50 p-4"
-                aria-labelledby="action-heading"
-              >
-                <h3
-                  id="action-heading"
-                  className="text-sm font-semibold text-slate-100"
-                >
-                  Plano de ação sugerido
-                </h3>
-                <p className="mt-2 text-sm text-slate-200">
-                  {action.suggestion}
-                </p>
-                <p className="mt-1 text-xs text-amber-300">
-                  Cobertura: {action.coverage}.{" "}
-                  {action.coverage !== "complete"
-                    ? "Confirme com nova coleta antes de decidir."
-                    : "A sugestão ainda exige validação humana."}
-                </p>
-                <dl className="mt-3 grid gap-2 text-xs text-slate-300 sm:grid-cols-2">
-                  <div>
-                    <dt className="font-semibold">Benefício esperado</dt>
-                    <dd>{action.plan.expected_benefit}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold">Risco</dt>
-                    <dd>{action.plan.risk}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold">Pré-requisitos</dt>
-                    <dd>{action.plan.prerequisites}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold">Como confirmar</dt>
-                    <dd>{action.plan.confirmation}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold">Como validar depois</dt>
-                    <dd>{action.plan.validation}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold">Possível falso positivo</dt>
-                    <dd>{action.plan.false_positive_risk}</dd>
-                  </div>
-                </dl>
-                {action.plan.read_only_query ? (
-                  <details className="mt-3 text-xs text-slate-400">
-                    <summary>
-                      Consulta de confirmação para revisão externa
-                    </summary>
-                    <pre className="mt-2 overflow-auto">
-                      {action.plan.read_only_query}
-                    </pre>
-                  </details>
-                ) : null}
-                <p className="mt-3 text-xs text-slate-400">
-                  O auditor não executa alterações no banco analisado. Registre
-                  o resultado após a ação externa. Para marcar como validada,
-                  registre em Ações assistidas uma medição comparável de uma
-                  coleta completa posterior à mudança.
-                </p>
-                {api.hasRole("auditor") ? (
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    <label className="text-xs text-slate-300">
-                      Estado
-                      <select
-                        value={actionStatus}
-                        onChange={(e) => setActionStatus(e.target.value)}
-                        className="mt-1 block w-full rounded border border-slate-600 bg-slate-900 p-2"
-                      >
-                        <option value="suggested">Sugerida</option>
-                        <option value="in_review">Em análise</option>
-                        <option value="planned">Planejada</option>
-                        <option value="executed_externally">
-                          Executada externamente
-                        </option>
-                        <option value="validated">Validada</option>
-                        <option value="discarded">Descartada</option>
-                      </select>
-                    </label>
-                    <label className="text-xs text-slate-300">
-                      Responsável
-                      <input
-                        value={actionOwner}
-                        onChange={(e) => setActionOwner(e.target.value)}
-                        className="mt-1 block w-full rounded border border-slate-600 bg-slate-900 p-2"
-                      />
-                    </label>
-                    <label className="text-xs text-slate-300">
-                      Justificativa
-                      <textarea
-                        value={actionJustification}
-                        onChange={(e) => setActionJustification(e.target.value)}
-                        className="mt-1 block w-full rounded border border-slate-600 bg-slate-900 p-2"
-                      />
-                    </label>
-                    <label className="text-xs text-slate-300">
-                      Resultado ou evidência posterior
-                      <textarea
-                        value={actionResult}
-                        onChange={(e) => setActionResult(e.target.value)}
-                        className="mt-1 block w-full rounded border border-slate-600 bg-slate-900 p-2"
-                      />
-                    </label>
-                    <Button onClick={() => void saveAction()}>
-                      Salvar decisão
-                    </Button>
-                  </div>
-                ) : null}
-                {actionEvents.length ? (
-                  <details className="mt-3 text-xs text-slate-400">
-                    <summary>Histórico da ação ({actionEvents.length})</summary>
-                    <ul className="mt-2 space-y-1">
-                      {actionEvents.map((event, index) => (
-                        <li key={`${event.recorded_at}-${index}`}>
-                          {new Date(event.recorded_at).toLocaleString()} ·{" "}
-                          {event.actor} · {event.status}{" "}
-                          {event.result ? `· ${event.result}` : ""}
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                ) : null}
-              </section>
-            ) : null}
-            <details className="mt-3 text-xs text-slate-400">
-              <summary className="cursor-pointer">
-                Detalhes técnicos da regra
-              </summary>
-              <p className="mt-2">Título original: {selected.title}</p>
-              <p>
-                Regra: {selected.rule_id || selected.finding_type}{" "}
-                {selected.rule_version ? `(v${selected.rule_version})` : ""}
-              </p>
-              <p>Categoria: {selected.category || "—"}</p>
-              <p>Impacto: {selected.impact || "—"}</p>
-              <p>
-                Risco/ressalva: {selected.risk || "revisão humana necessária"}
-              </p>
-              <p>Resumo original: {selected.summary}</p>
-              <p>Recomendação original: {selected.recommendation || "—"}</p>
-              <p>Validação original: {selected.validation || "—"}</p>
-            </details>
-            {selected.references?.length ? (
-              <div className="mt-3 text-xs text-slate-400">
-                Referências:{" "}
-                {selected.references.map((url) => (
-                  <a
-                    key={url}
-                    className="mr-2 underline"
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    PostgreSQL
-                  </a>
-                ))}
-              </div>
-            ) : null}
-            {selected.finding_type.startsWith("inactivity.") ? (
-              <p className="mt-3 text-xs text-amber-300">
-                Classificação POSSIBLY_INACTIVE — o auditor nunca recomenda
-                DROP, TRUNCATE ou exclusão automática.
-              </p>
-            ) : null}
-            {selected.evidence ? (
-              <pre className="mt-3 overflow-auto rounded bg-slate-950 p-3 text-xs text-slate-400">
-                {JSON.stringify(selected.evidence, null, 2)}
-              </pre>
-            ) : null}
-            {api.hasRole("auditor") ? (
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button
-                  onClick={() => void triage(selected.id, "acknowledged")}
-                >
-                  Reconhecer
-                </Button>
-                <Button onClick={() => void triage(selected.id, "resolved")}>
-                  Resolver
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => void triage(selected.id, "open")}
-                >
-                  Reabrir
-                </Button>
-              </div>
-            ) : null}
-            {api.hasRole("auditor") ? (
-              <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                <input
-                  className="rounded border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                  aria-label="Responsável"
-                  placeholder="Responsável"
-                  value={assignee}
-                  onChange={(event) => setAssignee(event.target.value)}
-                />
-                <input
-                  className="rounded border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                  aria-label="Prazo"
-                  type="datetime-local"
-                  value={dueAt}
-                  onChange={(event) => setDueAt(event.target.value)}
-                />
-                <div className="flex gap-2">
-                  <Button
-                    disabled={!assignee.trim() && !dueAt}
-                    onClick={() => void saveWorkflow()}
-                  >
-                    Salvar prazo
-                  </Button>
-                  {api.currentUser() ? (
-                    <Button
-                      variant="secondary"
-                      onClick={() => setAssignee(api.currentUser())}
-                    >
-                      Eu
-                    </Button>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
-            {api.hasRole("auditor") ? (
-              <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                <input
-                  className="rounded border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                  aria-label="Motivo da supressão"
-                  placeholder="Motivo da supressão"
-                  value={suppressionReason}
-                  onChange={(event) => setSuppressionReason(event.target.value)}
-                />
-                <input
-                  className="rounded border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100"
-                  aria-label="Validade da supressão"
-                  type="datetime-local"
-                  value={suppressedUntil}
-                  onChange={(event) => setSuppressedUntil(event.target.value)}
-                />
-                <Button
-                  disabled={!suppressionReason.trim() || !suppressedUntil}
-                  onClick={() => void suppressSelected()}
-                >
-                  Suprimir com validade
-                </Button>
-              </div>
-            ) : null}
-            <h3 className="mt-5 text-sm font-semibold text-slate-200">
-              Linha do tempo
-            </h3>
-            <ul className="mt-2 space-y-1 text-xs text-slate-400">
-              {timeline.map((event) => (
-                <li key={event.id}>
-                  {new Date(event.recorded_at).toLocaleString()} ·{" "}
-                  {event.event_type}
-                  {event.reason ? ` — ${event.reason}` : ""}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        ) : null}
-      </div>
-    </>
+    </FindingsBrowser>
   );
 }

@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/osmendes/db-auditor/internal/collectors/mongodb"
-	"github.com/osmendes/db-auditor/internal/collectors/postgres"
+	"github.com/mayconmendes-qc/db-auditor/internal/collectors/mongodb"
+	"github.com/mayconmendes-qc/db-auditor/internal/collectors/postgres"
 )
 
 // NewMongoRegistry maps collection and index metadata to the existing bounded

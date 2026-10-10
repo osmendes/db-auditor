@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/osmendes/db-auditor/internal/quality"
+	"github.com/mayconmendes-qc/db-auditor/internal/quality"
 )
 
 var ErrQualityNotFound = errors.New("quality issue not found in environment")

@@ -1031,47 +1031,9 @@ export interface CompareResult {
   objects: ObjectDiff[];
 }
 
-export interface Finding {
-  id: string;
-  environment_id: string;
-  audit_run_id?: string | null;
-  finding_type: string;
-  rule_id?: string;
-  rule_version?: string;
-  category?: string;
-  confidence?: number;
-  impact?: string;
-  risk?: string;
-  recommendation?: string;
-  friendly_meaning?: string;
-  friendly_next?: string;
-  validation?: string;
-  references?: string[];
-  rule_parameters?: Record<string, unknown>;
-  severity: string;
-  status: string;
-  title: string;
-  summary: string;
-  object_type?: string;
-  object_key?: string;
-  database_name?: string;
-  schema_name?: string;
-  object_name?: string;
-  evidence?: Record<string, unknown>;
-  dedup_key: string;
-  first_seen_at: string;
-  last_seen_at: string;
-  resolved_at?: string | null;
-  recurrence_count?: number;
-  suppression_reason?: string | null;
-  suppressed_until?: string | null;
-  assignee?: string;
-  due_at?: string | null;
-  superseded_by?: string | null;
-  notes?: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import type { Finding, FindingChange } from "./openapi";
+
+export type { Finding, FindingChange };
 
 export interface AnalyzeResult {
   produced: number;

@@ -2,10 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
-	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/jackc/pgx/v5"
+	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
 )
 
 // LoadSnapshotFacts loads every analyzer input from one explicitly selected run.
@@ -237,5 +239,47 @@ FROM workload_snapshot WHERE environment_id=$1::uuid AND audit_run_id=$2::uuid`,
 	if err = s.enrichP2Facts(ctx, environmentID, auditRunID, &f); err != nil {
 		return f, err
 	}
+	if err = s.loadMaintenanceContext(ctx, environmentID, auditRunID, &f); err != nil {
+		return f, err
+	}
 	return f, nil
+}
+
+func (s *Store) loadMaintenanceContext(ctx context.Context, environmentID, auditRunID string, f *analyzer.SnapshotFacts) error {
+	current, err := s.GetSnapshotCompleteness(ctx, environmentID, auditRunID)
+	if err != nil {
+		return err
+	}
+	f.CollectionComplete = current != nil && current.Completeness == "complete"
+	var started time.Time
+	err = s.pool.QueryRow(ctx, `SELECT started_at FROM audit_run WHERE id=$1::uuid`, auditRunID).Scan(&started)
+	if err != nil {
+		return err
+	}
+	var prior string
+	err = s.pool.QueryRow(ctx, `SELECT id::text FROM audit_run WHERE environment_id=$1::uuid AND status='success' AND id<>$2::uuid AND started_at<$3 ORDER BY started_at DESC LIMIT 1`, environmentID, auditRunID, started).Scan(&prior)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	previous, err := s.GetSnapshotCompleteness(ctx, environmentID, prior)
+	if err != nil {
+		return err
+	}
+	f.PreviousComplete = previous != nil && previous.Completeness == "complete"
+	rows, err := s.pool.Query(ctx, `SELECT database_name,schema_name,table_name,total_size_bytes,collected_at,n_tup_del,stats_reset FROM table_snapshot WHERE environment_id=$1::uuid AND audit_run_id=$2::uuid`, environmentID, prior)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var t analyzer.TableFact
+		if err = rows.Scan(&t.Database, &t.Schema, &t.Name, &t.SizeBytes, &t.CollectedAt, &t.NTupDel, &t.StatsReset); err != nil {
+			return err
+		}
+		f.PreviousTables = append(f.PreviousTables, t)
+	}
+	return rows.Err()
 }

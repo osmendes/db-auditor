@@ -119,6 +119,21 @@ func (s *Store) EnsureIdentitySchema(ctx context.Context) error {
 		)`,
 		`CREATE INDEX IF NOT EXISTS auditor_operation_log_created_idx ON auditor_operation_log (created_at DESC)`,
 		`CREATE INDEX IF NOT EXISTS auditor_operation_log_env_created_idx ON auditor_operation_log (environment_id, created_at DESC)`,
+		`ALTER TABLE auditor_user ADD COLUMN IF NOT EXISTS totp_enabled boolean NOT NULL DEFAULT false`,
+		`ALTER TABLE auditor_user ADD COLUMN IF NOT EXISTS totp_required boolean NOT NULL DEFAULT false`,
+		`ALTER TABLE auditor_user ADD COLUMN IF NOT EXISTS totp_secret bytea`,
+		`CREATE TABLE IF NOT EXISTS auditor_recovery_code (
+		  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+		  user_id uuid NOT NULL REFERENCES auditor_user(id) ON DELETE CASCADE,
+		  code_hash bytea NOT NULL,
+		  used_at timestamptz
+		)`,
+		`CREATE TABLE IF NOT EXISTS auditor_mfa_challenge (
+		  token_hash bytea PRIMARY KEY,
+		  user_id uuid NOT NULL REFERENCES auditor_user(id) ON DELETE CASCADE,
+		  expires_at timestamptz NOT NULL,
+		  created_at timestamptz NOT NULL DEFAULT now()
+		)`,
 	}
 	for _, statement := range statements {
 		if _, err := s.pool.Exec(ctx, statement); err != nil {
@@ -156,6 +171,19 @@ func (s *Store) CreateAuditorUser(ctx context.Context, username, passwordHash, r
 		}
 	}
 	return user, tx.Commit(ctx)
+}
+
+func (s *Store) FindAuditorUserByID(ctx context.Context, id string) (*AuditorUser, error) {
+	user := &AuditorUser{}
+	err := s.pool.QueryRow(ctx, `SELECT id::text,username,role,active,password_hash FROM auditor_user WHERE id=$1::uuid`, id).
+		Scan(&user.ID, &user.Username, &user.Role, &user.Active, &user.PasswordHash)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return s.loadAuditorEnvironments(ctx, user)
 }
 
 func (s *Store) FindAuditorUser(ctx context.Context, username string) (*AuditorUser, error) {
