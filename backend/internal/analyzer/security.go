@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
+	"unicode"
 )
 
 // SecurityAnalyzer flags SECURITY DEFINER functions and broad privileges for human review.
@@ -124,7 +126,7 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 		}
 		key := fmt.Sprintf("%s.role:%s", role.Database, role.RoleName)
 		if at, ok := powerful[key]; ok {
-			mergePowerfulRole(&out[at], role)
+			mergePowerfulRole(&out[at], role, facts.ServerVersion)
 			continue
 		}
 		powerful[key] = len(out)
@@ -150,7 +152,7 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 			},
 			DedupKey: DedupKey("security.powerful_role", key, title),
 		}
-		mergePowerfulRole(&f, role)
+		mergePowerfulRole(&f, role, facts.ServerVersion)
 		out = append(out, f)
 	}
 
@@ -202,18 +204,33 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 	return out, nil
 }
 
-// powerfulPrivilegeHigh lists inherited privileges that rate the role high;
-// CREATEROLE alone (direct or inherited) is medium: since PostgreSQL 16 it
-// only administers the roles it creates, but it still creates and manages
-// roles.
+// powerfulPrivilegeHigh lists inherited privileges that rate the role high.
+// CREATEROLE alone (direct or inherited) is medium on PostgreSQL 16+, where it
+// only administers the roles it creates; before 16 it grants itself any
+// non-superuser role (pg_execute_server_program included), so it is high
+// there (see createRoleGrantsAnyRole).
 var powerfulPrivilegeHigh = map[string]bool{
 	"superuser": true, "bypass_rls": true, "replication": true,
-	"pg_execute_server_program": true, "pg_read_server_files": true, "pg_write_server_files": true, "pg_write_all_data": true,
+	"pg_execute_server_program": true, "pg_read_server_files": true, "pg_write_server_files": true,
+	"pg_read_all_data": true, "pg_write_all_data": true,
+}
+
+// createRoleGrantsAnyRole reports whether serverVersion (the collected
+// server_version, such as "15.8" or "16.4 (Debian ...)") is older than
+// PostgreSQL 16. An unknown version is not assumed old.
+func createRoleGrantsAnyRole(serverVersion string) bool {
+	digits := strings.TrimLeftFunc(serverVersion, unicode.IsSpace)
+	end := strings.IndexFunc(digits, func(r rune) bool { return !unicode.IsDigit(r) })
+	if end >= 0 {
+		digits = digits[:end]
+	}
+	major, err := strconv.Atoi(digits)
+	return err == nil && major > 0 && major < 16
 }
 
 // mergePowerfulRole folds one source of a role's power into its finding:
 // own attributes, and inherited ones with the role they come from (#126).
-func mergePowerfulRole(f *Finding, role RoleFact) {
+func mergePowerfulRole(f *Finding, role RoleFact, serverVersion string) {
 	evidence := f.Evidence
 	for name, set := range map[string]bool{"superuser": role.Superuser, "bypass_rls": role.BypassRLS, "replication": role.Replication, "createrole": role.CreateRole, "login": role.Login} {
 		if set {
@@ -248,6 +265,10 @@ func mergePowerfulRole(f *Finding, role RoleFact) {
 		high = high || powerfulPrivilegeHigh[item["privilege"]]
 	}
 	sort.Strings(sources)
+	if createRoleGrantsAnyRole(serverVersion) && (evidence["createrole"] == true || hasPrivilege(inherited, "createrole")) {
+		evidence["createrole_grants_any_role"] = true
+		high = true
+	}
 	if len(inherited) > 0 {
 		evidence["inherited"] = inherited
 		evidence["source_roles"] = sources
@@ -256,4 +277,13 @@ func mergePowerfulRole(f *Finding, role RoleFact) {
 	if high {
 		f.Severity = SeverityHigh
 	}
+}
+
+func hasPrivilege(inherited []map[string]string, privilege string) bool {
+	for _, item := range inherited {
+		if item["privilege"] == privilege {
+			return true
+		}
+	}
+	return false
 }

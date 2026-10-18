@@ -362,3 +362,41 @@ func TestPowerfulRoleInheritedPrivileges(t *testing.T) {
 		t.Fatalf("CREATEROLE alone must be medium: %s", hr.Severity)
 	}
 }
+
+// #126 (R3): before PostgreSQL 16 CREATEROLE grants itself any non-superuser
+// role, so it is high there; on 16+ and with an unknown version it stays
+// medium.
+func TestPowerfulRoleCreateRoleSeverityByVersion(t *testing.T) {
+	for version, want := range map[string]Severity{
+		"15.8":                      SeverityHigh,
+		"9.6.24":                    SeverityHigh,
+		" 14.2 (Debian 14.2-1)":     SeverityHigh,
+		"16.4 (Debian 16.4-1.pgdg)": SeverityMedium,
+		"18.0":                      SeverityMedium,
+		"":                          SeverityMedium,
+		"devel":                     SeverityMedium,
+		"0":                         SeverityMedium,
+	} {
+		for _, role := range []RoleFact{
+			{Database: "db", RoleName: "cr", Login: true, CreateRole: true},
+			{Database: "db", RoleName: "cr", Login: true, Inherited: []string{"createrole:g_cr"}},
+		} {
+			out, err := SecurityAnalyzer{}.Analyze(context.Background(), SnapshotFacts{ServerVersion: version, Roles: []RoleFact{role}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(out) != 1 || out[0].Severity != want {
+				t.Fatalf("version %q, role %+v: %+v, want %s", version, role, out, want)
+			}
+			if pre16 := out[0].Evidence["createrole_grants_any_role"] == true; pre16 != (want == SeverityHigh) {
+				t.Fatalf("version %q: createrole_grants_any_role=%v", version, pre16)
+			}
+		}
+	}
+	out, _ := SecurityAnalyzer{}.Analyze(context.Background(), SnapshotFacts{ServerVersion: "15.8", Roles: []RoleFact{
+		{Database: "db", RoleName: "reader", Login: true, Inherited: []string{"pg_read_all_data:pg_read_all_data"}},
+	}})
+	if len(out) != 1 || out[0].Severity != SeverityHigh || out[0].Evidence["createrole_grants_any_role"] != nil {
+		t.Fatalf("pg_read_all_data must be high and not a CREATEROLE case: %+v", out)
+	}
+}
