@@ -798,6 +798,21 @@ type ReportJob struct {
 	ArchitectureDecisions       []byte
 	ReportFormat                string
 	ArchitectureTemplateVersion string
+	LimitNote                   string
+}
+
+type RetentionEvidence struct {
+	ID               pgtype.UUID
+	Kind             string
+	EnvironmentLabel string
+	ArtifactSha256   string
+	Succeeded        bool
+	RtoSeconds       pgtype.Int4
+	Integrity        []byte
+	Note             string
+	RecordedBy       string
+	PerformedAt      pgtype.Timestamptz
+	RecordedAt       pgtype.Timestamptz
 }
 
 type RetentionPolicy struct {
@@ -807,6 +822,9 @@ type RetentionPolicy struct {
 	OwnerName              string
 	EncryptionAtRest       string
 	UpdatedAt              pgtype.Timestamptz
+	ApprovedBy             string
+	ApprovedAt             pgtype.Timestamptz
+	ArchiveNote            string
 }
 
 type RlsPolicySnapshot struct {
