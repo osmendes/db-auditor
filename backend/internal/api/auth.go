@@ -310,7 +310,7 @@ func authMiddleware(next http.Handler, store AuthStore) http.Handler {
 		}
 		env, allowed := authorizeRequest(r, user, store)
 		if !allowed {
-			if err := store.LogAuditorOperation(r.Context(), user, r.Method+" "+r.URL.Path, env, "", "denied"); err != nil {
+			if err := store.LogAuditorOperation(r.Context(), user, r.Method+" "+r.URL.Path, auditEnvironment(env), "", "denied"); err != nil {
 				slog.Warn("could not write authorization log", "error", err)
 			}
 			writeError(w, http.StatusForbidden, CodeUnavailable, "Acesso não autorizado.")
@@ -327,7 +327,7 @@ func authMiddleware(next http.Handler, store AuthStore) http.Handler {
 		if recorder.status >= 400 {
 			result = "failed"
 		}
-		if err := store.LogAuditorOperation(r.Context(), user, r.Method+" "+r.URL.Path, env, "", result); err != nil {
+		if err := store.LogAuditorOperation(r.Context(), user, r.Method+" "+r.URL.Path, auditEnvironment(env), "", result); err != nil {
 			slog.Warn("could not write operation log", "error", err)
 		}
 	})
@@ -426,6 +426,16 @@ func environmentFromRequest(r *http.Request, parts []string) string {
 		return parts[1]
 	}
 	return r.URL.Query().Get("environment_id")
+}
+
+// auditEnvironment keeps the operation log writable: a malformed
+// environment_id (e.g. "*", "-1", "B,A") is recorded as no environment
+// instead of failing the uuid cast and losing the audit row.
+func auditEnvironment(env string) string {
+	if !uuidPattern.MatchString(env) {
+		return ""
+	}
+	return env
 }
 
 func hasEnvironment(user *repository.AuditorUser, id string) bool {

@@ -3,8 +3,11 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
+	"sync"
 	"testing"
 
 	"github.com/osmendes/db-auditor/internal/repository"
@@ -111,6 +114,101 @@ func TestSearchAuthorizationRequiresHeldEnvironment(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, target, nil)
 		if _, ok := authorizeRequest(req, viewer, nil); ok != want {
 			t.Errorf("%s: authorized=%v want %v", target, ok, want)
+		}
+	}
+	// A user holding no environment sees nothing, never everything.
+	for _, user := range []*repository.AuditorUser{
+		{Role: "viewer", Environments: nil},
+		{Role: "viewer", Environments: []string{}},
+		{Role: "auditor", Environments: nil},
+	} {
+		for _, target := range []string{
+			"/api/v1/search?q=orders&environment_id=" + searchEnv,
+			"/api/v1/search?q=orders&environment_id=" + other,
+			"/api/v1/search?q=orders",
+		} {
+			req := httptest.NewRequest(http.MethodGet, target, nil)
+			if _, ok := authorizeRequest(req, user, nil); ok {
+				t.Errorf("%s role with no environments authorized for %s", user.Role, target)
+			}
+		}
+	}
+}
+
+type recordingAuthStore struct {
+	fakeAuthStore
+	mu   sync.Mutex
+	logs []loggedOperation
+}
+
+type loggedOperation struct{ action, env, result string }
+
+func (s *recordingAuthStore) LogAuditorOperation(_ context.Context, _ *repository.AuditorUser, action, env, _, result string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	// Mirror the auditor_operation_log uuid column: a non-uuid value fails the insert.
+	if env != "" && !uuidPattern.MatchString(env) {
+		return errors.New(`invalid input syntax for type uuid: "` + env + `"`)
+	}
+	s.logs = append(s.logs, loggedOperation{action, env, result})
+	return nil
+}
+
+func searchThroughMiddleware(t *testing.T, store AuthStore, target string) int {
+	t.Helper()
+	mux := http.NewServeMux()
+	registerSearchRoutes(mux, &fakeSearchStore{})
+	req := httptest.NewRequest(http.MethodGet, target, nil)
+	req.Header.Set("Authorization", "Bearer test-token")
+	rec := httptest.NewRecorder()
+	authMiddleware(mux, store).ServeHTTP(rec, req)
+	return rec.Code
+}
+
+func TestSearchMiddlewareDeniesUserWithoutEnvironments(t *testing.T) {
+	store := &recordingAuthStore{fakeAuthStore: fakeAuthStore{user: &repository.AuditorUser{ID: "u1", Username: "noenv", Role: "viewer", Active: true, Environments: nil}}}
+	for _, target := range []string{
+		"/api/v1/search?q=orders&environment_id=" + searchEnv,
+		"/api/v1/search?q=orders",
+	} {
+		if code := searchThroughMiddleware(t, store, target); code != http.StatusForbidden {
+			t.Errorf("%s: status %d, want 403", target, code)
+		}
+	}
+	if len(store.logs) != 2 || store.logs[0].result != "denied" || store.logs[0].env != searchEnv || store.logs[1].env != "" {
+		t.Fatalf("denials must be audited: %+v", store.logs)
+	}
+	held := &recordingAuthStore{fakeAuthStore: fakeAuthStore{user: &repository.AuditorUser{ID: "u2", Username: "viewer", Role: "viewer", Active: true, Environments: []string{searchEnv}}}}
+	if code := searchThroughMiddleware(t, held, "/api/v1/search?q=orders&environment_id="+searchEnv); code != http.StatusOK {
+		t.Fatalf("viewer holding the environment: %d", code)
+	}
+}
+
+func TestDeniedSearchWithMalformedEnvironmentIsAudited(t *testing.T) {
+	user := &repository.AuditorUser{ID: "u1", Username: "viewer", Role: "viewer", Active: true, Environments: []string{searchEnv}}
+	malformed := []string{"*", "-1", searchEnv + ",22222222-2222-2222-2222-222222222222", "%27%20OR%201%3D1", searchEnv + "x"}
+	for _, env := range malformed {
+		store := &recordingAuthStore{fakeAuthStore: fakeAuthStore{user: user}}
+		if code := searchThroughMiddleware(t, store, "/api/v1/search?q=orders&environment_id="+env); code != http.StatusForbidden {
+			t.Errorf("env %q: status %d, want 403", env, code)
+		}
+		if len(store.logs) != 1 || store.logs[0].result != "denied" || store.logs[0].env != "" || store.logs[0].action != "GET /api/v1/search" {
+			t.Errorf("env %q: denial not audited: %+v", env, store.logs)
+		}
+	}
+	// An operator passes authorization; the handler rejects the malformed value
+	// and the outcome is still written to the log.
+	op := &recordingAuthStore{fakeAuthStore: fakeAuthStore{user: &repository.AuditorUser{ID: "op", Username: "op", Role: "operator", Active: true}}}
+	if code := searchThroughMiddleware(t, op, "/api/v1/search?q=orders&environment_id=*"); code != http.StatusBadRequest {
+		t.Fatalf("operator malformed env: %d", code)
+	}
+}
+
+func TestAuditEnvironment(t *testing.T) {
+	upper := strings.ToUpper(searchEnv)
+	for in, want := range map[string]string{searchEnv: searchEnv, upper: upper, "": "", "*": "", "-1": "", searchEnv + ",x": ""} {
+		if got := auditEnvironment(in); got != want {
+			t.Errorf("auditEnvironment(%q)=%q want %q", in, got, want)
 		}
 	}
 }

@@ -57,6 +57,15 @@ func TestGlobalSearchIntegration(t *testing.T) {
 	table(envA, latestA, token+"_orders")
 	table(envA, runningA, token+"_running_only")
 	table(envB, latestB, token+"_orders")
+	// Environment B carries the token in its run version and name, so a missing
+	// run environment filter would surface B's run for a search in A.
+	exec(`UPDATE audit_run SET service_version=$2 WHERE id=$1`, latestB, token+"-svc")
+	exec(`UPDATE audit_environment SET name=$2 WHERE id=$1`, envB, token+"-env-b")
+	// B also has more matching tables than one group LIMIT, sorting before A's
+	// table: the environment filter must apply before the per-kind LIMIT.
+	for i := 0; i < SearchMaxLimit+5; i++ {
+		table(envB, latestB, token+"_a"+string(rune('a'+i/10))+string(rune('0'+i%10)))
+	}
 	exec(`INSERT INTO index_snapshot(audit_run_id,environment_id,database_name,schema_name,table_name,index_name,index_definition) VALUES($1,$2,'appdb','public',$3,$4,'CREATE INDEX')`, latestA, envA, token+"_orders", token+"_orders_idx")
 	exec(`INSERT INTO view_snapshot(audit_run_id,environment_id,database_name,schema_name,view_name,relkind,view_definition) VALUES($1,$2,'appdb','public',$3,'v','SELECT 1')`, latestA, envA, token+"_v")
 	exec(`INSERT INTO function_snapshot(audit_run_id,environment_id,database_name,schema_name,function_name,identity_arguments) VALUES($1,$2,'appdb','public',$3,'integer')`, latestA, envA, token+"_fn")
@@ -68,6 +77,48 @@ func TestGlobalSearchIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Runs of B never resolve from A: full UUID, 8-char prefix or text.
+	for _, q := range []string{latestB, strings.ToUpper(latestB), latestB[:8], latestB[:13], token + "-svc", token + "-env-b"} {
+		got, err := s.Search(ctx, envA, q, SearchMaxLimit)
+		if err != nil {
+			t.Fatal(err)
+		}
+		runs := 0
+		for _, h := range got.Items {
+			if h.Kind == "run" {
+				runs++
+				if h.EnvironmentID != envA {
+					t.Fatalf("query %q in A returned run of %s: %+v", q, h.EnvironmentID, h)
+				}
+			}
+			if h.ID == latestB || h.AuditRunID == latestB || strings.Contains(h.Subtitle, token+"-env-b") {
+				t.Fatalf("query %q in A leaked B's run: %+v", q, h)
+			}
+		}
+		if q == latestB || q == strings.ToUpper(latestB) || q == latestB[:8] {
+			if len(got.Items) != 0 || got.Exact {
+				t.Fatalf("query %q in A must return 0 items, got %+v", q, got.Items)
+			}
+		}
+		if runs != 0 {
+			t.Fatalf("query %q in A returned %d runs", q, runs)
+		}
+	}
+	// Positive control: the same lookups in B do find the run, so the
+	// assertions above fail if the environment filter is removed.
+	for _, q := range []string{latestB, latestB[:8], token + "-svc"} {
+		got, err := s.Search(ctx, envB, q, SearchMaxLimit)
+		if err != nil {
+			t.Fatal(err)
+		}
+		found := false
+		for _, h := range got.Items {
+			found = found || (h.Kind == "run" && h.ID == latestB)
+		}
+		if !found {
+			t.Fatalf("query %q in B must find B's run: %+v", q, got.Items)
+		}
+	}
 	res, err := s.Search(ctx, envA, token, 20)
 	if err != nil {
 		t.Fatal(err)
@@ -125,6 +176,22 @@ func TestGlobalSearchIntegration(t *testing.T) {
 	}
 	if !foundRun {
 		t.Fatalf("run id prefix: %+v", prefix.Items)
+	}
+
+	// Inventory: A's table survives B's larger set of matches.
+	crowded, err := s.Search(ctx, envA, token, SearchMaxLimit)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ownTable := false
+	for _, h := range crowded.Items {
+		if h.Kind == "inventory" && h.EnvironmentID != envA {
+			t.Fatalf("inventory leaked: %+v", h)
+		}
+		ownTable = ownTable || (h.Kind == "inventory" && h.ObjectKind == "tables" && h.Name == token+"_orders")
+	}
+	if !ownTable {
+		t.Fatalf("environment filter must apply before the per-kind LIMIT: %+v", crowded.Items)
 	}
 
 	global, err := s.Search(ctx, "", token, 20)
