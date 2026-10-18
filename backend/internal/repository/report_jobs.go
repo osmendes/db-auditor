@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/osmendes/db-auditor/internal/config"
 	"github.com/osmendes/db-auditor/internal/report"
 )
 
@@ -241,7 +242,7 @@ ON CONFLICT(report_job_id) DO UPDATE SET content=EXCLUDED.content,sha256=EXCLUDE
 }
 
 func (s *Store) FailReportJob(ctx context.Context, id string, problem error) error {
-	msg := problem.Error()
+	msg := config.SanitizeError(problem)
 	if len(msg) > 500 {
 		msg = msg[:500]
 	}

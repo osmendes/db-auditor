@@ -83,7 +83,7 @@ func Run(ctx context.Context, dsn string, request Request) (Result, error) {
 	cfg.RuntimeParams["default_transaction_read_only"] = "on"
 	conn, err := pgx.ConnectConfig(ctx, cfg)
 	if err != nil {
-		return result, fmt.Errorf("falha na conexão: %s", config.SanitizeError(err))
+		return result, fmt.Errorf("falha na conexão: %s", config.RedactSecrets(err.Error(), dsn))
 	}
 	defer func() {
 		closeCtx, closeCancel := context.WithTimeout(context.Background(), 2*time.Second)

@@ -54,7 +54,7 @@ func listConnectionStatus(store InventoryStore, targets map[string]string) http.
 			if err != nil {
 				cancel()
 				item.Reachable = false
-				item.Error = config.SanitizeDSN(err.Error())
+				item.Error = config.RedactSecrets(err.Error(), dsn)
 				out = append(out, item)
 				continue
 			}

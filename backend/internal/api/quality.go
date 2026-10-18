@@ -64,7 +64,7 @@ func registerQualityRoutes(mux *http.ServeMux, store InventoryStore, targets map
 		}
 		result, err := quality.Run(r.Context(), dsn, request)
 		if err != nil {
-			writeError(w, 422, CodeValidation, "Diagnóstico não concluído: "+err.Error())
+			writeError(w, 422, CodeValidation, "Diagnóstico não concluído: "+config.RedactSecrets(err.Error(), dsn))
 			return
 		}
 		actor := "local"

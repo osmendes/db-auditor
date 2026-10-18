@@ -16,7 +16,7 @@ import (
 func ConnectReadOnly(ctx context.Context, dsn string) (*pgx.Conn, error) {
 	cfg, err := pgx.ParseConfig(dsn)
 	if err != nil {
-		return nil, fmt.Errorf("target config: %s", config.SanitizeError(err))
+		return nil, fmt.Errorf("target config: %s", config.RedactSecrets(err.Error(), dsn))
 	}
 	if cfg.RuntimeParams == nil {
 		cfg.RuntimeParams = map[string]string{}
@@ -34,11 +34,11 @@ func ConnectReadOnly(ctx context.Context, dsn string) (*pgx.Conn, error) {
 	cfg.RuntimeParams["lock_timeout"] = "3000"
 	conn, err := pgx.ConnectConfig(ctx, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("target connect: %s", config.SanitizeError(err))
+		return nil, fmt.Errorf("target connect: %s", config.RedactSecrets(err.Error(), dsn))
 	}
 	fail := func(err error) (*pgx.Conn, error) { _ = conn.Close(context.WithoutCancel(ctx)); return nil, err }
 	if _, err = conn.Exec(ctx, "BEGIN READ ONLY"); err != nil {
-		return fail(fmt.Errorf("target read-only transaction: %s", config.SanitizeError(err)))
+		return fail(fmt.Errorf("target read-only transaction: %s", config.RedactSecrets(err.Error(), dsn)))
 	}
 	if _, err = conn.Exec(ctx, fmt.Sprintf("SET LOCAL statement_timeout = %d", statementTimeout.Milliseconds())); err != nil {
 		return fail(err)
@@ -60,7 +60,7 @@ func ConnectReadOnly(ctx context.Context, dsn string) (*pgx.Conn, error) {
  OR EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname <> 'information_schema' AND c.relkind IN ('r','p','f') AND has_table_privilege(current_user,c.oid,'INSERT,UPDATE,DELETE,TRUNCATE'))
  FROM pg_roles r WHERE r.rolname=current_user`
 	if err = conn.QueryRow(ctx, privilegeSQL).Scan(&privileged); err != nil {
-		return fail(fmt.Errorf("target privilege preflight: %s", config.SanitizeError(err)))
+		return fail(fmt.Errorf("target privilege preflight: %s", config.RedactSecrets(err.Error(), dsn)))
 	}
 	if privileged {
 		return fail(fmt.Errorf("target role has effective write or administration privilege"))

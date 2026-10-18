@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/osmendes/db-auditor/internal/config"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -43,7 +44,17 @@ type Catalog struct {
 
 // Inspect opens a direct, TLS-verified connection configured by the operator.
 // The only server operations are ping, listCollections, collStats and listIndexes.
+// Every returned error is redacted against uri, so the password never reaches
+// the run record, the API or the logs.
 func Inspect(ctx context.Context, uri, database string) (Catalog, error) {
+	catalog, err := inspect(ctx, uri, database)
+	if err != nil {
+		return Catalog{}, config.RedactError(err, uri)
+	}
+	return catalog, nil
+}
+
+func inspect(ctx context.Context, uri, database string) (Catalog, error) {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Minute)
 	defer cancel()
 	client, err := mongo.Connect(options.Client().ApplyURI(uri).
