@@ -45,6 +45,8 @@ export function DashboardPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
+    const { signal } = controller;
     (async () => {
       setLoading(true);
       setError(null);
@@ -59,11 +61,11 @@ export function DashboardPage() {
           granularity: historyGranularity,
         };
         const [k, s, t, j, c] = await Promise.all([
-          api.analyticsKpis(params),
-          api.analyticsStorage(historyParams),
-          api.analyticsFindingsTrends(historyParams),
-          api.analyticsJobHealth(params),
-          api.connectionStatus(),
+          api.analyticsKpis(params, signal),
+          api.analyticsStorage(historyParams, signal),
+          api.analyticsFindingsTrends(historyParams, signal),
+          api.analyticsJobHealth(params, signal),
+          api.connectionStatus(signal),
         ]);
         if (!cancelled) {
           setKpis(k);
@@ -71,21 +73,27 @@ export function DashboardPage() {
           setTrends(t);
           setJobs(j);
           setConnections(c.items);
-          const queue = await api.findings({
-            environment_id: environmentId ?? undefined,
-            status: "open",
-            limit: 5,
-          });
+          const queue = await api.findings(
+            {
+              environment_id: environmentId ?? undefined,
+              status: "open",
+              limit: 5,
+            },
+            signal,
+          );
           if (!cancelled) setPriorities(queue.items.slice(0, 5));
         }
         if (environmentId) {
-          const runs = await api.auditRuns({
-            environment_id: environmentId,
-            status: "success",
-          });
+          const runs = await api.auditRuns(
+            {
+              environment_id: environmentId,
+              status: "success",
+            },
+            signal,
+          );
           const run = runs.items[0];
           if (run && !cancelled) {
-            const agg = await api.scopeScores(environmentId, run.id);
+            const agg = await api.scopeScores(environmentId, run.id, signal);
             if (!cancelled) setScores(agg.items);
           } else if (!cancelled) {
             setScores([]);
@@ -110,6 +118,7 @@ export function DashboardPage() {
     })();
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [environmentId, reloadKey, historyDays, historyGranularity]);
 

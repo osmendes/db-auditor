@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Sheet } from "../components/ui";
 import type { PageSize } from "../components/ui/PaginationControls";
 import { useApp } from "../context/AppContext";
@@ -59,8 +59,9 @@ export function FindingsPage() {
       return;
     }
     let active = true;
+    const controller = new AbortController();
     void api
-      .findingTimeline(selected.id)
+      .findingTimeline(selected.id, controller.signal)
       .then((result) => {
         if (active) setTimeline(result.items);
       })
@@ -69,6 +70,7 @@ export function FindingsPage() {
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [selected?.id]);
   useEffect(() => {
@@ -78,9 +80,10 @@ export function FindingsPage() {
       return;
     }
     let active = true;
+    const controller = new AbortController();
     void Promise.all([
-      api.findingAction(selected.id),
-      api.findingActionEvents(selected.id),
+      api.findingAction(selected.id, controller.signal),
+      api.findingActionEvents(selected.id, controller.signal),
     ])
       .then(([item, events]) => {
         if (!active) return;
@@ -97,6 +100,7 @@ export function FindingsPage() {
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [selected?.id]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
@@ -113,7 +117,13 @@ export function FindingsPage() {
       : "";
   const rulesOpen = search.view === "rules";
 
+  const loadController = useRef<AbortController | null>(null);
   const load = useCallback(async () => {
+    // A newer load (environment, filter or page change) supersedes this one:
+    // abort its requests so a slow, stale response can never be applied.
+    loadController.current?.abort();
+    const controller = new AbortController();
+    loadController.current = controller;
     setBusy(true);
     setError(null);
     try {
@@ -126,7 +136,9 @@ export function FindingsPage() {
         overdueOnly,
         pageSize,
         offset,
+        signal: controller.signal,
       });
+      if (controller.signal.aborted) return;
       setItems(result.items);
       setTotal(result.total);
       setEmptyKind(result.emptyKind);
@@ -135,10 +147,11 @@ export function FindingsPage() {
       }
       setSelectedIds(new Set());
     } catch (err: unknown) {
+      if (controller.signal.aborted) return;
       setError(formatError(err, "Falha ao listar findings"));
       setItems([]);
     } finally {
-      setBusy(false);
+      if (loadController.current === controller) setBusy(false);
     }
   }, [
     severityFilter,
@@ -153,6 +166,7 @@ export function FindingsPage() {
 
   useEffect(() => {
     void load();
+    return () => loadController.current?.abort();
   }, [load]);
 
   useEffect(() => {
@@ -184,14 +198,16 @@ export function FindingsPage() {
   useEffect(() => {
     if (!findingId) return;
     let active = true;
+    const controller = new AbortController();
     void api
-      .finding(findingId)
+      .finding(findingId, controller.signal)
       .then((item) => {
         if (active) setSelected(item);
       })
       .catch(() => undefined);
     return () => {
       active = false;
+      controller.abort();
     };
   }, [findingId]);
 

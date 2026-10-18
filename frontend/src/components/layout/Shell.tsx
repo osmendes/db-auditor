@@ -141,8 +141,10 @@ export function Shell({
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
+    const { signal } = controller;
     api
-      .health()
+      .health(signal)
       .then(() => {
         if (!cancelled) {
           setApiOk(true);
@@ -154,7 +156,7 @@ export function Shell({
         }
       });
     api
-      .connectionStatus()
+      .connectionStatus(signal)
       .then((res) => {
         if (!cancelled) {
           setDsnDown(
@@ -168,7 +170,7 @@ export function Shell({
         }
       });
     api
-      .analyticsKpis({ environment_id: environmentId || undefined })
+      .analyticsKpis({ environment_id: environmentId || undefined }, signal)
       .then((k) => {
         if (!cancelled) {
           setOpenFindings(k.open_findings ?? 0);
@@ -180,10 +182,13 @@ export function Shell({
         }
       });
     api
-      .auditRuns({
-        status: "running",
-        environment_id: environmentId || undefined,
-      })
+      .auditRuns(
+        {
+          status: "running",
+          environment_id: environmentId || undefined,
+        },
+        signal,
+      )
       .then((res) => {
         if (!cancelled) {
           setRunningRuns(res.items.length);
@@ -196,6 +201,7 @@ export function Shell({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [environmentId]);
 

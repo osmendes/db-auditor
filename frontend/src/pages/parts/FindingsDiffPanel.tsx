@@ -40,8 +40,9 @@ export function FindingsDiffPanel({
       return;
     }
     let active = true;
+    const controller = new AbortController();
     void api
-      .auditRuns({ environment_id: environmentId })
+      .auditRuns({ environment_id: environmentId }, controller.signal)
       .then((result) => {
         if (!active) return;
         const next = result.items.slice(0, 40);
@@ -54,6 +55,7 @@ export function FindingsDiffPanel({
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [environmentId]);
 

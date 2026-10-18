@@ -570,23 +570,31 @@ export const api = {
       "POST",
       input,
     ),
-  health: () => getJSON<HealthResponse>("/health"),
+  health: (signal?: AbortSignal) => getJSON<HealthResponse>("/health", signal),
   ready: () => getJSON<HealthResponse>("/ready"),
   status: () => getJSON<StatusResponse>("/api/v1/status"),
-  connectionStatus: () =>
+  connectionStatus: (signal?: AbortSignal) =>
     getJSON<ItemsResponse<ConnectionStatus>>(
       "/api/v1/environments/connection-status",
+      signal,
     ),
-  analyticsKpis: (params?: AnalyticsParams) =>
-    getJSON<DashboardKPIs>(`/api/v1/analytics/kpis${qs(params)}`),
-  analyticsStorage: (params?: AnalyticsParams) =>
-    getJSON<StorageGrowthResponse>(`/api/v1/analytics/storage${qs(params)}`),
-  analyticsFindingsTrends: (params?: AnalyticsParams) =>
+  analyticsKpis: (params?: AnalyticsParams, signal?: AbortSignal) =>
+    getJSON<DashboardKPIs>(`/api/v1/analytics/kpis${qs(params)}`, signal),
+  analyticsStorage: (params?: AnalyticsParams, signal?: AbortSignal) =>
+    getJSON<StorageGrowthResponse>(
+      `/api/v1/analytics/storage${qs(params)}`,
+      signal,
+    ),
+  analyticsFindingsTrends: (params?: AnalyticsParams, signal?: AbortSignal) =>
     getJSON<FindingsTrendResponse>(
       `/api/v1/analytics/findings-trends${qs(params)}`,
+      signal,
     ),
-  analyticsJobHealth: (params?: AnalyticsParams) =>
-    getJSON<JobHealthResponse>(`/api/v1/analytics/job-health${qs(params)}`),
+  analyticsJobHealth: (params?: AnalyticsParams, signal?: AbortSignal) =>
+    getJSON<JobHealthResponse>(
+      `/api/v1/analytics/job-health${qs(params)}`,
+      signal,
+    ),
   reportInventory: (params?: AnalyticsParams) =>
     getJSON<Record<string, unknown>>(`/api/v1/reports/inventory${qs(params)}`),
   reportFindings: (params?: AnalyticsParams) =>
@@ -1117,11 +1125,14 @@ export const api = {
     getJSON<PagedResponse<Finding>>(
       `${functionScopePath(env, run, database, schema, name)}/findings${qs({ signature, limit, offset })}`,
     ),
-  auditRuns: (params?: {
-    environment_id?: string;
-    profile?: string;
-    status?: string;
-  }) => {
+  auditRuns: (
+    params?: {
+      environment_id?: string;
+      profile?: string;
+      status?: string;
+    },
+    signal?: AbortSignal,
+  ) => {
     const q = new URLSearchParams();
     if (params?.environment_id) {
       q.set("environment_id", params.environment_id);
@@ -1135,6 +1146,7 @@ export const api = {
     const s = q.toString();
     return getJSON<ItemsResponse<AuditRun>>(
       `/api/v1/audit-runs${s ? `?${s}` : ""}`,
+      signal,
     );
   },
   auditRunsPage: (params: {
@@ -1243,9 +1255,10 @@ export const api = {
     }>(
       `/api/v1/environments/${environmentId}/runs/${runId}/score/compare${qs({ database, schema, table })}`,
     ),
-  scopeScores: (environmentId: string, runId: string) =>
+  scopeScores: (environmentId: string, runId: string, signal?: AbortSignal) =>
     getJSON<{ items: ScopeAggregate[]; version: string }>(
       `/api/v1/environments/${environmentId}/runs/${runId}/scores`,
+      signal,
     ),
   rules: (environmentId: string, schema?: string) =>
     getJSON<{ items: EffectiveRule[]; schema: string }>(
@@ -1334,13 +1347,16 @@ export const api = {
     getJSON<ServerCompareReport>(
       `/api/v1/server-compare${qs({ left, right })}`,
     ),
-  findings: (params?: {
-    environment_id?: string;
-    finding_type?: string;
-    severity?: string;
-    status?: string;
-    limit?: number;
-  }) => {
+  findings: (
+    params?: {
+      environment_id?: string;
+      finding_type?: string;
+      severity?: string;
+      status?: string;
+      limit?: number;
+    },
+    signal?: AbortSignal,
+  ) => {
     const q = new URLSearchParams();
     if (params?.environment_id) {
       q.set("environment_id", params.environment_id);
@@ -1360,22 +1376,26 @@ export const api = {
     const s = q.toString();
     return getJSON<ItemsResponse<Finding>>(
       `/api/v1/findings${s ? `?${s}` : ""}`,
+      signal,
     );
   },
   runFindings: (auditRunId: string) =>
     getJSON<ItemsResponse<Finding>>(
       `/api/v1/findings?audit_run_id=${encodeURIComponent(auditRunId)}`,
     ),
-  findingsPage: (params: {
-    environment_id?: string;
-    finding_type?: string;
-    severity?: string;
-    status?: string;
-    assignee?: string;
-    overdue?: string;
-    limit: number;
-    offset: number;
-  }) => getJSON<PagedResponse<Finding>>(`/api/v1/findings${qs(params)}`),
+  findingsPage: (
+    params: {
+      environment_id?: string;
+      finding_type?: string;
+      severity?: string;
+      status?: string;
+      assignee?: string;
+      overdue?: string;
+      limit: number;
+      offset: number;
+    },
+    signal?: AbortSignal,
+  ) => getJSON<PagedResponse<Finding>>(`/api/v1/findings${qs(params)}`, signal),
   findingsCategoryPage: (
     category: "security" | "performance",
     params: {
@@ -1384,15 +1404,21 @@ export const api = {
       limit: number;
       offset: number;
     },
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<Finding>>(
       `/api/v1/finding-categories/${category}${qs(params)}`,
+      signal,
     ),
-  finding: (id: string) => getJSON<Finding>(`/api/v1/findings/${id}`),
-  findingAction: (id: string) =>
-    getJSON<FindingAction>(`/api/v1/findings/${id}/action`),
-  findingActionEvents: (id: string) =>
-    getJSON<ItemsResponse<ActionEvent>>(`/api/v1/findings/${id}/action/events`),
+  finding: (id: string, signal?: AbortSignal) =>
+    getJSON<Finding>(`/api/v1/findings/${id}`, signal),
+  findingAction: (id: string, signal?: AbortSignal) =>
+    getJSON<FindingAction>(`/api/v1/findings/${id}/action`, signal),
+  findingActionEvents: (id: string, signal?: AbortSignal) =>
+    getJSON<ItemsResponse<ActionEvent>>(
+      `/api/v1/findings/${id}/action/events`,
+      signal,
+    ),
   actionMeasurements: (id: string, offset = 0, limit = 50) =>
     getJSON<PagedResponse<ActionMeasurement>>(
       `/api/v1/findings/${id}/action/measurements?offset=${offset}&limit=${limit}`,
@@ -1421,8 +1447,11 @@ export const api = {
       result: string;
     },
   ) => patchJSON<FindingAction>(`/api/v1/findings/${id}/action`, body),
-  findingTimeline: (id: string) =>
-    getJSON<ItemsResponse<FindingEvent>>(`/api/v1/findings/${id}/timeline`),
+  findingTimeline: (id: string, signal?: AbortSignal) =>
+    getJSON<ItemsResponse<FindingEvent>>(
+      `/api/v1/findings/${id}/timeline`,
+      signal,
+    ),
   suppressFinding: (id: string, reason: string, suppressedUntil: string) =>
     patchJSON<Finding>(`/api/v1/findings/${id}`, {
       status: "suppressed",

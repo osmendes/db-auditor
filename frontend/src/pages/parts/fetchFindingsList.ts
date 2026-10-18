@@ -15,6 +15,8 @@ export async function fetchFindingsList(input: {
   overdueOnly: boolean;
   pageSize: PageSize;
   offset: number;
+  /** Aborts every request of this load when the caller moves on (PF-02). */
+  signal?: AbortSignal;
 }): Promise<{
   items: Finding[];
   total: number;
@@ -30,6 +32,7 @@ export async function fetchFindingsList(input: {
     overdueOnly,
     pageSize,
     offset,
+    signal,
   } = input;
   const filters = {
     severity: severityFilter || undefined,
@@ -48,38 +51,49 @@ export async function fetchFindingsList(input: {
     };
     if (pageSize === "all") {
       const rows = await fetchAllPages((pageOffset, limit) =>
-        api.findingsCategoryPage(presetCategory, {
-          ...categoryFilters,
-          offset: pageOffset,
-          limit,
-        }),
+        api.findingsCategoryPage(
+          presetCategory,
+          {
+            ...categoryFilters,
+            offset: pageOffset,
+            limit,
+          },
+          signal,
+        ),
       );
       items = rows;
       total = rows.length;
       count = rows.length;
     } else {
-      const res = await api.findingsCategoryPage(presetCategory, {
-        ...categoryFilters,
-        offset,
-        limit: pageSize,
-      });
+      const res = await api.findingsCategoryPage(
+        presetCategory,
+        {
+          ...categoryFilters,
+          offset,
+          limit: pageSize,
+        },
+        signal,
+      );
       items = res.items;
       total = res.page.total;
       count = res.page.total;
     }
   } else if (pageSize === "all") {
     const rows = await fetchAllPages((pageOffset, limit) =>
-      api.findingsPage({ ...filters, offset: pageOffset, limit }),
+      api.findingsPage({ ...filters, offset: pageOffset, limit }, signal),
     );
     items = rows;
     total = rows.length;
     count = rows.length;
   } else {
-    const res = await api.findingsPage({
-      ...filters,
-      offset,
-      limit: pageSize,
-    });
+    const res = await api.findingsPage(
+      {
+        ...filters,
+        offset,
+        limit: pageSize,
+      },
+      signal,
+    );
     items = res.items;
     total = res.page.total;
     count = res.page.total;
@@ -87,17 +101,20 @@ export async function fetchFindingsList(input: {
   let emptyKind: FindingsEmptyKind = null;
   let coverageKind: FindingsCoverageKind | undefined;
   if (count === 0) {
-    const unfiltered = await api.findingsPage({
-      environment_id: environmentId || undefined,
-      offset: 0,
-      limit: 1,
-    });
+    const unfiltered = await api.findingsPage(
+      {
+        environment_id: environmentId || undefined,
+        offset: 0,
+        limit: 1,
+      },
+      signal,
+    );
     if (unfiltered.page.total > 0) {
       emptyKind = "filter";
     } else {
       const [runs, connections] = await Promise.all([
-        api.auditRuns({ environment_id: environmentId || undefined }),
-        api.connectionStatus(),
+        api.auditRuns({ environment_id: environmentId || undefined }, signal),
+        api.connectionStatus(signal),
       ]);
       const scoped = environmentId
         ? connections.items.filter(
