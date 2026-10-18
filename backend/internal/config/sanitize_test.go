@@ -93,3 +93,79 @@ func TestRedactErrorKeepsChainAndRemovesLiteralSecret(t *testing.T) {
 	mongo := "mongodb://reader:" + fakeSecret + "@h1,h2/app"
 	assertNoSecret(t, "mongodb dsn", RedactSecrets("auth failed for "+fakeSecret, mongo))
 }
+
+// R2 #3: prefixed keys (environment dumps, app config) and unquoted values
+// holding ; , } or quotes are redacted whole.
+func TestSanitizeDSNPrefixedKeysAndUnquotedTerminators(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		in      string
+		keep    []string
+		secrets []string
+	}{
+		{in: "PGPASSWORD=" + fakeSecret + " psql -h db", keep: []string{"PGPASSWORD=***", "psql -h db"}},
+		{in: "MONGO_PASSWORD=" + fakeSecret, keep: []string{"MONGO_PASSWORD=***"}},
+		{in: "db_password: " + fakeSecret, keep: []string{"db_password: ***"}},
+		{in: "AUDITOR_BOOTSTRAP_PASSWORD=" + fakeSecret, keep: []string{"AUDITOR_BOOTSTRAP_PASSWORD=***"}},
+		{in: "pass=" + fakeSecret + " user=auditor", keep: []string{"pass=***", "user=auditor"}},
+		{in: `{"db.password": "` + fakeSecret + `"}`, keep: []string{`"db.password": ***`}},
+		{in: "postgres://db/app?password=ab;cdEFg&sslmode=require", keep: []string{"password=***", "sslmode=require"}, secrets: []string{"cdEFg", "ab;"}},
+		{in: "password=ab,cdEFg next", keep: []string{"password=*** next"}, secrets: []string{"cdEFg"}},
+		{in: "password=ab}cdEFg", keep: []string{"password=***"}, secrets: []string{"cdEFg"}},
+		{in: `password=ab"cdEFg'xyZ end`, keep: []string{"password=*** end"}, secrets: []string{"cdEFg", "xyZ"}},
+		{in: "password=" + fakeSecret + ";", keep: []string{"password=***"}},
+		{in: "password=" + fakeSecret, keep: []string{"password=***"}},
+	} {
+		got := SanitizeDSN(tc.in)
+		assertNoSecret(t, tc.in, got, tc.secrets...)
+		for _, want := range tc.keep {
+			if !strings.Contains(got, want) {
+				t.Errorf("%q: want %q in %q", tc.in, want, got)
+			}
+		}
+	}
+	// Word boundary: keys that merely end in "pass" are not credentials.
+	for _, in := range []string{"bypass=true", "compass: north", "first pass ok", "password authentication failed for user"} {
+		if got := SanitizeDSN(in); got != in {
+			t.Errorf("over-redaction: %q became %q", in, got)
+		}
+	}
+}
+
+// R2 #4: a 1-2 character password is still removed when the DSN is known, but
+// only as a standalone token so unrelated words and numbers survive.
+func TestRedactSecretsShortPasswords(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		dsn, in, want string
+	}{
+		{"postgres://auditor:ab@db:5432/app", "server rejected ab for auditor", "server rejected *** for auditor"},
+		{"postgres://auditor:ab@db:5432/app", `credential "ab" refused`, `credential "***" refused`},
+		{"postgres://auditor:ab@db:5432/app", "ab", "***"},
+		{"postgres://auditor:ab@db:5432/app", "table about tab: ok", "table about tab: ok"},
+		{"host=db port=5432 user=auditor password=7", "attempt 7 failed on port 5432 (17 tries)", "attempt *** failed on port 5432 (17 tries)"},
+		{"mongodb://reader:x@h1,h2/app", "auth x refused for reader on box", "auth *** refused for reader on box"},
+	} {
+		if got := RedactSecrets(tc.in, tc.dsn); got != tc.want {
+			t.Errorf("RedactSecrets(%q) = %q, want %q", tc.in, got, tc.want)
+		}
+	}
+}
+
+// R2 #1: AUDITOR_DATABASE_URL with a space or a quote in the password is not a
+// valid URL; the error must explain that without quoting the URL.
+func TestLoadInvalidDatabaseURLNeverEchoesPassword(t *testing.T) {
+	for _, password := range []string{"my Secret2", `Ab"Secret3`, "it's Secret4", "tab\tSecret5"} {
+		t.Setenv("AUDITOR_DATABASE_URL", "postgres://auditor:"+password+"@db.example:5432/auditor")
+		_, err := Load()
+		if err == nil {
+			t.Fatalf("password %q: expected an invalid URL error", password)
+		}
+		if strings.Contains(err.Error(), password) || strings.Contains(err.Error(), "Secret") {
+			t.Fatalf("password %q leaked: %v", password, err)
+		}
+		if !strings.Contains(err.Error(), "AUDITOR_DATABASE_URL is invalid") {
+			t.Fatalf("error lost its context: %v", err)
+		}
+	}
+}

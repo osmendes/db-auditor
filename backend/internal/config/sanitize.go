@@ -13,9 +13,15 @@ var (
 	// mongodb+srv, ...).
 	uriScheme = regexp.MustCompile(`(?i)\b[a-z][a-z0-9+.\-]*://`)
 	// password-like keys followed by = or : in libpq key/value DSNs, URL query
-	// strings, JSON and free-form error text. The value may be single or double
-	// quoted (libpq allows spaces and \' escapes inside quotes).
-	secretKV = regexp.MustCompile(`(?i)(["']?)\b((?:ssl)?password|passwd|pwd|secret|access_?token|auth_?token|sessiontoken|aws_session_token)(["']?)(\s*[=:]\s*)('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|[^\s&;,"'}]+)`)
+	// strings, environment dumps, JSON and free-form error text. The key may
+	// carry a prefix (PGPASSWORD, MONGO_PASSWORD, db_password,
+	// AUDITOR_BOOTSTRAP_PASSWORD, sslpassword) but must start at a word
+	// boundary, so "bypass=" or "compass:" are left alone. A value may be
+	// single or double quoted (libpq allows spaces and \' escapes inside
+	// quotes); an unquoted value runs to whitespace, '&' (the URL query
+	// separator) or the end, so a password holding ; , } or a quote is never
+	// cut short and half-printed.
+	secretKV = regexp.MustCompile(`(?i)(["']?)\b((?:[a-z0-9]+[_.\-])*(?:pg|ssl|db|mongo|mongodb|mysql|redis)?(?:password|passwd|pwd|pass|secret)|access_?token|auth_?token|sessiontoken|aws_session_token)(["']?)(\s*[=:]\s*)('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|[^\s&]+)`)
 )
 
 // SanitizeDSN redacts credentials from SQL or MongoDB connection URIs, libpq
@@ -45,7 +51,7 @@ func RedactSecrets(text string, dsns ...string) string {
 	out := SanitizeDSN(text)
 	for _, dsn := range dsns {
 		for _, secret := range dsnSecrets(dsn) {
-			out = strings.ReplaceAll(out, secret, redacted)
+			out = redactLiteral(out, secret)
 		}
 	}
 	return out
@@ -123,8 +129,7 @@ func redactKeyValues(s string) string {
 
 // dsnSecrets extracts the literal secrets carried by a DSN: the URI password
 // and any password-like query parameter, or the password of a libpq key/value
-// string. Values shorter than 3 characters are skipped so redaction never
-// shreds unrelated text.
+// string. Short values are kept too; redactLiteral decides how to match them.
 func dsnSecrets(dsn string) []string {
 	dsn = strings.TrimSpace(dsn)
 	var raw []string
@@ -156,11 +161,51 @@ func dsnSecrets(dsn string) []string {
 	var out []string
 	for _, secret := range raw {
 		for _, form := range []string{secret, url.QueryEscape(secret), url.PathEscape(secret)} {
-			if len(form) >= 3 && !seen[form] {
+			if form != "" && !seen[form] {
 				seen[form] = true
 				out = append(out, form)
 			}
 		}
 	}
 	return out
+}
+
+// shortSecret is the length under which a literal secret is only removed as a
+// standalone token. A 1-2 character password replaced everywhere would shred
+// unrelated words and numbers ("ab" inside "table", "1" inside "5432").
+const shortSecret = 3
+
+// redactLiteral removes secret from text. Secrets of shortSecret or more
+// characters are removed wherever they appear. Shorter ones are removed only
+// where they are not part of a larger alphanumeric run: quoted, after a key or
+// colon, between spaces or punctuation.
+func redactLiteral(text, secret string) string {
+	if secret == "" {
+		return text
+	}
+	if len(secret) >= shortSecret {
+		return strings.ReplaceAll(text, secret, redacted)
+	}
+	var b strings.Builder
+	for i := 0; i < len(text); {
+		j := strings.Index(text[i:], secret)
+		if j < 0 {
+			b.WriteString(text[i:])
+			break
+		}
+		start, end := i+j, i+j+len(secret)
+		standalone := (start == 0 || !isAlnum(text[start-1])) && (end == len(text) || !isAlnum(text[end]))
+		b.WriteString(text[i:start])
+		if standalone {
+			b.WriteString(redacted)
+		} else {
+			b.WriteString(secret)
+		}
+		i = end
+	}
+	return b.String()
+}
+
+func isAlnum(c byte) bool {
+	return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
 }
