@@ -14,6 +14,58 @@ A migração `15_cagg_source.sql` acrescenta campos opcionais de origem e interv
 
 `04_p1.sql` adiciona workflow de finding (responsável e prazo), dedupe de alerta, privilégio do papel auditor, GUCs fechados e colunas de job, lag de CAGG e tamanho antes/depois da compressão. Alertas são opcionais: `AUDITOR_ALERT_WEBHOOK_URL` e/ou `AUDITOR_ALERT_EMAIL_TO` com `AUDITOR_ALERT_SMTP_HOST`. Sem URL e sem SMTP, nada é enviado. Falha de envio não falha o run. O payload não leva DSN, senha nem SQL cru. Coletores de catálogo ficam no `statement_timeout` curto do alvo; estatística, chunks, jobs e workload usam 120s locais para não estourar falso timeout em banco grande.
 
+### Checksum antigo da migração 25
+
+`25_role_attributes_regression_workload.sql` mudou durante a revisão do PR #132. A primeira versão (commit `3245036`) só criava `is_superuser`, `bypass_rls` e `replication` em `account_role_snapshot`. A versão que entrou na `main` (`35ee520`, igual à do merge `a964ac2`) acrescenta `create_role` e `inherited_privileges`. Só é afetado um snapshot store em que a API do branch do PR #132 subiu entre esses dois commits (homologação ou QA). Instalações que só rodaram versões da `main` não precisam fazer nada.
+
+| versão de `25_role_attributes_regression_workload.sql` | sha256 |
+| --- | --- |
+| antiga (`3245036`, só no PR) | `3d3512136baa8b30ce931e6242c6a570050a479c3eae78d08a612d79dda73545` |
+| atual (`35ee520` / `main`) | `023d0d2758fbd17784f32a48de03dd70b4ef7828e71db83b97078b11ce0d2b9f` |
+
+**Sintoma.** No boot, `migrate.Apply` (`backend/internal/migrate`) compara o sha256 do arquivo com `schema_migration.checksum` e para na primeira diferença. A API sai com `could not apply snapshot store migrations` e `error="checksum of 25_role_attributes_regression_workload.sql changed after it was applied"`. As migrações depois da 25 também não rodam.
+
+**Como detectar.** Antes de atualizar, ou depois da falha (`$POSTGRES_USER`/`$POSTGRES_DB` como no `.env.prod`):
+
+```bash
+sha256sum backend/migrations/25_role_attributes_regression_workload.sql
+podman compose -f deploy/compose.prod.yaml --env-file .env.prod exec -T postgres \
+  psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At \
+  -c "SELECT checksum FROM schema_migration WHERE version = '25_role_attributes_regression_workload.sql'" \
+  -c "SELECT string_agg(column_name, ',' ORDER BY column_name) FROM information_schema.columns
+      WHERE table_name = 'account_role_snapshot'
+        AND column_name IN ('is_superuser','bypass_rls','replication','create_role','inherited_privileges')" \
+  -c "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'regression_alert_category_check'"
+```
+
+O checksum `3d3512…545` com `create_role` e `inherited_privileges` ausentes confirma a versão antiga. Outro checksum que não seja nenhum dos dois da tabela vem de um arquivo alterado (por exemplo, fim de linha CRLF no checkout): não aplique o procedimento abaixo, investigue o arquivo.
+
+**Correção segura.** **Não** basta trocar só o checksum: o schema antigo não tem as duas colunas novas, e a coleta de roles e a regra `security.powerful_role` falham sem elas. O arquivo atual é idempotente (`ADD COLUMN IF NOT EXISTS`, `DROP CONSTRAINT IF EXISTS` antes do `ADD CONSTRAINT`), só acrescenta colunas com default e não altera nem apaga linhas. Com a API parada e um backup recente (veja [Backup do snapshot store](#backup-do-snapshot-store)), use **uma** das opções:
+
+1. Deixar a API reaplicar: apague só o registro antigo e suba a API. O migrador vê a 25 como pendente, executa o arquivo atual numa transação e grava o checksum novo.
+
+   ```sql
+   DELETE FROM schema_migration
+    WHERE version = '25_role_attributes_regression_workload.sql'
+      AND checksum = '3d3512136baa8b30ce931e6242c6a570050a479c3eae78d08a612d79dda73545';
+   ```
+
+2. Aplicar à mão e então atualizar o registro (o `UPDATE` só depois de o `psql -1` terminar sem erro):
+
+   ```bash
+   podman compose -f deploy/compose.prod.yaml --env-file .env.prod exec -T postgres \
+     psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -1 \
+     < backend/migrations/25_role_attributes_regression_workload.sql
+   ```
+
+   ```sql
+   UPDATE schema_migration SET checksum = '023d0d2758fbd17784f32a48de03dd70b4ef7828e71db83b97078b11ce0d2b9f'
+    WHERE version = '25_role_attributes_regression_workload.sql'
+      AND checksum = '3d3512136baa8b30ce931e6242c6a570050a479c3eae78d08a612d79dda73545';
+   ```
+
+Depois, rode de novo a consulta de detecção: o checksum deve ser `023d0d…b9f`, as cinco colunas devem existir e `regression_alert_category_check` deve aceitar `workload`. Suba a API e confira `GET /ready`. Snapshots antigos ficam com `create_role = false` e `inherited_privileges = '{}'` até a próxima coleta de PostgreSQL. Não existe comando da API para reconciliar checksums. A correção é feita só por SQL no snapshot store, como descrito em `backend/migrations/README.md`.
+
 ## Produção
 
 Copie [deploy/env.prod.example](../deploy/env.prod.example) para `.env.prod` na raiz do repositório. Preencha a senha do snapshot store, a senha inicial do operador e os dois slots `AUDITOR_TARGET_1_*` e `AUDITOR_TARGET_2_*`.
