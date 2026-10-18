@@ -2,7 +2,7 @@
 
 ## Schema do snapshot store
 
-O schema canônico está em `backend/migrations/01_baseline.sql`. Os ambientes iniciais vêm de `AUDITOR_TARGET_N_*` no `.env`: a API grava nome e id depois das migrations. A API aplica o baseline só quando o banco está vazio e registra `schema_migration`. Um volume que já tem o schema atual recebe só o que falta (`03_audit_schedule.sql` até `21_identity_login_block.sql`) e não reaplica o baseline. O segundo boot não executa SQL de novo. Se o checksum de um arquivo já aplicado mudar, a API recusa subir. As notas de cada etapa (migrações, limites e decisões) estão em [notas-por-etapa.md](notas-por-etapa.md).
+O schema canônico está em `backend/migrations/01_baseline.sql`. Os ambientes iniciais vêm de `AUDITOR_TARGET_N_*` no `.env`: a API grava nome e id depois das migrations. A API aplica o baseline só quando o banco está vazio e registra `schema_migration`. Um volume que já tem o schema atual recebe só o que falta (`03_audit_schedule.sql` até `22_report_limits_retention_governance.sql`) e não reaplica o baseline. O segundo boot não executa SQL de novo. Se o checksum de um arquivo já aplicado mudar, a API recusa subir. As notas de cada etapa (migrações, limites e decisões) estão em [notas-por-etapa.md](notas-por-etapa.md).
 
 Antes de atualizar uma instalação persistente, faça backup do snapshot store e confira a restauração. A migração `12_view_detail.sql` acrescenta campos sem apagar visões existentes. Depois do deploy, execute uma nova coleta de PostgreSQL para preencher colunas e opções de segurança: execuções antigas mostram esses campos como não coletados. Para voltar à versão anterior, pare a API nova e restaure o backup ou use a versão anterior do aplicativo; não remova as novas colunas manualmente.
 
@@ -130,9 +130,96 @@ O dump não contém senha de alvo. Confira o `.env.prod` à parte antes de subir
 
 ## Retenção e restauração
 
-O prazo do PDF fica em `auditor_setting.report_retention_days` (padrão 30). Um artefato vencido não é mais baixado; a linha do job permanece como trilha. Uma atualização não apaga achados, execuções nem jobs.
+O prazo do PDF fica em `auditor_setting.report_retention_days` (padrão 30). Um artefato vencido não é mais baixado e é removido pela limpeza horária do worker; a linha do job permanece como trilha auditável. Uma atualização não apaga achados, execuções nem jobs.
 
-Backup e criptografia em repouso são da infraestrutura: use `pg_dump` do snapshot store e o volume criptografado do operador. O auditor não executa `DROP` nem `DELETE` de histórico durante o upgrade.
+### Política de retenção (BA-03)
+
+A política fica em `retention_policy` e só um **operador** autenticado a lê ou altera:
+
+| Campo | Padrão | Significado |
+|---|---|---|
+| `snapshot_retention_days` | 0 | 0 = manter todos os snapshots. Um valor > 0 só gera **contagem** no plano; a API nunca apaga snapshots. |
+| `report_job_retention_days` | 90 (30–3650) | Prazo da trilha do job depois que o PDF venceu. |
+| `owner_name` | `operator` | Responsável pela política. |
+| `encryption_at_rest` | `required-external` | Como volumes, backups e artefatos são cifrados (texto da política aprovada). |
+| `archive_note` | vazio | Onde ficam os backups arquivados e por quanto tempo. |
+| `approved_by` / `approved_at` | vazio | Preenchidos só quando o responsável aprova. Qualquer edição remove a aprovação. |
+
+```bash
+# ler / alterar e aprovar (sessão de operador; cookie + X-CSRF-Token da UI)
+curl -sS -b cookies.txt https://auditor.exemplo/api/v1/retention-policy
+curl -sS -b cookies.txt -H "X-CSRF-Token: $CSRF" -X PUT https://auditor.exemplo/api/v1/retention-policy \
+  -d '{"snapshot_retention_days":0,"report_job_retention_days":180,"owner_name":"Maycon Mendes","encryption_at_rest":"LUKS2 no volume snapshot-store e snapshot-backup; dumps cifrados com age antes de sair da VPS","archive_note":"dumps diários por 14 dias; mensais por 12 meses no bucket X","approve":true}'
+# plano (dry-run: só contagens e bloqueios)
+curl -sS -b cookies.txt https://auditor.exemplo/api/v1/retention-policy/plan
+```
+
+**Nenhuma limpeza destrutiva** roda sem: política aprovada e não alterada depois da aprovação, backup verificado há no máximo 7 dias e restauração de teste bem-sucedida em ambiente isolado há no máximo 30 dias. `POST /api/v1/retention-policy/apply` exige `confirm=true` e a contagem exata `expected_report_jobs` do plano atual; remove apenas linhas de `report_job` além do prazo cujo PDF já venceu. Snapshots (execuções, tabelas, achados) só saem por procedimento manual, depois de arquivados em backup verificado e com aprovação registrada.
+
+### Backup verificado e restauração de teste (BA-10)
+
+`deploy/snapshot-backup.sh` grava o dump e o arquivo `.sha256` ao lado. `deploy/snapshot-restore-verify.sh` faz o ensaio:
+
+1. confere o sha256 do dump com o `.sha256` do backup e valida o arquivo com `pg_restore --list`;
+2. restaura com `pg_restore --clean --if-exists --exit-on-error` em um Postgres **isolado** (recusa sem `RESTORE_TARGET_CONFIRM=isolated` e se o destino for igual a `SOURCE_DSN`);
+3. mede o tempo de recuperação (RTO, em segundos);
+4. conta `audit_run`, `table_snapshot`, `finding`, `finding_event`, `report_job`, `report_artifact`, `auditor_user` (por papel), `auditor_user_environment` (permissões por ambiente) e `schema_migration`, e compara com as contagens da origem;
+5. escreve a evidência JSON (`succeeded=false` em qualquer falha) para registro.
+
+Rollback: o ensaio nunca toca a origem. Se a restauração real for necessária e falhar, mantenha a API parada, restaure o dump anterior verificado (`*.dump` + `.sha256` do dia anterior) e só promova depois de o script terminar com sucesso.
+
+### Passos do responsável (homologação, evidência a anexar na issue #106)
+
+Execute com volume representativo (cópia do store de produção ou massa equivalente) em homologação. Os comandos rodam num host com `postgresql-client` da mesma versão major do servidor ou superior (18 no Compose); sem cliente local, use o próprio contêiner: `podman run --rm --network host -v ./deploy:/deploy:ro -v snapshot-backup:/backup -v "$PWD":/out postgres:18-alpine sh /deploy/snapshot-restore-verify.sh ...`.
+
+```bash
+# 0) janela calma: pare escritas na origem (worker/agendador) para que as contagens batam
+podman compose -f deploy/compose.prod.yaml --env-file .env.prod stop api
+# 1) backup + checksum
+podman compose -f deploy/compose.prod.yaml --env-file .env.prod exec -T snapshot-backup sh /snapshot-backup.sh
+# 2) contagens da origem no mesmo instante do dump
+sh deploy/snapshot-restore-verify.sh counts "$SOURCE_DSN" > source-counts.json
+podman compose -f deploy/compose.prod.yaml --env-file .env.prod start api
+# 3) Postgres isolado (outro host/volume, mesma versão major ou superior)
+podman run -d --name dba-restore -e POSTGRES_PASSWORD=x -p 55432:5432 postgres:18-alpine
+TARGET_DSN=postgresql://postgres:x@127.0.0.1:55432/postgres
+# 4) papéis globais (pg_dump não leva roles do cluster)
+pg_dumpall --globals-only -d "$SOURCE_DSN" | psql "$TARGET_DSN"
+# 5) ensaio
+SOURCE_DSN="$SOURCE_DSN" RESTORE_TARGET_CONFIRM=isolated ENV_LABEL=staging \
+  sh deploy/snapshot-restore-verify.sh verify /backup/db-auditor-AAAAMMDDTHHMMSSZ.dump "$TARGET_DSN" source-counts.json > restore-evidence.json
+# 6) registrar a evidência (e um backup_verified com o mesmo sha256)
+curl -sS -b cookies.txt -H "X-CSRF-Token: $CSRF" -X POST https://auditor.exemplo/api/v1/retention-policy/evidence -d @restore-evidence.json
+jq '.kind="backup_verified"' restore-evidence.json | curl -sS -b cookies.txt -H "X-CSRF-Token: $CSRF" -X POST https://auditor.exemplo/api/v1/retention-policy/evidence -d @-
+```
+
+Anexe na issue: `restore-evidence.json`, `source-counts.json`, saída do passo 5 (RTO), saída do `GET /api/v1/retention-policy/plan` depois do registro, e o login de um usuário restaurado na UI apontada para o destino (prova de que permissões e ambientes vieram juntos).
+
+### Criptografia, chaves, acesso e descarte (BA-16)
+
+O auditor não cifra disco nem guarda chave. Para a infraestrutura usada, registre na política (`encryption_at_rest`) e anexe na issue:
+
+- **Volumes** `snapshot-store` e `snapshot-backup`: `lsblk -o NAME,TYPE,FSTYPE,MOUNTPOINT` e `cryptsetup status <mapeamento>` (LUKS) ou a tela/CLI do provedor mostrando o volume cifrado (`aws ec2 describe-volumes --query 'Volumes[].Encrypted'`, equivalente no provedor).
+- **Backups fora da VPS**: cifre o dump antes de enviar (`age -r <chave-publica> -o dump.age dump`) ou use bucket com SSE-KMS; anexe a configuração do bucket (`aws s3api get-bucket-encryption`) ou o comando `age` usado.
+- **Chaves**: quem guarda a chave LUKS/age/KMS, onde (cofre), rotação e quem pode ler. A chave nunca fica no Compose, no `.env.prod` nem no repositório.
+- **Acesso**: diretório `/backup` com dono do serviço e modo `0700`; `ls -ld /backup` e a lista de usuários do host com acesso.
+- **Descarte**: dumps locais saem após `BACKUP_RETENTION_DAYS` (padrão 14) pelo `find -delete` do script; PDFs vencidos saem pela limpeza horária; para mídia/volume descartado, `cryptsetup luksErase` ou destruição de chave KMS. Registre o prazo aprovado em `archive_note`.
+
+### Limites de consultas históricas (BA-03)
+
+Meça e anexe, com o store de homologação restaurado:
+
+```bash
+psql "$TARGET_DSN" -c "SELECT relname, n_live_tup FROM pg_stat_user_tables WHERE relname IN ('audit_run','table_snapshot','finding','finding_event','report_job') ORDER BY 2 DESC;"
+psql "$TARGET_DSN" -c "EXPLAIN (ANALYZE, BUFFERS) SELECT r.id, r.started_at, sum(t.total_size_bytes) FROM audit_run r LEFT JOIN table_snapshot t ON t.audit_run_id=r.id WHERE r.environment_id='<env>' GROUP BY r.id ORDER BY r.started_at DESC LIMIT 6;"
+/usr/bin/time -v curl -sS -o /dev/null -b cookies.txt "https://auditor.exemplo/api/v1/analytics/storage?environment_id=<env>&granularity=day"
+```
+
+Registre cardinalidade, tempo e pico de memória (`Maximum resident set size`) e o limite operacional decidido.
+
+### Calibração de regressões (BA-15)
+
+Com pelo menos 10 coletas completas reais de um ambiente: liste os motivos de silêncio no log (`regression silenced`, nível debug) e os alertas criados em `regression_alert`; confira manualmente cada alerta (verdadeiro/falso positivo). Se a taxa de falso positivo passar de 1 em 10, ajuste `AUDITOR_REGRESSION_MAX_GAP` ao intervalo real do agendamento e anexe a tabela de calibração na issue #104.
 
 ## Recuperar o acesso de operador
 

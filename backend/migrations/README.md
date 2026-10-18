@@ -23,6 +23,7 @@ O diretório contém o baseline, o seed local e migrações incrementais. O Post
 - `19_architecture_report.sql`: permite artefato Markdown e registra decisões de domínio versionadas, congeladas no pedido do relatório. Atua somente no banco interno.
 - `20_architecture_insertion.sql`: guarda a evidência de inserção colhida em auditoria manual, inclusive consultas puladas por orçamento ou permissão. Atua somente no banco interno.
 - `21_identity_login_block.sql`: acrescenta `blocked_until` ao contador de tentativas de login em volumes antigos. Substitui a criação ad hoc das tabelas de login que a API fazia no boot (`EnsureIdentitySchema`); agora todo o schema de identidade vem de `16_identity.sql`, `18_totp_discard_retention.sql` e desta migração, registradas em `schema_migration`.
+- `22_report_limits_retention_governance.sql`: acrescenta `report_job.limit_note` (limite ou truncamento aplicado ao relatório), aprovação da política em `retention_policy` (`approved_by`, `approved_at`, `archive_note`) e a tabela `retention_evidence` (backup verificado e restauração de teste). Só adiciona; não altera nem remove linhas.
 
 Não reintroduza arquivos `.down.sql`: o entrypoint executaria todos os `.sql`.
 

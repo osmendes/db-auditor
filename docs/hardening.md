@@ -55,7 +55,7 @@ O bloqueio de senha usa a conta junto com o IP visto pelo proxy confiável (`log
 
 ## Retenção, backup e criptografia
 
-A política em `retention_policy` guarda o dono, o prazo dos jobs de PDF (padrão 90 dias) e o prazo de snapshots (0 = não apagar até aprovação). A expiração do PDF remove só o artefato; a trilha do job permanece. O script `deploy/snapshot-backup.sh` gera `pg_dump` custom e registra sucesso ou falha. Restaure com `pg_restore --clean --if-exists` em um Postgres vazio, fora de produção, e confira contagens de `audit_run`, `finding` e `auditor_user` antes de promover. Volumes e backups precisam de criptografia do disco ou do destino (LUKS, volume cifrado do provedor ou `age`/`gpg` no arquivo). O Compose não guarda a chave. Sem backup verificado e aprovação, nenhuma limpeza apaga snapshots existentes.
+A política em `retention_policy` guarda o dono, o prazo dos jobs de PDF (padrão 90 dias) e o prazo de snapshots (0 = não apagar até aprovação). A expiração do PDF remove só o artefato; a trilha do job permanece. O script `deploy/snapshot-backup.sh` gera `pg_dump` custom e registra sucesso ou falha. Restaure com `pg_restore --clean --if-exists` em um Postgres vazio, fora de produção, e confira contagens de `audit_run`, `finding` e `auditor_user` antes de promover. Volumes e backups precisam de criptografia do disco ou do destino (LUKS, volume cifrado do provedor ou `age`/`gpg` no arquivo). O Compose não guarda a chave. Sem backup verificado e aprovação, nenhuma limpeza apaga snapshots existentes. A API registra aprovação, backup verificado e restauração de teste (`/api/v1/retention-policy*`, só operador) e recusa limpeza sem os três; o ensaio é `deploy/snapshot-restore-verify.sh`. Veja [ops.md](ops.md#retenção-e-restauração).
 
 ## CSP
 
