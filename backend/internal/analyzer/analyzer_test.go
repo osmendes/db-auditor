@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 )
@@ -282,5 +283,120 @@ func TestDedupKeyStable(t *testing.T) {
 	b := DedupKey("index.unused", "db.public.idx", "title")
 	if a != b || a == "" {
 		t.Fatalf("unstable dedup key: %q vs %q", a, b)
+	}
+}
+
+// #126: every login role with elevated attributes yields one finding, and the
+// auditor's own role (seen by the privilege check and by the role sample)
+// yields exactly one, merging both sources.
+func TestPowerfulRoleCoversEveryLoginRole(t *testing.T) {
+	facts := SnapshotFacts{EnvironmentID: "env-1", Roles: []RoleFact{
+		{Database: "db", RoleName: "auditor", Current: true, Superuser: true},
+		{Database: "db", RoleName: "auditor", Login: true, Superuser: true, Replication: true},
+		{Database: "db", RoleName: "ops_power", Login: true, Superuser: true},
+		{Database: "db", RoleName: "rls_bypass", Login: true, BypassRLS: true},
+		{Database: "db", RoleName: "replicator", Login: true, Replication: true},
+		{Database: "db", RoleName: "app", Login: true},
+	}}
+	out, err := SecurityAnalyzer{}.Analyze(context.Background(), facts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]Finding{}
+	for _, f := range out {
+		if f.FindingType != "security.powerful_role" {
+			continue
+		}
+		if _, dup := got[f.ObjectName]; dup {
+			t.Fatalf("powerful_role duplicado para %s", f.ObjectName)
+		}
+		got[f.ObjectName] = f
+	}
+	for _, name := range []string{"auditor", "ops_power", "rls_bypass", "replicator"} {
+		if _, ok := got[name]; !ok {
+			t.Fatalf("sem powerful_role para %s: %v", name, got)
+		}
+	}
+	if _, ok := got["app"]; ok || len(got) != 4 {
+		t.Fatalf("powerful_role inesperado: %v", got)
+	}
+	ev := got["auditor"].Evidence
+	if ev["superuser"] != true || ev["replication"] != true || ev["login"] != true {
+		t.Fatalf("evidência do auditor não juntou as duas fontes: %v", ev)
+	}
+	if got["rls_bypass"].Evidence["bypass_rls"] != true {
+		t.Fatalf("bypass_rls ausente: %v", got["rls_bypass"].Evidence)
+	}
+}
+
+// #126 (R2): power reached through membership is reported with its source
+// role; CREATEROLE alone is medium; sources merge across duplicate entries.
+func TestPowerfulRoleInheritedPrivileges(t *testing.T) {
+	facts := SnapshotFacts{EnvironmentID: "env-1", Roles: []RoleFact{
+		{Database: "db", RoleName: "ops", Login: true, CreateRole: true},
+		{Database: "db", RoleName: "ops", Login: true, Inherited: []string{"pg_execute_server_program:pg_execute_server_program", "superuser:g_admin"}},
+		{Database: "db", RoleName: "hr", Login: true, Inherited: []string{"createrole:g_hr"}},
+	}}
+	out, err := SecurityAnalyzer{}.Analyze(context.Background(), facts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]Finding{}
+	for _, f := range out {
+		if f.FindingType == "security.powerful_role" {
+			got[f.ObjectName] = f
+		}
+	}
+	ops := got["ops"]
+	if ops.Severity != SeverityHigh || ops.Evidence["createrole"] != true {
+		t.Fatalf("ops: %s %v", ops.Severity, ops.Evidence)
+	}
+	if sources, _ := ops.Evidence["source_roles"].([]string); strings.Join(sources, ",") != "g_admin,pg_execute_server_program" {
+		t.Fatalf("ops sources: %v", ops.Evidence["source_roles"])
+	}
+	inherited, _ := ops.Evidence["inherited"].([]map[string]string)
+	if len(inherited) != 2 || inherited[0]["privilege"] != "pg_execute_server_program" || inherited[1]["source"] != "g_admin" {
+		t.Fatalf("ops inherited: %v", inherited)
+	}
+	if hr := got["hr"]; hr.Severity != SeverityMedium {
+		t.Fatalf("CREATEROLE alone must be medium: %s", hr.Severity)
+	}
+}
+
+// #126 (R3): before PostgreSQL 16 CREATEROLE grants itself any non-superuser
+// role, so it is high there; on 16+ and with an unknown version it stays
+// medium.
+func TestPowerfulRoleCreateRoleSeverityByVersion(t *testing.T) {
+	for version, want := range map[string]Severity{
+		"15.8":                      SeverityHigh,
+		"9.6.24":                    SeverityHigh,
+		" 14.2 (Debian 14.2-1)":     SeverityHigh,
+		"16.4 (Debian 16.4-1.pgdg)": SeverityMedium,
+		"18.0":                      SeverityMedium,
+		"":                          SeverityMedium,
+		"devel":                     SeverityMedium,
+		"0":                         SeverityMedium,
+	} {
+		for _, role := range []RoleFact{
+			{Database: "db", RoleName: "cr", Login: true, CreateRole: true},
+			{Database: "db", RoleName: "cr", Login: true, Inherited: []string{"createrole:g_cr"}},
+		} {
+			out, err := SecurityAnalyzer{}.Analyze(context.Background(), SnapshotFacts{ServerVersion: version, Roles: []RoleFact{role}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(out) != 1 || out[0].Severity != want {
+				t.Fatalf("version %q, role %+v: %+v, want %s", version, role, out, want)
+			}
+			if pre16 := out[0].Evidence["createrole_grants_any_role"] == true; pre16 != (want == SeverityHigh) {
+				t.Fatalf("version %q: createrole_grants_any_role=%v", version, pre16)
+			}
+		}
+	}
+	out, _ := SecurityAnalyzer{}.Analyze(context.Background(), SnapshotFacts{ServerVersion: "15.8", Roles: []RoleFact{
+		{Database: "db", RoleName: "reader", Login: true, Inherited: []string{"pg_read_all_data:pg_read_all_data"}},
+	}})
+	if len(out) != 1 || out[0].Severity != SeverityHigh || out[0].Evidence["createrole_grants_any_role"] != nil {
+		t.Fatalf("pg_read_all_data must be high and not a CREATEROLE case: %+v", out)
 	}
 }

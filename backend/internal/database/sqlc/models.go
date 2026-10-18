@@ -9,14 +9,19 @@ import (
 )
 
 type AccountRoleSnapshot struct {
-	AuditRunID    pgtype.UUID
-	EnvironmentID pgtype.UUID
-	DatabaseName  string
-	RoleName      string
-	CanLogin      bool
-	ValidUntil    pgtype.Timestamptz
-	SampledActive bool
-	CollectedAt   pgtype.Timestamptz
+	AuditRunID          pgtype.UUID
+	EnvironmentID       pgtype.UUID
+	DatabaseName        string
+	RoleName            string
+	CanLogin            bool
+	ValidUntil          pgtype.Timestamptz
+	SampledActive       bool
+	CollectedAt         pgtype.Timestamptz
+	IsSuperuser         bool
+	BypassRls           bool
+	Replication         bool
+	CreateRole          bool
+	InheritedPrivileges []string
 }
 
 type AlertDelivery struct {

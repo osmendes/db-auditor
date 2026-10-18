@@ -105,16 +105,23 @@ export function StoragePieChart({ items }: { items: StoragePieSlice[] }) {
       </ul>
 
       {/* The SVG is decorative for assistive tech: the sr-only table below is
-          the text equivalent (UI-05). */}
+          the text equivalent (UI-05). Hidden content must not take keyboard
+          focus either (#122): Recharts gives the Pie layer tabindex=0 by
+          default, so it is set to -1 and the wrapper is inert. */}
       <div
         className="flex w-full items-center justify-center sm:w-[58%]"
         aria-hidden="true"
+        inert
       >
         <ChartContainer
           config={chartConfig}
           className="aspect-square h-[280px] w-full max-w-[300px]"
+          initialDimension={{ width: 300, height: 280 }}
         >
-          <PieChart margin={{ top: 12, right: 12, bottom: 12, left: 12 }}>
+          <PieChart
+            accessibilityLayer={false}
+            margin={{ top: 12, right: 12, bottom: 12, left: 12 }}
+          >
             <ChartTooltip
               content={
                 <ChartTooltipContent
@@ -129,6 +136,7 @@ export function StoragePieChart({ items }: { items: StoragePieSlice[] }) {
               }
             />
             <Pie
+              rootTabIndex={-1}
               data={chartData}
               dataKey="size_bytes"
               nameKey="key"

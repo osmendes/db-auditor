@@ -3,7 +3,11 @@ package analyzer
 import (
 	"context"
 	"fmt"
+	"slices"
+	"sort"
+	"strconv"
 	"strings"
+	"unicode"
 )
 
 // SecurityAnalyzer flags SECURITY DEFINER functions and broad privileges for human review.
@@ -94,7 +98,10 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 		}
 	}
 
-	// Superuser / powerful roles
+	// Superuser / powerful roles. Every login role carries its attributes
+	// (#126); the auditor's own role also comes from the privilege check, so
+	// one finding per database and role merges both sources.
+	powerful := map[string]int{}
 	for _, role := range facts.Roles {
 		if !role.Current && role.Login {
 			expired := role.ValidUntil != nil && !role.CollectedAt.IsZero() && role.ValidUntil.Before(role.CollectedAt)
@@ -114,32 +121,38 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 				})
 			}
 		}
-		if !role.Superuser && !role.BypassRLS && !role.Replication {
+		if !role.Superuser && !role.BypassRLS && !role.Replication && !role.CreateRole && len(role.Inherited) == 0 {
 			continue
 		}
 		key := fmt.Sprintf("%s.role:%s", role.Database, role.RoleName)
+		if at, ok := powerful[key]; ok {
+			mergePowerfulRole(&out[at], role, facts.ServerVersion)
+			continue
+		}
+		powerful[key] = len(out)
 		title := fmt.Sprintf("Powerful role: %s", role.RoleName)
 		f := Finding{
 			EnvironmentID: facts.EnvironmentID,
 			AuditRunID:    facts.AuditRunID,
 			FindingType:   "security.powerful_role",
-			Severity:      SeverityHigh,
 			Status:        StatusOpen,
 			Title:         title,
-			Summary:       "Role has elevated attributes (superuser, bypass RLS, or replication). Confirm least-privilege need.",
+			Summary:       "Role has elevated attributes (superuser, bypass RLS, replication or CREATEROLE), directly or through membership in a role that has them or in a predefined role that reaches server files, programs or every table. Confirm least-privilege need.",
 			ObjectType:    "role",
 			ObjectKey:     key,
 			DatabaseName:  role.Database,
 			ObjectName:    role.RoleName,
 			Evidence: map[string]any{
-				"superuser":   role.Superuser,
-				"bypass_rls":  role.BypassRLS,
-				"replication": role.Replication,
-				"login":       role.Login,
+				"superuser":   false,
+				"bypass_rls":  false,
+				"replication": false,
+				"createrole":  false,
+				"login":       false,
 				"safety_note": "Never ALTER ROLE or REVOKE automatically",
 			},
 			DedupKey: DedupKey("security.powerful_role", key, title),
 		}
+		mergePowerfulRole(&f, role, facts.ServerVersion)
 		out = append(out, f)
 	}
 
@@ -189,4 +202,88 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 	}
 
 	return out, nil
+}
+
+// powerfulPrivilegeHigh lists inherited privileges that rate the role high.
+// CREATEROLE alone (direct or inherited) is medium on PostgreSQL 16+, where it
+// only administers the roles it creates; before 16 it grants itself any
+// non-superuser role (pg_execute_server_program included), so it is high
+// there (see createRoleGrantsAnyRole).
+var powerfulPrivilegeHigh = map[string]bool{
+	"superuser": true, "bypass_rls": true, "replication": true,
+	"pg_execute_server_program": true, "pg_read_server_files": true, "pg_write_server_files": true,
+	"pg_read_all_data": true, "pg_write_all_data": true,
+}
+
+// createRoleGrantsAnyRole reports whether serverVersion (the collected
+// server_version, such as "15.8" or "16.4 (Debian ...)") is older than
+// PostgreSQL 16. An unknown version is not assumed old.
+func createRoleGrantsAnyRole(serverVersion string) bool {
+	digits := strings.TrimLeftFunc(serverVersion, unicode.IsSpace)
+	end := strings.IndexFunc(digits, func(r rune) bool { return !unicode.IsDigit(r) })
+	if end >= 0 {
+		digits = digits[:end]
+	}
+	major, err := strconv.Atoi(digits)
+	return err == nil && major > 0 && major < 16
+}
+
+// mergePowerfulRole folds one source of a role's power into its finding:
+// own attributes, and inherited ones with the role they come from (#126).
+func mergePowerfulRole(f *Finding, role RoleFact, serverVersion string) {
+	evidence := f.Evidence
+	for name, set := range map[string]bool{"superuser": role.Superuser, "bypass_rls": role.BypassRLS, "replication": role.Replication, "createrole": role.CreateRole, "login": role.Login} {
+		if set {
+			evidence[name] = true
+		}
+	}
+	inherited, _ := evidence["inherited"].([]map[string]string)
+	seen := map[string]bool{}
+	for _, item := range inherited {
+		seen[item["privilege"]+":"+item["source"]] = true
+	}
+	for _, entry := range role.Inherited {
+		privilege, source, ok := strings.Cut(entry, ":")
+		if !ok || seen[entry] {
+			continue
+		}
+		seen[entry] = true
+		inherited = append(inherited, map[string]string{"privilege": privilege, "source": source})
+	}
+	sort.Slice(inherited, func(i, j int) bool {
+		if inherited[i]["privilege"] != inherited[j]["privilege"] {
+			return inherited[i]["privilege"] < inherited[j]["privilege"]
+		}
+		return inherited[i]["source"] < inherited[j]["source"]
+	})
+	sources := []string{}
+	high := evidence["superuser"] == true || evidence["bypass_rls"] == true || evidence["replication"] == true
+	for _, item := range inherited {
+		if !slices.Contains(sources, item["source"]) {
+			sources = append(sources, item["source"])
+		}
+		high = high || powerfulPrivilegeHigh[item["privilege"]]
+	}
+	sort.Strings(sources)
+	if createRoleGrantsAnyRole(serverVersion) && (evidence["createrole"] == true || hasPrivilege(inherited, "createrole")) {
+		evidence["createrole_grants_any_role"] = true
+		high = true
+	}
+	if len(inherited) > 0 {
+		evidence["inherited"] = inherited
+		evidence["source_roles"] = sources
+	}
+	f.Severity = SeverityMedium
+	if high {
+		f.Severity = SeverityHigh
+	}
+}
+
+func hasPrivilege(inherited []map[string]string, privilege string) bool {
+	for _, item := range inherited {
+		if item["privilege"] == privilege {
+			return true
+		}
+	}
+	return false
 }
