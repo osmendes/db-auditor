@@ -212,6 +212,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
   const fromHistory = useRef(false);
   const boot = useRef(true);
+  // Last fragment this provider wrote or replayed. Back/forward between
+  // fragments fires both popstate and hashchange; handling the second one
+  // again would leave `fromHistory` set and swallow the next navigation.
+  const lastHash = useRef<string | null>(null);
+  // Canonical fragment of the current state, to ignore a pop that would not
+  // change anything (e.g. same filters in another order).
+  const current = useRef<string | null>(null);
 
   const snapshot = useCallback(
     (): LocationState => ({
@@ -226,11 +233,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
+    const next = formatLocation(snapshot());
+    current.current = next;
     if (fromHistory.current) {
       fromHistory.current = false;
       return;
     }
-    const next = formatLocation(snapshot());
+    lastHash.current = next;
     if (window.location.hash === next) {
       boot.current = false;
       return;
@@ -245,7 +254,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const onPop = () => {
+      if (window.location.hash === lastHash.current) return;
+      lastHash.current = window.location.hash;
       const parsed = parseLocation();
+      if (formatLocation(parsed) === current.current) return;
       fromHistory.current = true;
       setSectionState(parsed.section);
       setEnvironmentIdState(parsed.env);

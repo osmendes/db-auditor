@@ -129,9 +129,9 @@ describe("ConfirmDialog (UI-05)", () => {
     expect(document.activeElement).toBe(cancel);
     // The backdrop is not a tab stop.
     expect(
-      document.querySelector('[aria-label="Fechar diálogo"]')?.getAttribute(
-        "tabindex",
-      ),
+      document
+        .querySelector('[aria-label="Fechar diálogo"]')
+        ?.getAttribute("tabindex"),
     ).toBe("-1");
     confirm?.focus();
     press("Tab");
