@@ -104,6 +104,7 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	role("g_super", "NOLOGIN SUPERUSER")
 	role("g_bypass", "NOLOGIN BYPASSRLS")
 	role("g_cr", "NOLOGIN CREATEROLE")
+	role("g_repl", "NOLOGIN REPLICATION")
 	role("g_mid", "NOLOGIN IN ROLE "+quoted("g_super"))
 	role("g_plain", "NOLOGIN")
 	role("super", "LOGIN SUPERUSER")
@@ -113,10 +114,11 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	role("m_super", "LOGIN IN ROLE "+quoted("g_super"))
 	role("m_bypass", "LOGIN IN ROLE "+quoted("g_bypass"))
 	role("m_cr", "LOGIN IN ROLE "+quoted("g_cr"))
+	role("m_repl", "LOGIN IN ROLE "+quoted("g_repl"))
 	role("m_nested", "LOGIN IN ROLE "+quoted("g_mid"))
 	role("m_noinherit", "LOGIN NOINHERIT IN ROLE "+quoted("g_super"))
 	// Spelled out, not taken from the collector, so dropping one there fails.
-	predefinedRoles := []string{"pg_execute_server_program", "pg_read_server_files", "pg_write_server_files", "pg_write_all_data"}
+	predefinedRoles := []string{"pg_execute_server_program", "pg_read_server_files", "pg_write_server_files", "pg_read_all_data", "pg_write_all_data"}
 	for _, predefined := range predefinedRoles {
 		role("m_"+predefined, "LOGIN IN ROLE "+predefined)
 	}
@@ -127,6 +129,23 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 		role("m_noset_exec", "LOGIN")
 		exec("GRANT " + quoted("g_super") + " TO " + quoted("m_noset_super") + " WITH INHERIT FALSE, SET FALSE")
 		exec("GRANT pg_execute_server_program TO " + quoted("m_noset_exec") + " WITH INHERIT FALSE, SET FALSE")
+		// Inheritance alone (no SET ROLE) still runs COPY ... PROGRAM.
+		role("m_inh_only", "LOGIN")
+		exec("GRANT pg_execute_server_program TO " + quoted("m_inh_only") + " WITH INHERIT TRUE, SET FALSE")
+		// ADMIN OPTION alone: the member grants the role to itself WITH
+		// SET/INHERIT TRUE in one command.
+		for base, target := range map[string]string{
+			"m_admin_pg_execute_server_program": "pg_execute_server_program",
+			"m_admin_g_bypass":                  quoted("g_bypass"),
+			"m_admin_g_cr":                      quoted("g_cr"),
+			"m_admin_g_repl":                    quoted("g_repl"),
+		} {
+			role(base, "LOGIN")
+			exec("GRANT " + target + " TO " + quoted(base) + " WITH ADMIN TRUE, INHERIT FALSE, SET FALSE")
+		}
+		// ADMIN over a SUPERUSER role is no path: only a superuser may grant it.
+		role("m_admin_super", "LOGIN")
+		exec("GRANT " + quoted("g_super") + " TO " + quoted("m_admin_super") + " WITH ADMIN TRUE, INHERIT FALSE, SET FALSE")
 	}
 
 	conn, err := pgx.Connect(ctx, url)
@@ -192,6 +211,7 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 		"m_super":     {"high", "", []string{"superuser:g_super"}},
 		"m_bypass":    {"high", "", []string{"bypass_rls:g_bypass"}},
 		"m_cr":        {"medium", "", []string{"createrole:g_cr"}},
+		"m_repl":      {"high", "", []string{"replication:g_repl"}},
 		"m_nested":    {"high", "", []string{"superuser:g_super"}},
 		"m_noinherit": {"high", "", []string{"superuser:g_super"}}, // NOINHERIT still allows SET ROLE
 	}
@@ -201,6 +221,20 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 			attribute string
 			inherited []string
 		}{"high", "", []string{predefined + ":" + predefined}}
+	}
+	if version >= 160000 {
+		add := func(base, severity string, inherited ...string) {
+			expect[base] = struct {
+				severity  string
+				attribute string
+				inherited []string
+			}{severity, "", inherited}
+		}
+		add("m_inh_only", "high", "pg_execute_server_program:pg_execute_server_program")
+		add("m_admin_pg_execute_server_program", "high", "pg_execute_server_program:pg_execute_server_program")
+		add("m_admin_g_bypass", "high", "bypass_rls:g_bypass")
+		add("m_admin_g_cr", "medium", "createrole:g_cr")
+		add("m_admin_g_repl", "high", "replication:g_repl")
 	}
 	short := func(entry string) string { return strings.ReplaceAll(entry, "r126_", "") }
 	for base, want := range expect {
@@ -229,7 +263,7 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 			}
 		}
 	}
-	for _, base := range []string{"app_user", "plain", "g_super", "g_plain", "m_noset_super", "m_noset_exec"} {
+	for _, base := range []string{"app_user", "plain", "g_super", "g_plain", "m_noset_super", "m_noset_exec", "m_admin_super"} {
 		if g, ok := powerful[name(base)]; ok {
 			t.Fatalf("powerful_role inesperado para %s: %v", base, g.evidence)
 		}
