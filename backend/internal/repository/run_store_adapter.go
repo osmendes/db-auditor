@@ -94,6 +94,24 @@ func (a *AuditRunStore) FinishCollectorRun(ctx context.Context, collectorRunID, 
 	return err
 }
 
+// coverageSnapshotTables maps a cluster-wide collector to the snapshot table
+// whose rows are counted per database for its coverage. The count uses
+// audit_run_id (the join key, present in every snapshot table); some tables,
+// such as account_role_snapshot, have no id column (#124).
+var coverageSnapshotTables = map[string]string{
+	"postgres.databases": "database_snapshot", "postgres.schemas": "schema_snapshot",
+	"postgres.tables": "table_snapshot", "postgres.columns": "column_snapshot",
+	"postgres.indexes": "index_snapshot", "postgres.constraints": "constraint_snapshot",
+	"postgres.views": "view_snapshot", "postgres.functions": "function_snapshot",
+	"postgres.extensions": "extension_snapshot", "timescale.version": "timescale_version_snapshot",
+	"postgres.sequences": "sequence_snapshot", "postgres.triggers": "trigger_snapshot",
+	"postgres.policies": "rls_policy_snapshot", "postgres.effective_grants": "grant_snapshot", "postgres.account_roles": "account_role_snapshot",
+	"postgres.object_dependencies": "object_dependency_snapshot",
+	"timescale.hypertables":        "hypertable_snapshot", "timescale.dimensions": "dimension_snapshot",
+	"timescale.chunks": "chunk_snapshot", "timescale.continuous_aggregates": "continuous_aggregate_snapshot",
+	"timescale.jobs": "job_snapshot", "timescale.policies": "policy_snapshot",
+}
+
 func (a *AuditRunStore) RecordCollectorCoverage(ctx context.Context, auditRunID, collectorName, databaseName, status string, rows int64, warning, errMsg string) error {
 	runID, err := parseUUID(auditRunID)
 	if err != nil {
@@ -116,20 +134,7 @@ ON CONFLICT (audit_run_id, collector_name, database_name) DO UPDATE SET
 	if err != nil {
 		return err
 	}
-	tables := map[string]string{
-		"postgres.databases": "database_snapshot", "postgres.schemas": "schema_snapshot",
-		"postgres.tables": "table_snapshot", "postgres.columns": "column_snapshot",
-		"postgres.indexes": "index_snapshot", "postgres.constraints": "constraint_snapshot",
-		"postgres.views": "view_snapshot", "postgres.functions": "function_snapshot",
-		"postgres.extensions": "extension_snapshot", "timescale.version": "timescale_version_snapshot",
-		"postgres.sequences": "sequence_snapshot", "postgres.triggers": "trigger_snapshot",
-		"postgres.policies": "rls_policy_snapshot", "postgres.effective_grants": "grant_snapshot", "postgres.account_roles": "account_role_snapshot",
-		"postgres.object_dependencies": "object_dependency_snapshot",
-		"timescale.hypertables":        "hypertable_snapshot", "timescale.dimensions": "dimension_snapshot",
-		"timescale.chunks": "chunk_snapshot", "timescale.continuous_aggregates": "continuous_aggregate_snapshot",
-		"timescale.jobs": "job_snapshot", "timescale.policies": "policy_snapshot",
-	}
-	table, ok := tables[collectorName]
+	table, ok := coverageSnapshotTables[collectorName]
 	if !ok || status != "success" || databaseName != "" {
 		return nil
 	}
@@ -138,7 +143,7 @@ INSERT INTO audit_run_coverage (
   audit_run_id, environment_id, collector_name, database_name,
   status, rows_collected, collected_at
 )
-SELECT $1::uuid, d.environment_id, $2, d.database_name, 'success', count(s.id), now()
+SELECT $1::uuid, d.environment_id, $2, d.database_name, 'success', count(s.audit_run_id), now()
 FROM database_snapshot d
 LEFT JOIN %s s ON s.audit_run_id=d.audit_run_id AND s.database_name=d.database_name
 WHERE d.audit_run_id=$1::uuid
