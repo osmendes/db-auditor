@@ -1,5 +1,5 @@
 lines=8068
 pages=162
-bytes=2250635
-sha256=1cc03f6ac4c9121504a8dd58d49a211cb6dca1a97249043faf987bee4e4571e5
+bytes=2251893
+sha256=568f105bc20bdc2dbc1e2f75ea2575cbbcf18acd0b1710e0179854d1634ca00f
 headings=Resumo executivo | Riscos e prioridades | Inventário técnico (apêndice) | Análise final e próximos passos | Metodologia e glossário

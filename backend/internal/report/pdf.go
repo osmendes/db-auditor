@@ -202,6 +202,33 @@ type structElem struct {
 type tagging struct {
 	elems []structElem
 	pages [][]int // per page, the element of each MCID
+	// outline is one bookmark per section heading (H2), in reading order.
+	outline []outlineItem
+}
+
+// outlineItem is a bookmark: the heading text and where it starts.
+type outlineItem struct {
+	title string
+	page  int
+	top   int
+}
+
+// maxOutlineItems and maxOutlineTitle bound the bookmarks kept in memory.
+const (
+	maxOutlineItems = 200
+	maxOutlineTitle = 120
+)
+
+// section records a section heading as a bookmark (#107). top is the page
+// y the viewer scrolls to.
+func (t *tagging) section(title string, page, top int) {
+	if len(t.outline) >= maxOutlineItems {
+		return
+	}
+	if runes := []rune(strings.TrimSpace(title)); len(runes) > maxOutlineTitle {
+		title = string(runes[:maxOutlineTitle-1]) + "…"
+	}
+	t.outline = append(t.outline, outlineItem{title: strings.TrimSpace(title), page: page, top: top})
 }
 
 func newTagging() *tagging { return &tagging{pages: [][]int{nil}} }
@@ -250,7 +277,14 @@ func writeDocumentObjects(writeObject func(string) error, pageCount int, documen
 	parentTreeID := 2*pageCount + 8
 	docID := 2*pageCount + 9
 	elemID := func(index int) int { return docID + 1 + index }
-	catalogID = elemID(len(tags.elems))
+	// The outline (bookmarks) follows the structure elements: its root, then
+	// one object per section heading.
+	outlineID := elemID(len(tags.elems))
+	itemID := func(index int) int { return outlineID + 1 + index }
+	catalogID = outlineID
+	if len(tags.outline) > 0 {
+		catalogID = itemID(len(tags.outline))
+	}
 	kids := make([]string, pageCount)
 	for index := 0; index < pageCount; index++ {
 		kids[index] = fmt.Sprintf("%d 0 R", pageID(index))
@@ -324,7 +358,26 @@ func writeDocumentObjects(writeObject func(string) error, pageCount int, documen
 			return 0, 0, err
 		}
 	}
-	if err := writeObject(fmt.Sprintf("<< /Type /Catalog /Pages %d 0 R /Lang (pt-BR) /MarkInfo << /Marked true >> /StructTreeRoot %d 0 R /Metadata %d 0 R /ViewerPreferences << /DisplayDocTitle true >> >>", pagesID, rootID, metadataID)); err != nil {
+	outlines := ""
+	if n := len(tags.outline); n > 0 {
+		if err := writeObject(fmt.Sprintf("<< /Type /Outlines /First %d 0 R /Last %d 0 R /Count %d >>", itemID(0), itemID(n-1), n)); err != nil {
+			return 0, 0, err
+		}
+		for index, item := range tags.outline {
+			links := ""
+			if index > 0 {
+				links += fmt.Sprintf(" /Prev %d 0 R", itemID(index-1))
+			}
+			if index < n-1 {
+				links += fmt.Sprintf(" /Next %d 0 R", itemID(index+1))
+			}
+			if err := writeObject(fmt.Sprintf("<< /Title %s /Parent %d 0 R%s /Dest [%d 0 R /XYZ 0 %d 0] >>", pdfTextString(item.title), outlineID, links, pageID(item.page), item.top)); err != nil {
+				return 0, 0, err
+			}
+		}
+		outlines = fmt.Sprintf(" /Outlines %d 0 R /PageMode /UseOutlines", outlineID)
+	}
+	if err := writeObject(fmt.Sprintf("<< /Type /Catalog /Pages %d 0 R /Lang (pt-BR) /MarkInfo << /Marked true >> /StructTreeRoot %d 0 R /Metadata %d 0 R%s /ViewerPreferences << /DisplayDocTitle true >> >>", pagesID, rootID, metadataID, outlines)); err != nil {
 		return 0, 0, err
 	}
 	return catalogID, infoID, nil
@@ -535,6 +588,9 @@ func (l *pdfLayout) place(line Line) error {
 			// A blank spacer line is layout, not content.
 			open := "/Artifact BMC "
 			if strings.TrimSpace(part) != "" {
+				if elem < 0 && role == "H2" && l.tags != nil {
+					l.tags.section(line.Text, len(l.tags.pages)-1, l.y+fontSize+4)
+				}
 				open = l.markText(&elem, role)
 			}
 			l.draw(fmt.Sprintf("%s%s rg BT /F1 %d Tf 42 %d Td (%s) Tj ET EMC\n", open, color, fontSize, l.y, escapePDFText(part)))

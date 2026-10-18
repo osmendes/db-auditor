@@ -146,6 +146,10 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 			}
 			open := "/Artifact BMC "
 			if strings.TrimSpace(part) != "" {
+				if elem < 0 && line.Style == "heading" {
+					// Bookmark at the top of the section heading (#107).
+					tags.section(line.Text, len(pages)-1, y+fontSize+4)
+				}
 				open = mark(&elem, role)
 			}
 			command := fmt.Sprintf("%s%s rg BT /F1 %d Tf 42 %d Td (%s) Tj ET EMC\n", open, color, fontSize, y, escapePDFText(part))

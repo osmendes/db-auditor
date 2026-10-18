@@ -332,3 +332,102 @@ func TestPDFReportStringsArePortuguese(t *testing.T) {
 }
 
 var unaccented = regexp.MustCompile(`(?i)\b(execucao|ausencia|nao|resolucao|relatorio|findings)\b`)
+
+// decodePDFTextString reverses pdfTextString.
+func decodePDFTextString(t *testing.T, hex string) string {
+	t.Helper()
+	if !strings.HasPrefix(hex, "FEFF") || len(hex)%4 != 0 {
+		t.Fatalf("title %q is not UTF-16BE with BOM", hex)
+	}
+	units := []uint16{}
+	for i := 4; i < len(hex); i += 4 {
+		v, err := strconv.ParseUint(hex[i:i+4], 16, 16)
+		if err != nil {
+			t.Fatal(err)
+		}
+		units = append(units, uint16(v))
+	}
+	return string(utf16.Decode(units))
+}
+
+// #107: one bookmark per section heading, in reading order, each opening the
+// page where its H2 element starts, as a well-formed doubly linked list.
+func TestPDFOutlineHasOneBookmarkPerSection(t *testing.T) {
+	for name, d := range taggedFixtures() {
+		t.Run(name, func(t *testing.T) {
+			pdf := mustRenderPDF(t, d)
+			objects := pdfObjects(t, pdf)
+			root := catalog(t, pdf, objects)
+			if !bytes.Contains(root, []byte("/PageMode /UseOutlines")) {
+				t.Fatalf("catalog does not open the bookmarks: %s", root)
+			}
+			outlinesID := ref(t, root, "/Outlines")
+			outlines := objects[outlinesID]
+			want := []string{}
+			for _, line := range BuildLines(d) {
+				if line.Style == "heading" && strings.TrimSpace(line.Text) != "" {
+					want = append(want, strings.TrimSpace(line.Text))
+				}
+			}
+			if !bytes.HasPrefix(outlines, []byte("<< /Type /Outlines ")) || !bytes.Contains(outlines, []byte(fmt.Sprintf("/Count %d >>", len(want)))) {
+				t.Fatalf("outline root %s for %d headings", outlines, len(want))
+			}
+			// H2 elements in structure order with their page.
+			h2Pages := []int{}
+			treeRoot := objects[ref(t, root, "/StructTreeRoot")]
+			document := objects[ref(t, treeRoot, "/K")]
+			for _, child := range regexp.MustCompile(`(\d+) 0 R`).FindAllSubmatch(regexp.MustCompile(`/K \[([^\]]*)\]`).FindSubmatch(document)[1], -1) {
+				id, _ := strconv.Atoi(string(child[1]))
+				if m := regexp.MustCompile(`^<< /Type /StructElem /S /H2 /P \d+ 0 R /Pg (\d+) 0 R`).FindSubmatch(objects[id]); m != nil {
+					page, _ := strconv.Atoi(string(m[1]))
+					h2Pages = append(h2Pages, page)
+				}
+			}
+			if len(h2Pages) != len(want) {
+				t.Fatalf("%d H2 elements for %d headings", len(h2Pages), len(want))
+			}
+			item := ref(t, outlines, "/First")
+			prev := 0
+			for i, title := range want {
+				body := objects[item]
+				m := regexp.MustCompile(`^<< /Title <([0-9A-F]+)> /Parent (\d+) 0 R(?: /Prev (\d+) 0 R)?(?: /Next (\d+) 0 R)? /Dest \[(\d+) 0 R /XYZ 0 (\d+) 0\] >>$`).FindSubmatch(body)
+				if m == nil {
+					t.Fatalf("bookmark %d: %s", i, body)
+				}
+				if got := decodePDFTextString(t, string(m[1])); got != title {
+					t.Fatalf("bookmark %d title %q, want %q", i, got, title)
+				}
+				if parent, _ := strconv.Atoi(string(m[2])); parent != outlinesID {
+					t.Fatalf("bookmark %d parent %d", i, parent)
+				}
+				if got, _ := strconv.Atoi(string(m[3])); (i == 0 && m[3] != nil) || (i > 0 && got != prev) {
+					t.Fatalf("bookmark %d Prev %s, want %d", i, m[3], prev)
+				}
+				if page, _ := strconv.Atoi(string(m[5])); page != h2Pages[i] {
+					t.Fatalf("bookmark %q opens page object %d, heading is on %d", title, page, h2Pages[i])
+				}
+				if top, _ := strconv.Atoi(string(m[6])); top < 55 || top > 842 {
+					t.Fatalf("bookmark %q top %d off the page", title, top)
+				}
+				if i == len(want)-1 {
+					if m[4] != nil || ref(t, outlines, "/Last") != item {
+						t.Fatalf("last bookmark %s", body)
+					}
+					break
+				}
+				prev = item
+				item, _ = strconv.Atoi(string(m[4]))
+			}
+		})
+	}
+}
+
+func TestPDFOutlineTitlesAreBounded(t *testing.T) {
+	tags := newTagging()
+	for i := 0; i < maxOutlineItems+5; i++ {
+		tags.section(strings.Repeat("é", maxOutlineTitle+10), 0, 700)
+	}
+	if len(tags.outline) != maxOutlineItems || len([]rune(tags.outline[0].title)) != maxOutlineTitle {
+		t.Fatalf("outline not bounded: %d items, %d runes", len(tags.outline), len([]rune(tags.outline[0].title)))
+	}
+}
