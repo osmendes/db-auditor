@@ -183,12 +183,22 @@ jobs:
           docker pull -q alpine:3.20 >/dev/null
           limit="$REPORT_MEMORY_LIMIT_BYTES"
           # Control: the same flags really kill a process that needs more memory.
-          docker run --name report-mem-control --memory "$limit" --memory-swap "$limit" alpine:3.20 \
-            sh -c 'x=$(head -c 200000000 /dev/zero | tr "\000" a); echo survived' || true
-          control=$(docker inspect -f '{{.State.OOMKilled}}' report-mem-control)
+          # awk is PID 1 and doubles a string up to 512 MiB (a peak of ~3x per
+          # step), far beyond the limit, so the allocation is deterministic.
+          # The kernel SIGKILLs it: exit 137. OOMKilled is also accepted, but
+          # not required: dockerd can miss the OOM event when the container
+          # exits first, which made this check flaky. "survived" means the
+          # limit was not enforced.
+          docker rm -f report-mem-control >/dev/null 2>&1 || true
+          control_out=$(docker run --name report-mem-control --memory "$limit" --memory-swap "$limit" alpine:3.20 \
+            awk 'BEGIN { s = "a"; while (length(s) < 536870912) s = s s; print "survived" }' 2>&1 || true)
+          control_oom=$(docker inspect -f '{{.State.OOMKilled}}' report-mem-control)
+          control_exit=$(docker inspect -f '{{.State.ExitCode}}' report-mem-control)
           docker rm report-mem-control >/dev/null
-          if [ "$control" != "true" ]; then
-            echo "::error::control container was not OOM-killed; the memory limit is not enforced"
+          control="oom_killed=${control_oom} exit=${control_exit}"
+          echo "control container: ${control}"
+          if printf '%s' "$control_out" | grep -q survived || { [ "$control_oom" != "true" ] && [ "$control_exit" != "137" ]; }; then
+            echo "::error::control container was not killed by the memory limit (${control}); the limit is not enforced"
             exit 1
           fi
           set +e
@@ -219,7 +229,7 @@ jobs:
             echo "### Report under a container memory limit"
             echo
             echo '```'
-            echo "control_oom_killed=${control} ${result}"
+            echo "control ${control} ${result}"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
