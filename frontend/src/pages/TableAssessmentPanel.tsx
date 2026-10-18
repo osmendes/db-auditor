@@ -1,17 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   type InventoryDetailTab,
   InventoryDetailTabs,
 } from "../components/InventoryDetailTabs";
-import {
-  type PageSize,
-  PaginationControls,
-} from "../components/ui/PaginationControls";
-import { DetailGrid, DetailSection } from "../components/ui/Sheet";
 import { formatError } from "../lib/errors";
-import { formatBytes } from "../lib/format";
-import { inventoryPermalink } from "../lib/inventoryTarget";
-import { fetchAllPages } from "../lib/pagination";
 import { api } from "../services/api";
 import type {
   AuditBaseline,
@@ -22,9 +14,6 @@ import type {
   Finding,
   GrantSnapshot,
   IndexSnapshot,
-  PagedResponse,
-  PageMeta,
-  RelationshipEdge,
   RelationshipGraph,
   RLSPolicySnapshot,
   ScopeScore,
@@ -35,403 +24,26 @@ import type {
   WorkloadSnapshot,
 } from "../types";
 import { TableDetail } from "./InventoryDetails";
+import { AssessmentRunNotice } from "./parts/AssessmentSummary";
+import { useCollection } from "./parts/assessmentCollection";
+import { tablePermalink } from "./parts/RelationshipDiagram";
+import {
+  TableBaselineBox,
+  TableFindingsTab,
+  TableOverviewTab,
+  TableRelationshipsTab,
+  TableSecurityTab,
+  TableStructureTab,
+} from "./parts/TableAssessmentTabs";
 
-function permalink(env: string, t: TableSnapshot): string {
-  return inventoryPermalink(env, t.audit_run_id, {
-    kind: "tables",
-    database: t.database_name,
-    schema: t.schema_name,
-    name: t.table_name,
-  });
-}
-
-function useCollection<T>(
-  enabled: boolean,
-  key: string,
-  load: (offset: number, limit: number) => Promise<PagedResponse<T>>,
-) {
-  const loader = useRef(load);
-  loader.current = load;
-  const [offset, setOffset] = useState(0);
-  const [size, setSize] = useState<PageSize>(20);
-  const [items, setItems] = useState<T[]>([]);
-  const [page, setPage] = useState<PageMeta | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    setOffset(0);
-    setItems([]);
-    setPage(null);
-    setError(null);
-  }, [key]);
-  useEffect(() => {
-    if (!enabled) return;
-    let cancelled = false;
-    setLoading(true);
-    const request =
-      size === "all"
-        ? fetchAllPages(loader.current).then((allItems) => ({
-            items: allItems,
-            page: {
-              total: allItems.length,
-              limit: allItems.length,
-              offset: 0,
-              has_more: false,
-            },
-          }))
-        : loader.current(offset, size);
-    request
-      .then((result) => {
-        if (!cancelled) {
-          setItems(result.items);
-          setPage(result.page);
-          setError(null);
-        }
-      })
-      .catch((cause: unknown) => {
-        if (!cancelled) {
-          setItems([]);
-          setPage(null);
-          setError(formatError(cause, "Não foi possível carregar esta seção"));
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [enabled, key, offset, size]);
-  return { items, page, error, loading, offset, size, setOffset, setSize };
-}
-
-function CollectionState({
-  data,
-  children,
-}: {
-  data: ReturnType<typeof useCollection<unknown>>;
-  children: React.ReactNode;
-}) {
-  if (data.loading)
-    return (
-      <p role="status" className="text-sm text-slate-400">
-        Carregando…
-      </p>
-    );
-  if (data.error)
-    return (
-      <p role="alert" className="text-sm text-red-300">
-        {data.error}
-      </p>
-    );
-  const page = data.page;
-  return (
-    <div className="space-y-2">
-      {data.items.length === 0 ? (
-        <p className="text-sm text-slate-400">Nenhum item neste run.</p>
-      ) : (
-        children
-      )}
-      {page ? (
-        <PaginationControls
-          total={page.total}
-          offset={data.offset}
-          size={data.size}
-          onSizeChange={(next) => {
-            data.setSize(next);
-            data.setOffset(0);
-          }}
-          onOffsetChange={data.setOffset}
-          label="Detalhe da tabela"
-        />
-      ) : null}
-    </div>
-  );
-}
-
-function nodeKey(schema: string, table: string) {
-  return `${schema}.${table}`;
-}
-
-export function visibleRelationshipEdges(
-  graph: RelationshipGraph,
-  root: TableSnapshot,
-  direction: "all" | "incoming" | "outgoing",
-) {
-  const key = nodeKey(root.schema_name, root.table_name);
-  return graph.edges.filter(
-    (edge) =>
-      direction === "all" ||
-      (direction === "incoming"
-        ? nodeKey(edge.to.schema, edge.to.table) === key
-        : nodeKey(edge.from.schema, edge.from.table) === key),
-  );
-}
-
-export function AssessmentScoreSummary({
-  summary,
-}: {
-  summary: TableAssessment["summary"];
-}) {
-  if (summary.score_status !== "available" || summary.score === null) {
-    return (
-      <p role="status" className="text-sm text-amber-300">
-        Score indisponível: cobertura insuficiente neste run
-        {summary.score_missing_collectors.length > 0
-          ? ` (${summary.score_missing_collectors.join(", ")})`
-          : ""}
-        .
-      </p>
-    );
-  }
-  return (
-    <div className="space-y-2 text-sm">
-      <p>
-        <strong>{summary.score}/100</strong> · {summary.score_version} ·
-        confiança {Math.round((summary.score_confidence ?? 0) * 100)}%
-      </p>
-      <p className="text-xs text-slate-400">
-        Base estrutural 100; os fatores abaixo reduzem a pontuação. Findings
-        aparecem separadamente porque seu histórico ainda não é imutável.
-      </p>
-      {summary.score_factors.length === 0 ? (
-        <p className="text-xs text-slate-400">
-          Nenhuma penalidade estrutural identificada no snapshot.
-        </p>
-      ) : (
-        <ul className="space-y-1" aria-label="Fatores do score">
-          {summary.score_factors.map((factor) => (
-            <li key={factor.code}>
-              {factor.description}: −{factor.penalty}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-export function AssessmentRunNotice({ partial }: { partial: boolean }) {
-  if (!partial) return null;
-  return (
-    <p className="rounded border border-amber-600 p-2 text-xs text-amber-300">
-      Run parcial: a ausência de dados não confirma ausência de problemas.
-    </p>
-  );
-}
-
-export function RelationshipDiagram({
-  graph,
-  root,
-  env,
-  run,
-  database,
-  onNavigate,
-}: {
-  graph: RelationshipGraph;
-  root: TableSnapshot;
-  env: string;
-  run: string;
-  database: string;
-  onNavigate: (schema: string, table: string) => void;
-}) {
-  const [direction, setDirection] = useState<"all" | "incoming" | "outgoing">(
-    "all",
-  );
-  const [schemaFilter, setSchemaFilter] = useState("all");
-  const [zoom, setZoom] = useState(1);
-  const rootKey = nodeKey(root.schema_name, root.table_name);
-  const schemas = [...new Set(graph.nodes.map((n) => n.schema))].sort();
-  const edges = visibleRelationshipEdges(graph, root, direction).filter(
-    (edge) =>
-      schemaFilter === "all" ||
-      (nodeKey(edge.from.schema, edge.from.table) === rootKey
-        ? edge.to.schema
-        : edge.from.schema) === schemaFilter,
-  );
-  const nodes = graph.nodes.filter(
-    (n) =>
-      nodeKey(n.schema, n.table) === rootKey ||
-      edges.some(
-        (e) =>
-          nodeKey(e.from.schema, e.from.table) === nodeKey(n.schema, n.table) ||
-          nodeKey(e.to.schema, e.to.table) === nodeKey(n.schema, n.table),
-      ),
-  );
-  const positions = new Map(
-    nodes.map((n, i) => [
-      nodeKey(n.schema, n.table),
-      i === 0
-        ? { x: 300, y: 180 }
-        : {
-            x:
-              300 +
-              220 *
-                Math.cos(
-                  (2 * Math.PI * (i - 1)) / Math.max(1, nodes.length - 1),
-                ),
-            y:
-              180 +
-              130 *
-                Math.sin(
-                  (2 * Math.PI * (i - 1)) / Math.max(1, nodes.length - 1),
-                ),
-          },
-    ]),
-  );
-  const link = (schema: string, table: string) =>
-    permalink(env, {
-      ...root,
-      audit_run_id: run,
-      database_name: database,
-      schema_name: schema,
-      table_name: table,
-    });
-  return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-3 text-xs">
-        <label>
-          Direção{" "}
-          <select
-            aria-label="Direção dos relacionamentos"
-            value={direction}
-            onChange={(e) => setDirection(e.target.value as typeof direction)}
-            className="rounded bg-slate-800 p-1"
-          >
-            <option value="all">Todas</option>
-            <option value="incoming">Entrada</option>
-            <option value="outgoing">Saída</option>
-          </select>
-        </label>
-        <label>
-          Schema relacionado{" "}
-          <select
-            aria-label="Filtrar schema relacionado"
-            value={schemaFilter}
-            onChange={(e) => setSchemaFilter(e.target.value)}
-            className="rounded bg-slate-800 p-1"
-          >
-            <option value="all">Todos</option>
-            {schemas.map((schema) => (
-              <option key={schema} value={schema}>
-                {schema}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Zoom{" "}
-          <input
-            aria-label="Zoom do diagrama"
-            type="range"
-            min="0.7"
-            max="1.8"
-            step="0.1"
-            value={zoom}
-            onChange={(e) => setZoom(Number(e.target.value))}
-          />
-        </label>
-      </div>
-      {edges.length === 0 ? (
-        <p className="text-sm text-slate-400">Nenhuma FK nesta direção.</p>
-      ) : (
-        <div
-          className="overflow-auto rounded border border-slate-700"
-          aria-hidden="true"
-        >
-          <svg
-            viewBox="0 0 600 360"
-            width={600 * zoom}
-            height={360 * zoom}
-            role="img"
-          >
-            <title>{`Diagrama ER focado em ${rootKey}`}</title>
-            {edges.map((edge: RelationshipEdge) => {
-              const from = positions.get(
-                nodeKey(edge.from.schema, edge.from.table),
-              );
-              const to = positions.get(nodeKey(edge.to.schema, edge.to.table));
-              return from && to ? (
-                <line
-                  key={edge.constraint_name}
-                  x1={from.x}
-                  y1={from.y}
-                  x2={to.x}
-                  y2={to.y}
-                  stroke="#38bdf8"
-                  strokeWidth="2"
-                />
-              ) : null;
-            })}
-            {nodes.map((n) => {
-              const p = positions.get(nodeKey(n.schema, n.table));
-              if (!p) return null;
-              const isRoot = nodeKey(n.schema, n.table) === rootKey;
-              return (
-                <g key={nodeKey(n.schema, n.table)}>
-                  <rect
-                    x={p.x - 67}
-                    y={p.y - 17}
-                    width="134"
-                    height="34"
-                    rx="6"
-                    fill={isRoot ? "#0e7490" : "#334155"}
-                  />
-                  <text
-                    x={p.x}
-                    y={p.y + 5}
-                    textAnchor="middle"
-                    fill="white"
-                    fontSize="11"
-                  >
-                    {n.table.slice(0, 19)}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-        </div>
-      )}
-      <p className="text-xs text-slate-400">
-        Legenda: bloco azul = tabela selecionada; linha = chave estrangeira. Use
-        a lista abaixo para navegação acessível.
-      </p>
-      <ul className="space-y-2 text-sm" aria-label="Relacionamentos acessíveis">
-        {edges.map((e) => {
-          const target =
-            nodeKey(e.from.schema, e.from.table) === rootKey ? e.to : e.from;
-          return (
-            <li
-              key={e.constraint_name}
-              className="rounded border border-slate-700 p-2"
-            >
-              <span>
-                {e.from.schema}.{e.from.table} ({e.columns.join(", ")}) →{" "}
-                {e.to.schema}.{e.to.table} ({e.referenced_columns.join(", ")})
-              </span>
-              <span className="ml-2 text-slate-400">{e.constraint_name}</span>{" "}
-              <a
-                href={link(target.schema, target.table)}
-                onClick={(event) => {
-                  event.preventDefault();
-                  onNavigate(target.schema, target.table);
-                }}
-                className="text-cyan-300 underline"
-              >
-                Abrir tabela
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-      {graph.truncated ? (
-        <p className="text-xs text-amber-300">
-          Grafo limitado a 50 relacionamentos. Refine o escopo.
-        </p>
-      ) : null}
-    </div>
-  );
-}
+export {
+  AssessmentRunNotice,
+  AssessmentScoreSummary,
+} from "./parts/AssessmentSummary";
+export {
+  RelationshipDiagram,
+  visibleRelationshipEdges,
+} from "./parts/RelationshipDiagram";
 
 export function TableAssessmentPanel({
   t,
@@ -634,7 +246,10 @@ export function TableAssessmentPanel({
   const table = assessment?.table ?? t;
   return (
     <div className="space-y-4">
-      <a href={permalink(env, t)} className="text-xs text-cyan-300 underline">
+      <a
+        href={tablePermalink(env, t)}
+        className="text-xs text-cyan-300 underline"
+      >
         Link direto para esta tabela e execução
       </a>
       {loading ? (
@@ -648,224 +263,33 @@ export function TableAssessmentPanel({
         </p>
       ) : null}
       <AssessmentRunNotice partial={assessment?.run.partial ?? false} />
-      <div className="rounded border border-slate-700 bg-slate-900/60 p-3 text-xs text-slate-300">
-        <p>
-          Baseline desta tabela:{" "}
-          {baseline ? `${baseline.audit_run_id.slice(0, 8)}…` : "não definido"}
-        </p>
-        <p>
-          Score de escopo:{" "}
-          {scopeScore?.score == null
-            ? scopeScore?.status === "not_applicable"
-              ? "não aplicável a este mecanismo"
-              : "indisponível por cobertura"
-            : `${scopeScore.score}/100`}{" "}
-          · confiança {Math.round((scopeScore?.confidence ?? 0) * 100)}%
-        </p>
-        {scopeScore?.categories.map((category) => (
-          <p key={category.category}>
-            {category.category}: {category.score}/100 · {category.findings}{" "}
-            achados · penalidade {category.penalty} · evidência positiva +
-            {category.positive}
-          </p>
-        ))}
-        {assessment?.run.status === "success" ? (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {!api.hasSession() && (
-              <input
-                aria-label="Token para baseline da tabela"
-                type="password"
-                autoComplete="off"
-                placeholder="Token de operação protegida"
-                value={baselineToken}
-                onChange={(event) => setBaselineToken(event.target.value)}
-                className="rounded border border-slate-600 bg-slate-900 px-2 py-1 text-slate-100"
-              />
-            )}
-            <button
-              type="button"
-              disabled={!api.hasRole("operator") && !baselineToken}
-              className="rounded border border-slate-500 px-2 py-1 text-cyan-300 disabled:opacity-50"
-              onClick={() => void approveBaseline()}
-            >
-              Aprovar esta execução como baseline da tabela
-            </button>
-          </div>
-        ) : null}
-      </div>
+      <TableBaselineBox
+        assessment={assessment}
+        baseline={baseline}
+        scopeScore={scopeScore}
+        baselineToken={baselineToken}
+        setBaselineToken={setBaselineToken}
+        approveBaseline={approveBaseline}
+      />
       <InventoryDetailTabs tab={tab} onTabChange={setTab}>
         {tab === "overview" ? (
-          <>
-            <DetailSection title="Tabela">
-              <DetailGrid
-                items={[
-                  {
-                    label: "Banco / esquema",
-                    value: `${t.database_name} / ${t.schema_name}`,
-                  },
-                  { label: "Tabela", value: t.table_name },
-                  { label: "Tipo", value: t.relation_class || t.relkind },
-                  {
-                    label: "Linhas estimadas",
-                    value: t.row_estimate.toLocaleString("pt-BR"),
-                  },
-                  {
-                    label: "Armazenamento",
-                    value: formatBytes(t.total_size_bytes),
-                  },
-                  {
-                    label: "Chave primária",
-                    value: t.has_primary_key ? "Sim" : "Não",
-                  },
-                  {
-                    label: "Comentário",
-                    value: assessment?.table.comment ?? "—",
-                  },
-                  {
-                    label: "Área de armazenamento",
-                    value: assessment?.table.tablespace_name ?? "—",
-                  },
-                  {
-                    label: "Persistência",
-                    value: assessment?.table.persistence ?? "—",
-                  },
-                  {
-                    label: "Parâmetros de armazenamento",
-                    value:
-                      assessment?.table.storage_parameters.join(", ") || "—",
-                  },
-                  { label: "Execução", value: t.audit_run_id },
-                ]}
-              />
-            </DetailSection>
-            <DetailSection title="Resumo da execução">
-              <DetailGrid
-                items={[
-                  {
-                    label: "Colunas",
-                    value: assessment?.summary.columns ?? "—",
-                  },
-                  {
-                    label: "Restrições",
-                    value: assessment?.summary.constraints ?? "—",
-                  },
-                  {
-                    label: "Índices",
-                    value: assessment?.summary.indexes ?? "—",
-                  },
-                  {
-                    label: "Achados",
-                    value: assessment?.summary.findings ?? "—",
-                  },
-                  {
-                    label: "Permissões",
-                    value: assessment?.summary.grants ?? "—",
-                  },
-                  {
-                    label: "Dependências",
-                    value: assessment?.summary.dependencies ?? "—",
-                  },
-                ]}
-              />
-            </DetailSection>
-            {assessment ? (
-              <DetailSection title="Score estrutural da tabela">
-                <AssessmentScoreSummary summary={assessment.summary} />
-              </DetailSection>
-            ) : null}
-            <p className="text-xs text-slate-400">
-              Contrato v{assessment?.version ?? 1}; as coleções relacionadas são
-              paginadas e sempre usam esta execução.
-            </p>
-          </>
+          <TableOverviewTab t={t} assessment={assessment} />
         ) : null}
         {tab === "structure" ? (
-          <div className="space-y-5">
-            <DetailSection title="Colunas">
-              <CollectionState data={columns}>
-                <ul className="space-y-1 text-sm">
-                  {columns.items.map((c) => (
-                    <li
-                      key={c.id}
-                      className="rounded border border-slate-700 p-2"
-                    >
-                      <strong>{c.column_name}</strong> · {c.data_type} ·{" "}
-                      {c.is_nullable ? "nullable" : "not null"}
-                      {c.comment ? ` · ${c.comment}` : ""}
-                    </li>
-                  ))}
-                </ul>
-              </CollectionState>
-            </DetailSection>
-            <DetailSection title="Constraints">
-              <CollectionState data={constraints}>
-                <ul className="space-y-1 text-sm">
-                  {constraints.items.map((c) => (
-                    <li
-                      key={c.id}
-                      className="rounded border border-slate-700 p-2"
-                    >
-                      {c.constraint_name} · {c.constraint_type} ·{" "}
-                      {c.is_validated ? "validada" : "não validada"}
-                      {c.referenced_table_name
-                        ? ` → ${c.referenced_schema_name}.${c.referenced_table_name}`
-                        : ""}
-                    </li>
-                  ))}
-                </ul>
-              </CollectionState>
-            </DetailSection>
-            <DetailSection title="Índices">
-              <CollectionState data={indexes}>
-                <ul className="space-y-1 text-sm">
-                  {indexes.items.map((i) => (
-                    <li
-                      key={i.id}
-                      className="rounded border border-slate-700 p-2"
-                    >
-                      {i.index_name} · {i.access_method ?? "índice"} ·{" "}
-                      {formatBytes(i.size_bytes)}
-                    </li>
-                  ))}
-                </ul>
-              </CollectionState>
-            </DetailSection>
-          </div>
+          <TableStructureTab
+            columns={columns}
+            constraints={constraints}
+            indexes={indexes}
+          />
         ) : null}
         {tab === "relationships" ? (
-          <div className="space-y-5">
-            <DetailSection title="Foreign keys">
-              {graph ? (
-                <RelationshipDiagram
-                  graph={graph}
-                  root={t}
-                  env={env}
-                  run={t.audit_run_id}
-                  database={t.database_name}
-                  onNavigate={onNavigate}
-                />
-              ) : (
-                <p role="status" className="text-sm text-slate-400">
-                  Carregando grafo…
-                </p>
-              )}
-            </DetailSection>
-            <DetailSection title="Dependências de views e funções">
-              <CollectionState data={dependencies}>
-                <ul className="space-y-1 text-sm">
-                  {dependencies.items.map((d) => (
-                    <li
-                      key={`${d.source_kind}:${d.source_schema}.${d.source_name}->${d.target_schema}.${d.target_name}`}
-                      className="rounded border border-slate-700 p-2"
-                    >
-                      {d.source_kind} {d.source_schema}.{d.source_name} →{" "}
-                      {d.target_kind} {d.target_schema}.{d.target_name}
-                    </li>
-                  ))}
-                </ul>
-              </CollectionState>
-            </DetailSection>
-          </div>
+          <TableRelationshipsTab
+            t={t}
+            env={env}
+            graph={graph}
+            dependencies={dependencies}
+            onNavigate={onNavigate}
+          />
         ) : null}
         {tab === "performance" ? (
           <TableDetail
@@ -876,86 +300,15 @@ export function TableAssessmentPanel({
           />
         ) : null}
         {tab === "security" ? (
-          <div className="space-y-5">
-            <DetailSection title="Row Level Security">
-              <p className="text-sm">
-                RLS{" "}
-                {assessment?.table.rls_enabled ? "habilitado" : "desabilitado"}
-                {";"}
-                FORCE{" "}
-                {assessment?.table.rls_forced ? "habilitado" : "desabilitado"}.
-              </p>
-            </DetailSection>
-            <DetailSection title="Permissões efetivas">
-              <CollectionState data={grants}>
-                <ul className="space-y-1 text-sm">
-                  {grants.items.map((g) => (
-                    <li key={g.grantee}>
-                      {g.grantee}: {g.privileges.join(", ")}
-                    </li>
-                  ))}
-                </ul>
-              </CollectionState>
-            </DetailSection>
-            <DetailSection title="Políticas">
-              <CollectionState data={policies}>
-                <ul className="space-y-1 text-sm">
-                  {policies.items.map((p) => (
-                    <li key={p.name}>
-                      {p.name} · {p.command ?? "ALL"} · {p.roles.join(", ")}
-                    </li>
-                  ))}
-                </ul>
-              </CollectionState>
-            </DetailSection>
-            <DetailSection title="Triggers">
-              <CollectionState data={triggers}>
-                <ul className="space-y-1 text-sm">
-                  {triggers.items.map((tr) => (
-                    <li key={tr.name}>
-                      {tr.name} · {tr.enabled} · {tr.timing ?? "—"}{" "}
-                      {tr.events ?? ""}
-                    </li>
-                  ))}
-                </ul>
-              </CollectionState>
-            </DetailSection>
-          </div>
+          <TableSecurityTab
+            assessment={assessment}
+            grants={grants}
+            policies={policies}
+            triggers={triggers}
+          />
         ) : null}
         {tab === "recommendations" ? (
-          <DetailSection title="Findings do run">
-            <CollectionState data={findings}>
-              <ul className="space-y-2 text-sm">
-                {findings.items.map((f) => (
-                  <li
-                    key={f.id}
-                    className="rounded border border-slate-700 p-3"
-                  >
-                    <strong>{f.title}</strong>
-                    <span className="ml-2 text-xs text-slate-400">
-                      {f.severity} · {f.rule_id} v{f.rule_version} · confiança{" "}
-                      {Math.round((f.confidence ?? 0) * 100)}%
-                    </span>
-                    <p>{f.summary}</p>
-                    <p className="text-slate-300">{f.recommendation}</p>
-                    {f.validation ? (
-                      <p className="text-xs text-slate-400">
-                        Validação: {f.validation}
-                      </p>
-                    ) : null}
-                    {f.evidence ? (
-                      <details className="mt-2 text-xs text-slate-300">
-                        <summary>Evidência</summary>
-                        <pre className="overflow-auto whitespace-pre-wrap">
-                          {JSON.stringify(f.evidence, null, 2)}
-                        </pre>
-                      </details>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </CollectionState>
-          </DetailSection>
+          <TableFindingsTab findings={findings} />
         ) : null}
       </InventoryDetailTabs>
     </div>

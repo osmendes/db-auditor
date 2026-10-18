@@ -5,8 +5,8 @@ import { defineConfig } from "vite";
 
 // The browser calls this dev server on the same origin; Compose sets its API target.
 const env =
-  (globalThis as { process?: { env?: Record<string, string> } }).process
-    ?.env ?? {};
+  (globalThis as { process?: { env?: Record<string, string> } }).process?.env ??
+  {};
 const apiProxyTarget = env.VITE_API_PROXY_TARGET ?? "http://localhost:8080";
 
 export default defineConfig({
