@@ -67,7 +67,7 @@ services:
       XDG_CACHE_HOME: /bun-home/.cache
       XDG_DATA_HOME: /bun-home/.local/share
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/}
-      VITE_COMPANY_NAME: ${AUDITOR_COMPANY_NAME:-Qualle Control}
+      VITE_COMPANY_NAME: ${AUDITOR_COMPANY_NAME:-db-auditor}
       VITE_API_PROXY_TARGET: http://api:8080
       VITE_ARCHITECTURE_REPORT_ENABLED: ${VITE_ARCHITECTURE_REPORT_ENABLED:-false}
     volumes:

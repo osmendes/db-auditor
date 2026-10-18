@@ -7,7 +7,7 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 /**
- * Select alinhado ao Design System Qualle Control (dark):
+ * Select alinhado ao Design System do db-auditor (dark):
  * superfície elevated, borda Cinza, tipografia Satoshi, focus branco.
  * Native <select> com chevron custom (sem lib extra).
  */

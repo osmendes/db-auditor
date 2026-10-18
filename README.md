@@ -64,7 +64,7 @@ Você pode gravar essa escolha no ambiente, para não repetir em todo comando.
    | Senha do banco interno do auditor | `POSTGRES_PASSWORD` | Use uma senha sua. O exemplo `change-me-locally` não deve ir para um servidor exposto. |
    | Usuário do primeiro acesso | `AUDITOR_BOOTSTRAP_USER` | O exemplo é `admin`. |
    | Senha do primeiro acesso | `AUDITOR_BOOTSTRAP_PASSWORD` | Precisa ter **no mínimo 16 caracteres**. O exemplo local é `db-auditor-local-1`. Troque antes de expor o serviço. |
-   | Nome da empresa | `AUDITOR_COMPANY_NAME` | Aparece debaixo do título DB Auditor. O exemplo é `Qualle Control`. |
+   | Nome da empresa | `AUDITOR_COMPANY_NAME` | Aparece debaixo do título DB Auditor. O padrão é `db-auditor`. |
 
 3. Suba o sistema:
 
@@ -89,7 +89,7 @@ Para parar: `make down`. Para ver o que está acontecendo: `make logs`.
 - A conta de operador só é criada se ainda não existir nenhuma conta.
 - Mudar o `.env` **depois** não troca uma senha que já foi gravada.
 - A sessão dura até 8 horas. Recarregar a página não pede login de novo enquanto ela valer.
-- Se todas as contas de operador se perderem, não apague os usuários. Siga o procedimento de recuperação em [operações da segunda etapa](docs/second-stage-operations.md).
+- Se todas as contas de operador se perderem, não apague os usuários. Siga o procedimento de recuperação no [guia de operação](docs/ops.md#recuperar-o-acesso-de-operador).
 
 ### Ligar um banco para ser auditado
 
@@ -125,6 +125,8 @@ make down && make up
 Não rode `make reset-volume` numa instalação que já tem coletas. Esse comando apaga o banco interno: snapshots, achados e relatórios.
 
 Para um servidor de verdade (domínio, HTTPS, backup), use o [guia de operação](docs/ops.md) e o exemplo em `deploy/env.prod.example`.
+
+> **Atenção: porta 9090 (métricas).** A API expõe `GET /metrics` em `:9090` **sem autenticação**: os contadores revelam volume de execuções, erros e rotas. O Compose não publica essa porta no host, e o Caddy não encaminha `/metrics`. O scrape fica em `api:9090`, dentro da rede do Compose. Não acrescente `9090:9090` (nem `127.0.0.1:9090:9090` num host compartilhado) em `ports:` e não abra 9090 no firewall da VPS. Detalhes no [guia de operação](docs/ops.md).
 
 ### Endereços neste computador
 

@@ -4,5 +4,5 @@ export function companyName(): string {
   if (typeof raw === "string" && raw.trim()) {
     return raw.trim();
   }
-  return "Qualle Control";
+  return "db-auditor";
 }

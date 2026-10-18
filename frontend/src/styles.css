@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 /*
- * Design System Qualle Control — tokens dark/light.
+ * Design System db-auditor — tokens dark/light.
  * Default do produto: dark. Toggle aplica .light | .dark no <html>.
- * Fonte: Figma Design System - Qualle Control
+ * Fonte: Design System do db-auditor
  */
 @theme {
   --color-brand: #000000;
