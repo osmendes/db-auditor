@@ -61,6 +61,8 @@ Os dois usam `CREATE INDEX CONCURRENTLY IF NOT EXISTS`, um comando por arquivo. 
 
 A maior razão medida foi 1,74, na página profunda; o fator é 8. As demais ficaram abaixo de 0,6.
 
+Os planos completos (`EXPLAIN (ANALYZE, BUFFERS)`) estão em [`plans/before`](plans/before) (sem as migrações 22/23) e [`plans/after`](plans/after). Para regerar: `AUDITOR_SCALE_PLAN_DIR=<dir> go test -p 1 -count=1 -v -run '^TestScaleQueryBudgetsIntegration$' ./internal/repository/`.
+
 ## Planos aceitos com justificativa
 
 - **Página profunda da fila.** Com offset 5000, o planner prefere ordenar as cerca de 8 000 linhas abertas a percorrer 5 000 entradas do índice. É o plano certo para esse offset. A UI pagina a partir da primeira página, que usa o índice. O orçamento continua cobrindo o caso.

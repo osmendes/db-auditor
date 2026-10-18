@@ -1,0 +1,98 @@
+-- inventory.filtered query #0
+-- name: CountTableSnapshots :one
+
+SELECT COUNT(*)::bigint
+FROM table_snapshot
+WHERE environment_id = $1::uuid
+  AND audit_run_id = COALESCE(
+    NULLIF($2, '')::uuid,
+    (SELECT id FROM audit_run
+     WHERE environment_id = $1::uuid
+       AND status IN ('success', 'partial_success')
+     ORDER BY started_at DESC, id DESC
+     LIMIT 1)
+  )
+  AND ($3 = '' OR database_name = $3)
+  AND ($4 = '' OR schema_name = $4)
+  AND ($5 = '' OR table_name = $5)
+  AND ($6 = '' OR relation_class = $6)
+  AND (
+    $7 = ''
+    OR table_name ILIKE $7
+    OR schema_name ILIKE $7
+    OR database_name ILIKE $7
+  )
+Aggregate  (cost=429.43..429.44 rows=1 width=8) (actual time=1.543..1.544 rows=1 loops=1)
+  Buffers: shared hit=183
+  InitPlan 1
+    ->  Limit  (cost=0.28..2.01 rows=1 width=24) (actual time=0.006..0.006 rows=1 loops=1)
+          Buffers: shared hit=3
+          ->  Index Only Scan using audit_run_latest_idx on audit_run  (cost=0.28..47.02 rows=27 width=24) (actual time=0.006..0.006 rows=1 loops=1)
+                Index Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+                Heap Fetches: 1
+                Buffers: shared hit=3
+  ->  Bitmap Heap Scan on table_snapshot  (cost=10.03..427.39 rows=14 width=0) (actual time=0.145..1.532 rows=220 loops=1)
+        Recheck Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)) AND (database_name = 'db3'::text))
+        Filter: ((table_name ~~* '%table5%'::text) OR (schema_name ~~* '%table5%'::text) OR (database_name ~~* '%table5%'::text))
+        Rows Removed by Filter: 1780
+        Heap Blocks: exact=158
+        Buffers: shared hit=183
+        ->  Bitmap Index Scan on idx_assessment_table_scope  (cost=0.00..10.03 rows=129 width=0) (actual time=0.068..0.068 rows=2000 loops=1)
+              Index Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)) AND (database_name = 'db3'::text))
+              Buffers: shared hit=25
+Planning Time: 0.126 ms
+Execution Time: 1.555 ms
+
+-- inventory.filtered query #1
+-- name: ListTableSnapshotsFiltered :many
+SELECT id::text, audit_run_id::text, environment_id::text, database_name, schema_name, table_name,
+  owner_name, COALESCE(relkind, ''), COALESCE(relation_class, ''), COALESCE(is_partition, false),
+  total_size_bytes, data_size_bytes, index_size_bytes,
+  COALESCE(row_estimate, 0), COALESCE(column_count, 0), COALESCE(has_primary_key, false), collected_at
+FROM table_snapshot
+WHERE environment_id = $1::uuid
+  AND audit_run_id = COALESCE(
+    NULLIF($2, '')::uuid,
+    (SELECT id FROM audit_run
+     WHERE environment_id = $1::uuid
+       AND status IN ('success', 'partial_success')
+     ORDER BY started_at DESC, id DESC
+     LIMIT 1)
+  )
+  AND ($3 = '' OR database_name = $3)
+  AND ($4 = '' OR schema_name = $4)
+  AND ($5 = '' OR table_name = $5)
+  AND ($6 = '' OR relation_class = $6)
+  AND (
+    $7 = ''
+    OR table_name ILIKE $7
+    OR schema_name ILIKE $7
+    OR database_name ILIKE $7
+  )
+ORDER BY database_name, schema_name, table_name, id
+LIMIT $8 OFFSET $9
+Limit  (cost=429.87..429.91 rows=14 width=257) (actual time=1.768..1.774 rows=50 loops=1)
+  Buffers: shared hit=183
+  InitPlan 1
+    ->  Limit  (cost=0.28..2.01 rows=1 width=24) (actual time=0.006..0.006 rows=1 loops=1)
+          Buffers: shared hit=3
+          ->  Index Only Scan using audit_run_latest_idx on audit_run  (cost=0.28..47.02 rows=27 width=24) (actual time=0.006..0.006 rows=1 loops=1)
+                Index Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+                Heap Fetches: 1
+                Buffers: shared hit=3
+  ->  Sort  (cost=427.86..427.90 rows=14 width=257) (actual time=1.768..1.770 rows=50 loops=1)
+        Sort Key: table_snapshot.schema_name, table_snapshot.table_name, ((table_snapshot.id)::text)
+        Sort Method: top-N heapsort  Memory: 47kB
+        Buffers: shared hit=183
+        ->  Bitmap Heap Scan on table_snapshot  (cost=10.03..427.60 rows=14 width=257) (actual time=0.144..1.648 rows=220 loops=1)
+              Recheck Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)) AND (database_name = 'db3'::text))
+              Filter: ((table_name ~~* '%table5%'::text) OR (schema_name ~~* '%table5%'::text) OR (database_name ~~* '%table5%'::text))
+              Rows Removed by Filter: 1780
+              Heap Blocks: exact=158
+              Buffers: shared hit=183
+              ->  Bitmap Index Scan on idx_assessment_table_scope  (cost=0.00..10.03 rows=129 width=0) (actual time=0.067..0.067 rows=2000 loops=1)
+                    Index Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)) AND (database_name = 'db3'::text))
+                    Buffers: shared hit=25
+Planning Time: 0.137 ms
+Execution Time: 1.792 ms
+

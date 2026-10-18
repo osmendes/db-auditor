@@ -1,0 +1,18 @@
+-- kpi.count_findings query #0
+SELECT lower(severity), lower(status), finding_type, count(*)
+FROM finding WHERE ($1='' OR environment_id=$1::uuid)
+GROUP BY lower(severity), lower(status), finding_type
+HashAggregate  (cost=3900.46..3913.06 rows=840 width=90) (actual time=11.934..11.997 rows=840 loops=1)
+  Group Key: lower(severity), lower(status), finding_type
+  Batches: 1  Memory Usage: 169kB
+  Buffers: shared hit=644
+  ->  Bitmap Heap Scan on finding  (cost=227.55..3700.13 rows=20033 width=82) (actual time=0.355..7.817 rows=20000 loops=1)
+        Recheck Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+        Heap Blocks: exact=624
+        Buffers: shared hit=644
+        ->  Bitmap Index Scan on finding_env_status_idx  (cost=0.00..222.54 rows=20033 width=0) (actual time=0.293..0.293 rows=20000 loops=1)
+              Index Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+              Buffers: shared hit=20
+Planning Time: 0.052 ms
+Execution Time: 12.045 ms
+
