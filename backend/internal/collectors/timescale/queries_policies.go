@@ -36,8 +36,9 @@ SELECT
   COALESCE(j.scheduled, false) AS scheduled,
   COALESCE(j.fixed_schedule, false) AS fixed_schedule,
   j.config::text AS config_json,
-  j.next_start AS next_start,
-  j.initial_start AS initial_start,
+  -- -infinity while TimescaleDB runs the job; not a time.Time, so NULL.
+  CASE WHEN isfinite(j.next_start) THEN j.next_start END AS next_start,
+  CASE WHEN isfinite(j.initial_start) THEN j.initial_start END AS initial_start,
   j.hypertable_schema AS hypertable_schema,
   j.hypertable_name AS hypertable_name,
   j.check_schema AS check_schema,
@@ -70,7 +71,8 @@ SELECT
   j.schedule_interval::text AS schedule_interval,
   COALESCE(j.scheduled, false) AS scheduled,
   j.config::text AS config_json,
-  j.next_start AS next_start,
+  -- -infinity while TimescaleDB runs the job; not a time.Time, so NULL.
+  CASE WHEN isfinite(j.next_start) THEN j.next_start END AS next_start,
   j.owner AS owner_name
 FROM timescaledb_information.jobs j
 WHERE j.proc_name IN (

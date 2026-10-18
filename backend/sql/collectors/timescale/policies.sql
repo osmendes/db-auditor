@@ -1,5 +1,4 @@
 -- Retention / compression / refresh policies derived from jobs (read-only).
--- Policies are jobs with known proc names; config carries policy parameters.
 SELECT
   current_database() AS database_name,
   j.job_id::bigint AS job_id,
@@ -18,7 +17,8 @@ SELECT
   j.schedule_interval::text AS schedule_interval,
   COALESCE(j.scheduled, false) AS scheduled,
   j.config::text AS config_json,
-  j.next_start AS next_start,
+  -- -infinity while TimescaleDB runs the job; not a time.Time, so NULL.
+  CASE WHEN isfinite(j.next_start) THEN j.next_start END AS next_start,
   j.owner AS owner_name
 FROM timescaledb_information.jobs j
 WHERE j.proc_name IN (
@@ -29,4 +29,4 @@ WHERE j.proc_name IN (
   'policy_reorder',
   'policy_columnstore'
 )
-ORDER BY j.job_id;
+ORDER BY j.job_id

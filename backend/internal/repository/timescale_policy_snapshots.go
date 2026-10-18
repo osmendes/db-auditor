@@ -63,7 +63,7 @@ ON CONFLICT (audit_run_id, database_name, job_id) DO NOTHING
 			nullString(j.ProcSchema), nullString(j.ProcName), nullString(j.Owner),
 			j.Scheduled, j.FixedSchedule, nullStringPtr(j.ConfigJSON), j.NextStart, j.InitialStart,
 			nullStringPtr(j.HypertableSchema), nullStringPtr(j.HypertableName), nullStringPtr(j.CheckSchema), nullStringPtr(j.CheckName),
-			nullString(j.LastRunStatus), j.TotalFailures, nullString(j.LastRunDuration), j.MaxBackgroundWorkers)
+			nullString(j.LastRunStatus), j.TotalFailures, j.LastRunDuration, j.MaxBackgroundWorkers) // last_run_duration is NOT NULL DEFAULT '': a job that never ran has none
 		if err != nil {
 			return fmt.Errorf("insert job_snapshot %s#%d: %w", j.DatabaseName, j.JobID, err)
 		}
