@@ -1,0 +1,77 @@
+-- inventory.first_page_sorted query #0
+-- name: CountTableSnapshots :one
+
+SELECT COUNT(*)::bigint
+FROM table_snapshot
+WHERE environment_id = $1::uuid
+  AND audit_run_id = COALESCE(
+    NULLIF($2, '')::uuid,
+    (SELECT id FROM audit_run
+     WHERE environment_id = $1::uuid
+       AND status IN ('success', 'partial_success')
+     ORDER BY started_at DESC, id DESC
+     LIMIT 1)
+  )
+  AND ($3 = '' OR database_name = $3)
+  AND ($4 = '' OR schema_name = $4)
+  AND ($5 = '' OR table_name = $5)
+  AND ($6 = '' OR relation_class = $6)
+  AND (
+    $7 = ''
+    OR table_name ILIKE $7
+    OR schema_name ILIKE $7
+    OR database_name ILIKE $7
+  )
+Aggregate  (cost=1436.16..1436.17 rows=1 width=8) (actual time=1.881..1.883 rows=1 loops=1)
+  Buffers: shared hit=784
+  InitPlan 1
+    ->  Limit  (cost=0.28..2.01 rows=1 width=24) (actual time=0.013..0.014 rows=1 loops=1)
+          Buffers: shared hit=3
+          ->  Index Only Scan using audit_run_latest_idx on audit_run  (cost=0.28..47.02 rows=27 width=24) (actual time=0.012..0.013 rows=1 loops=1)
+                Index Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+                Heap Fetches: 1
+                Buffers: shared hit=3
+  ->  Bitmap Heap Scan on table_snapshot  (cost=10.96..1432.53 rows=650 width=0) (actual time=0.275..1.435 rows=10000 loops=1)
+        Recheck Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)))
+        Heap Blocks: exact=771
+        Buffers: shared hit=784
+        ->  Bitmap Index Scan on table_snapshot_run_history_idx  (cost=0.00..10.79 rows=650 width=0) (actual time=0.201..0.201 rows=10000 loops=1)
+              Index Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)))
+              Buffers: shared hit=13
+Planning Time: 0.131 ms
+Execution Time: 1.904 ms
+
+-- inventory.first_page_sorted query #1
+SELECT id::text,audit_run_id::text,environment_id::text,database_name,schema_name,table_name,
+owner_name,COALESCE(relkind,''),COALESCE(relation_class,''),COALESCE(is_partition,false),
+total_size_bytes,data_size_bytes,index_size_bytes,COALESCE(row_estimate,0),COALESCE(column_count,0),
+COALESCE(has_primary_key,false),collected_at FROM table_snapshot
+WHERE environment_id=$1::uuid AND audit_run_id=COALESCE(NULLIF($2,'')::uuid,
+(SELECT id FROM audit_run WHERE environment_id=$1::uuid AND status IN ('success','partial_success') ORDER BY started_at DESC,id DESC LIMIT 1))
+AND ($3='' OR database_name=$3) AND ($4='' OR schema_name=$4)
+AND ($5='' OR table_name=$5) AND ($6='' OR relation_class=$6)
+AND ($7='' OR table_name ILIKE $7 OR schema_name ILIKE $7 OR database_name ILIKE $7)
+ORDER BY total_size_bytes DESC NULLS LAST, id ASC LIMIT $8 OFFSET $9
+Limit  (cost=1465.88..1466.00 rows=50 width=257) (actual time=5.702..5.708 rows=50 loops=1)
+  Buffers: shared hit=784
+  InitPlan 1
+    ->  Limit  (cost=0.28..2.01 rows=1 width=24) (actual time=0.009..0.010 rows=1 loops=1)
+          Buffers: shared hit=3
+          ->  Index Only Scan using audit_run_latest_idx on audit_run  (cost=0.28..47.02 rows=27 width=24) (actual time=0.009..0.009 rows=1 loops=1)
+                Index Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+                Heap Fetches: 1
+                Buffers: shared hit=3
+  ->  Sort  (cost=1463.87..1465.49 rows=650 width=257) (actual time=5.701..5.703 rows=50 loops=1)
+        Sort Key: table_snapshot.total_size_bytes DESC NULLS LAST, ((table_snapshot.id)::text)
+        Sort Method: top-N heapsort  Memory: 50kB
+        Buffers: shared hit=784
+        ->  Bitmap Heap Scan on table_snapshot  (cost=10.96..1442.28 rows=650 width=257) (actual time=0.229..3.288 rows=10000 loops=1)
+              Recheck Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)))
+              Heap Blocks: exact=771
+              Buffers: shared hit=784
+              ->  Bitmap Index Scan on table_snapshot_run_history_idx  (cost=0.00..10.79 rows=650 width=0) (actual time=0.161..0.161 rows=10000 loops=1)
+                    Index Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)))
+                    Buffers: shared hit=13
+Planning Time: 0.126 ms
+Execution Time: 5.734 ms
+

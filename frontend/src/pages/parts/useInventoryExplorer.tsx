@@ -90,6 +90,14 @@ export function useInventoryExplorer() {
   const [detailStats, setDetailStats] = useState<ColumnStatSnapshot[]>([]);
   const [detailWorkload, setDetailWorkload] = useState<WorkloadSnapshot[]>([]);
   const selectedKeyRef = useRef<string | null>(null);
+  // Side requests of the open table (history, stats, workload): aborted when
+  // another object opens, the sheet closes, the env changes or we unmount.
+  const detailAbortRef = useRef<AbortController | null>(null);
+  const abortDetail = () => {
+    detailAbortRef.current?.abort();
+    detailAbortRef.current = null;
+  };
+  useEffect(() => abortDetail, []);
 
   useEffect(() => {
     if (!envId) {
@@ -104,6 +112,7 @@ export function useInventoryExplorer() {
       return;
     }
     let cancelled = false;
+    const controller = new AbortController();
     setDatabases(null);
     setSchemas(null);
     setSelectedDb(null);
@@ -113,10 +122,10 @@ export function useInventoryExplorer() {
     setSnapshotStatus(null);
     setCapabilities(null);
     Promise.all([
-      api.databases(envId),
-      api.schemas(envId),
-      api.snapshotStatus(envId).catch(() => null),
-      api.environmentCapabilities(envId).catch(() => null),
+      api.databases(envId, undefined, controller.signal),
+      api.schemas(envId, controller.signal),
+      api.snapshotStatus(envId, undefined, controller.signal).catch(() => null),
+      api.environmentCapabilities(envId, controller.signal).catch(() => null),
     ])
       .then(([dbRes, scRes, status, capability]) => {
         if (!cancelled) {
@@ -135,6 +144,7 @@ export function useInventoryExplorer() {
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [envId]);
 
@@ -192,6 +202,7 @@ export function useInventoryExplorer() {
   ) => {
     const target = targetFor(selection);
     const key = inventoryTargetKey(envId ?? "", run ?? "", target);
+    abortDetail();
     selectedKeyRef.current = key;
     setSelectedItem(selection);
     setSelectedRun(run);
@@ -204,6 +215,7 @@ export function useInventoryExplorer() {
   };
 
   const closeSheet = () => {
+    abortDetail();
     selectedKeyRef.current = null;
     setSheetOpen(false);
     setSelectedItem(null);
@@ -222,12 +234,15 @@ export function useInventoryExplorer() {
       schema: t.schema_name,
       table: t.table_name,
     };
+    const controller = new AbortController();
+    detailAbortRef.current = controller;
+    const { signal } = controller;
     Promise.allSettled([
-      api.tableHistory(envId, { ...scope, granularity: "day" }),
-      api.tableColumnStats(envId, scope),
-      api.tableWorkload(envId, scope),
+      api.tableHistory(envId, { ...scope, granularity: "day" }, signal),
+      api.tableColumnStats(envId, scope, signal),
+      api.tableWorkload(envId, scope, signal),
     ]).then(([history, stats, workload]) => {
-      if (selectedKeyRef.current !== key) return;
+      if (signal.aborted || selectedKeyRef.current !== key) return;
       setDetailHistory(
         history.status === "fulfilled" ? history.value.items : [],
       );
@@ -239,6 +254,7 @@ export function useInventoryExplorer() {
   };
 
   useEffect(() => {
+    abortDetail();
     selectedKeyRef.current = null;
     setSelectedItem(null);
     setSelectedRun(null);
@@ -260,12 +276,13 @@ export function useInventoryExplorer() {
     const key = inventoryTargetKey(envId, run, inventory);
     if (selectedKeyRef.current === key) return;
     let cancelled = false;
+    const controller = new AbortController();
     selectedKeyRef.current = key;
     setSelectedItem(null);
     setSelectedRun(run);
     setDetailError(null);
     setSheetOpen(true);
-    void resolveInventorySelection(envId, run, inventory)
+    void resolveInventorySelection(envId, run, inventory, controller.signal)
       .then((selection) => {
         if (cancelled || selectedKeyRef.current !== key) return;
         if (!selection) {
@@ -290,6 +307,7 @@ export function useInventoryExplorer() {
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
     // The canonical key captures every part of the selected object and run.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -362,9 +380,10 @@ export function useInventoryExplorer() {
       return;
     }
     let cancelled = false;
+    const controller = new AbortController();
     setDetailSnapshot(null);
     void api
-      .snapshotStatus(envId, selectedRun)
+      .snapshotStatus(envId, selectedRun, controller.signal)
       .then((status) => {
         if (!cancelled) setDetailSnapshot(status);
       })
@@ -373,6 +392,7 @@ export function useInventoryExplorer() {
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [envId, selectedRun, snapshotStatus]);
 

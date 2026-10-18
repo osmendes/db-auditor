@@ -6,9 +6,10 @@ import {
 } from "react";
 import { useApp } from "../../context/AppContext";
 import { useEmptyContext } from "../../hooks/useEmptyContext";
+import { useLatestSignal } from "../../hooks/useLatestSignal";
 import { useRunCoverage } from "../../hooks/useRunCoverage";
 import { resolveEmptyCause } from "../../lib/emptyCause";
-import { formatError } from "../../lib/errors";
+import { formatError, isAbortError } from "../../lib/errors";
 import { downloadBlob } from "../../lib/export";
 import { api } from "../../services/api";
 import type { AuditRun, ReportFilters, ReportJob } from "../../types";
@@ -127,9 +128,11 @@ export function useReportsPage() {
       setRunId("");
       return;
     }
+    const controller = new AbortController();
     void api
-      .auditRuns({ environment_id: env })
+      .auditRuns({ environment_id: env }, controller.signal)
       .then((result) => {
+        if (controller.signal.aborted) return;
         const completed = result.items.filter(
           (run) => run.status === "success" || run.status === "partial_success",
         );
@@ -142,18 +145,22 @@ export function useReportsPage() {
         );
       })
       .catch(() => {
+        if (controller.signal.aborted) return;
         setRuns([]);
         setRunsLoaded(false);
       });
+    return () => controller.abort();
   }, [env]);
   useEffect(() => {
     if (!env || !runId || kind !== "architecture") {
       setDatabaseOptions([]);
       return;
     }
+    const controller = new AbortController();
     void api
-      .databases(env, runId)
+      .databases(env, runId, controller.signal)
       .then((response) => {
+        if (controller.signal.aborted) return;
         const names = response.items.map((item) => item.database_name);
         setDatabaseOptions(names);
         setDatabase((current) =>
@@ -161,21 +168,30 @@ export function useReportsPage() {
         );
       })
       .catch(() => {
+        if (controller.signal.aborted) return;
         setDatabaseOptions([]);
         setDatabase("");
       });
+    return () => controller.abort();
   }, [env, runId, kind]);
 
+  const nextJobsSignal = useLatestSignal();
+  const nextDecisionsSignal = useLatestSignal();
+  // Latest call wins (env switch, polling, refresh after an action) (PF-02).
   const refresh = useCallback(async () => {
+    const signal = nextJobsSignal();
     if (!env || (!token && !api.hasSession())) return;
     api.setReportToken(token);
     try {
-      setJobs((await api.reportJobs(env)).items);
+      const result = await api.reportJobs(env, signal);
+      if (signal.aborted) return;
+      setJobs(result.items);
       setError(null);
     } catch (cause: unknown) {
+      if (signal.aborted || isAbortError(cause)) return;
       setError(formatError(cause, "Não foi possível consultar os relatórios"));
     }
-  }, [env, token]);
+  }, [env, token, nextJobsSignal]);
 
   useEffect(() => {
     void refresh();
@@ -245,12 +261,18 @@ export function useReportsPage() {
 
   const loadDecisions = async () => {
     if (!env || !database.trim()) return;
+    const signal = nextDecisionsSignal();
     try {
-      setDecisions(
-        (await api.architectureDecisions(env, database.trim())).items,
+      const result = await api.architectureDecisions(
+        env,
+        database.trim(),
+        signal,
       );
+      if (signal.aborted) return;
+      setDecisions(result.items);
       setError(null);
     } catch (cause: unknown) {
+      if (signal.aborted || isAbortError(cause)) return;
       setError(formatError(cause, "Falha ao consultar decisões"));
     }
   };

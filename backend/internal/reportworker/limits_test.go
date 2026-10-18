@@ -5,8 +5,6 @@ import (
 	"errors"
 	"testing"
 	"time"
-
-	"github.com/osmendes/db-auditor/internal/report"
 )
 
 func TestMaxRenderDurationBounds(t *testing.T) {
@@ -18,18 +16,25 @@ func TestMaxRenderDurationBounds(t *testing.T) {
 	}
 }
 
-func TestRenderWithinFailsExplicitlyOnTimeout(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	big := report.Document{Type: "technical", Coverage: "complete"}
-	for i := 0; i < 5000; i++ {
-		big.Tables = append(big.Tables, report.Table{Database: "db", Schema: "public", Name: "t"})
+func TestJobFailureNamesTimeoutExplicitly(t *testing.T) {
+	expired, cancel := context.WithTimeout(context.Background(), time.Nanosecond)
+	defer cancel()
+	<-expired.Done()
+	if err := jobFailure(expired, expired, time.Second, context.DeadlineExceeded); !errors.Is(err, ErrRenderTimeout) {
+		t.Fatalf("an exhausted time budget must fail with ErrRenderTimeout: %v", err)
 	}
-	if pdf, err := renderWithin(ctx, time.Second, big); !errors.Is(err, ErrRenderTimeout) || pdf != nil {
-		t.Fatalf("an exhausted budget must fail explicitly, never return a partial PDF: %v", err)
+	if !renderTimedOut(expired) {
+		t.Fatal("expired budget must count as a render timeout")
 	}
-	pdf, err := renderWithin(context.Background(), time.Minute, report.Document{Type: "executive"})
-	if err != nil || len(pdf) == 0 {
-		t.Fatalf("render within budget: %v", err)
+	shutdown, stop := context.WithCancel(context.Background())
+	stop()
+	if renderTimedOut(shutdown) {
+		t.Fatal("a parent shutdown is not a render timeout; the job must be requeued, not failed")
+	}
+	memory := errors.New("relatório excedeu o orçamento de memória do worker (1 MiB)")
+	renderCtx, stopRender := context.WithCancelCause(context.Background())
+	stopRender(memory)
+	if err := jobFailure(context.Background(), renderCtx, time.Second, context.Canceled); !errors.Is(err, memory) {
+		t.Fatalf("memory budget cause must win: %v", err)
 	}
 }

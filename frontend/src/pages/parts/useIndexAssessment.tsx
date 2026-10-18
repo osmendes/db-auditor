@@ -20,7 +20,7 @@ import type { IndexDetailSnapshot } from "../../types/openapi";
 export function usePage<T>(
   active: boolean,
   scope: string,
-  load: (offset: number) => Promise<PagedResponse<T>>,
+  load: (offset: number, signal?: AbortSignal) => Promise<PagedResponse<T>>,
 ) {
   const loader = useRef(load);
   loader.current = load;
@@ -36,10 +36,11 @@ export function usePage<T>(
   useEffect(() => {
     if (!active) return;
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
     void loader
-      .current(offset)
+      .current(offset, controller.signal)
       .then((value) => {
         if (!cancelled) setData(value);
       })
@@ -54,6 +55,7 @@ export function usePage<T>(
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [active, scope, offset]);
   return { offset, setOffset, data, error, loading };
@@ -133,6 +135,7 @@ export function useIndexAssessment({
   ]);
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setDetail(null);
     setDetailError(null);
     setDetailLoading(true);
@@ -143,6 +146,7 @@ export function useIndexAssessment({
         index.database_name,
         index.schema_name,
         index.index_name,
+        controller.signal,
       )
       .then((value) => {
         if (!cancelled) setDetail(value);
@@ -155,12 +159,13 @@ export function useIndexAssessment({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [scope]);
   const history = usePage<IndexHistoryPoint>(
     tab === "performance",
     scope,
-    (offset) =>
+    (offset, signal) =>
       api.indexHistory(
         environment,
         run,
@@ -169,23 +174,28 @@ export function useIndexAssessment({
         index.index_name,
         50,
         offset,
+        signal,
       ),
   );
-  const grants = usePage<GrantSnapshot>(tab === "security", scope, (offset) =>
-    api.tableGrants(
-      environment,
-      run,
-      index.database_name,
-      index.schema_name,
-      index.table_name,
-      50,
-      offset,
-    ),
+  const grants = usePage<GrantSnapshot>(
+    tab === "security",
+    scope,
+    (offset, signal) =>
+      api.tableGrants(
+        environment,
+        run,
+        index.database_name,
+        index.schema_name,
+        index.table_name,
+        50,
+        offset,
+        signal,
+      ),
   );
   const findings = usePage<Finding>(
     tab === "recommendations",
     scope,
-    (offset) =>
+    (offset, signal) =>
       api.indexFindings(
         environment,
         run,
@@ -194,6 +204,7 @@ export function useIndexAssessment({
         index.index_name,
         50,
         offset,
+        signal,
       ),
   );
   const detailState = state(detailError, detailLoading, detail !== null);

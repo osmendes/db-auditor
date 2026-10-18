@@ -2,7 +2,7 @@
 
 ## Schema do snapshot store
 
-O schema canônico está em `backend/migrations/01_baseline.sql`. Os ambientes iniciais vêm de `AUDITOR_TARGET_N_*` no `.env`: a API grava nome e id depois das migrations. A API aplica o baseline só quando o banco está vazio e registra `schema_migration`. Um volume que já tem o schema atual recebe só o que falta (`03_audit_schedule.sql` até `22_report_limits_retention_governance.sql`) e não reaplica o baseline. O segundo boot não executa SQL de novo. Se o checksum de um arquivo já aplicado mudar, a API recusa subir. As notas de cada etapa (migrações, limites e decisões) estão em [notas-por-etapa.md](notas-por-etapa.md).
+O schema canônico está em `backend/migrations/01_baseline.sql`. Os ambientes iniciais vêm de `AUDITOR_TARGET_N_*` no `.env`: a API grava nome e id depois das migrations. A API aplica o baseline só quando o banco está vazio e registra `schema_migration`. Um volume que já tem o schema atual recebe só o que falta (`03_audit_schedule.sql` até `24_report_limits_retention_governance.sql`) e não reaplica o baseline. O segundo boot não executa SQL de novo. Se o checksum de um arquivo já aplicado mudar, a API recusa subir. As notas de cada etapa (migrações, limites e decisões) estão em [notas-por-etapa.md](notas-por-etapa.md).
 
 Antes de atualizar uma instalação persistente, faça backup do snapshot store e confira a restauração. A migração `12_view_detail.sql` acrescenta campos sem apagar visões existentes. Depois do deploy, execute uma nova coleta de PostgreSQL para preencher colunas e opções de segurança: execuções antigas mostram esses campos como não coletados. Para voltar à versão anterior, pare a API nova e restaure o backup ou use a versão anterior do aplicativo; não remova as novas colunas manualmente.
 
@@ -129,6 +129,8 @@ O dump não contém senha de alvo. Confira o `.env.prod` à parte antes de subir
 6. UI **Documentação** descreve o fluxo de configuração via `.env`
 
 ## Retenção e restauração
+
+O worker grava o PDF em streaming: renderiza página a página direto num `COPY` para `report_artifact`, sem montar o arquivo inteiro na memória. Cada job registra `peak_heap_bytes`, `pages` e `bytes` no log `report pdf rendered`. Se o heap do job passar de `AUDITOR_REPORT_MAX_HEAP_MB` (padrão 256), o job falha com o motivo "relatório excedeu o orçamento de memória do worker". Limites de 200 páginas, 16 MiB e 8 MiB de texto também falham com motivo legível. Dimensione o limite de memória do contêiner da API acima desse teto.
 
 O prazo do PDF fica em `auditor_setting.report_retention_days` (padrão 30). Um artefato vencido não é mais baixado e é removido pela limpeza horária do worker; a linha do job permanece como trilha auditável. Uma atualização não apaga achados, execuções nem jobs.
 

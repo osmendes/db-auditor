@@ -11,6 +11,7 @@ export async function resolveInventorySelection(
   envId: string,
   run: string,
   inventory: InventoryTarget,
+  signal?: AbortSignal,
 ): Promise<SelectedInventoryItem | null> {
   const params = {
     audit_run_id: run,
@@ -24,6 +25,7 @@ export async function resolveInventorySelection(
   ): Promise<T | null> => {
     let offset = 0;
     for (let attempt = 0; attempt < 20; attempt++) {
+      signal?.throwIfAborted();
       const result = await load(offset);
       const found = result.items.find(matches);
       if (found) return found;
@@ -41,12 +43,14 @@ export async function resolveInventorySelection(
           inventory.database,
           inventory.schema,
           inventory.name,
+          signal,
         );
         return { kind: "tables", item: result.table };
       }
       case "indexes": {
         const item = await findPage(
-          (offset) => api.indexes(envId, { ...params, limit: 100, offset }),
+          (offset) =>
+            api.indexes(envId, { ...params, limit: 100, offset }, signal),
           (value) =>
             value.database_name === inventory.database &&
             value.schema_name === inventory.schema &&
@@ -56,7 +60,8 @@ export async function resolveInventorySelection(
       }
       case "views": {
         const item = await findPage(
-          (offset) => api.views(envId, { ...params, limit: 100, offset }),
+          (offset) =>
+            api.views(envId, { ...params, limit: 100, offset }, signal),
           (value) =>
             value.database_name === inventory.database &&
             value.schema_name === inventory.schema &&
@@ -67,11 +72,15 @@ export async function resolveInventorySelection(
       case "caggs": {
         const item = await findPage(
           (offset) =>
-            api.continuousAggregatesPage(envId, {
-              ...params,
-              limit: 100,
-              offset,
-            }),
+            api.continuousAggregatesPage(
+              envId,
+              {
+                ...params,
+                limit: 100,
+                offset,
+              },
+              signal,
+            ),
           (value) =>
             value.database_name === inventory.database &&
             value.schema_name === inventory.schema &&
@@ -82,7 +91,8 @@ export async function resolveInventorySelection(
       }
       case "functions": {
         const item = await findPage(
-          (offset) => api.functions(envId, { ...params, limit: 100, offset }),
+          (offset) =>
+            api.functions(envId, { ...params, limit: 100, offset }, signal),
           (value) =>
             value.database_name === inventory.database &&
             value.schema_name === inventory.schema &&
@@ -94,7 +104,11 @@ export async function resolveInventorySelection(
       case "hypertables": {
         const item = await findPage(
           (offset) =>
-            api.hypertablesPage(envId, { ...params, limit: 100, offset }),
+            api.hypertablesPage(
+              envId,
+              { ...params, limit: 100, offset },
+              signal,
+            ),
           (value) =>
             value.database_name === inventory.database &&
             value.schema_name === inventory.schema &&

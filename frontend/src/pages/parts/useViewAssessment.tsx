@@ -20,7 +20,7 @@ import type {
 export function useViewCollection<T>(
   active: boolean,
   scope: string,
-  load: (offset: number) => Promise<PagedResponse<T>>,
+  load: (offset: number, signal?: AbortSignal) => Promise<PagedResponse<T>>,
 ) {
   const loader = useRef(load);
   loader.current = load;
@@ -36,10 +36,11 @@ export function useViewCollection<T>(
   useEffect(() => {
     if (!active) return;
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
     void loader
-      .current(offset)
+      .current(offset, controller.signal)
       .then((result) => {
         if (!cancelled) setData(result);
       })
@@ -54,6 +55,7 @@ export function useViewCollection<T>(
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [active, scope, offset]);
   return { data, error, loading, offset, setOffset };
@@ -120,6 +122,7 @@ export function useViewAssessment({
   ]);
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setDetail(null);
     setDetailError(null);
     setDetailLoading(true);
@@ -130,6 +133,7 @@ export function useViewAssessment({
         view.database_name,
         view.schema_name,
         view.view_name,
+        controller.signal,
       )
       .then((item) => {
         if (!cancelled) setDetail(item);
@@ -142,12 +146,13 @@ export function useViewAssessment({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [scope]);
   const dependencies = useViewCollection<DependencySnapshot>(
     tab === "relationships",
     scope,
-    (offset) =>
+    (offset, signal) =>
       api.viewDependencies(
         environment,
         run,
@@ -156,12 +161,13 @@ export function useViewAssessment({
         view.view_name,
         50,
         offset,
+        signal,
       ),
   );
   const grants = useViewCollection<GrantSnapshot>(
     tab === "security",
     scope,
-    (offset) =>
+    (offset, signal) =>
       api.viewGrants(
         environment,
         run,
@@ -170,12 +176,13 @@ export function useViewAssessment({
         view.view_name,
         50,
         offset,
+        signal,
       ),
   );
   const findings = useViewCollection<Finding>(
     tab === "recommendations",
     scope,
-    (offset) =>
+    (offset, signal) =>
       api.viewFindings(
         environment,
         run,
@@ -184,6 +191,7 @@ export function useViewAssessment({
         view.view_name,
         50,
         offset,
+        signal,
       ),
   );
   const target = {

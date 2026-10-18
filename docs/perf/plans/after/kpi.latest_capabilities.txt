@@ -1,0 +1,57 @@
+-- kpi.latest_capabilities query #0
+WITH latest AS (
+ SELECT id FROM audit_run WHERE environment_id=$1::uuid
+ AND status IN ('success','partial_success')
+ ORDER BY started_at DESC,id DESC LIMIT 1
+)
+SELECT
+ COALESCE((SELECT sum(size_bytes) FROM database_snapshot WHERE audit_run_id=(SELECT id FROM latest) AND NOT is_template),0),
+ (SELECT count(*) FROM hypertable_snapshot WHERE audit_run_id=(SELECT id FROM latest)),
+ (SELECT count(*) FROM job_snapshot WHERE audit_run_id=(SELECT id FROM latest) AND scheduled),
+ (SELECT count(*) FROM policy_snapshot WHERE audit_run_id=(SELECT id FROM latest))
+Result  (cost=23.75..23.76 rows=1 width=56) (actual time=0.021..0.023 rows=1 loops=1)
+  Buffers: shared hit=6
+  CTE latest
+    ->  Limit  (cost=0.28..2.01 rows=1 width=24) (actual time=0.006..0.006 rows=1 loops=1)
+          Buffers: shared hit=3
+          ->  Index Only Scan using audit_run_latest_idx on audit_run  (cost=0.28..47.02 rows=27 width=24) (actual time=0.005..0.006 rows=1 loops=1)
+                Index Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+                Heap Fetches: 1
+                Buffers: shared hit=3
+  InitPlan 3
+    ->  Aggregate  (cost=21.64..21.65 rows=1 width=32) (actual time=0.016..0.017 rows=1 loops=1)
+          Buffers: shared hit=6
+          InitPlan 2
+            ->  CTE Scan on latest  (cost=0.00..0.02 rows=1 width=16) (actual time=0.007..0.007 rows=1 loops=1)
+                  Buffers: shared hit=3
+          ->  Bitmap Heap Scan on database_snapshot  (cost=4.32..21.60 rows=5 width=8) (actual time=0.013..0.014 rows=5 loops=1)
+                Recheck Cond: (audit_run_id = (InitPlan 2).col1)
+                Filter: (NOT is_template)
+                Heap Blocks: exact=1
+                Buffers: shared hit=6
+                ->  Bitmap Index Scan on database_snapshot_audit_run_id_database_name_key  (cost=0.00..4.32 rows=5 width=0) (actual time=0.010..0.010 rows=5 loops=1)
+                      Index Cond: (audit_run_id = (InitPlan 2).col1)
+                      Buffers: shared hit=5
+  InitPlan 5
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.001..0.002 rows=1 loops=1)
+          InitPlan 4
+            ->  CTE Scan on latest latest_1  (cost=0.00..0.02 rows=1 width=16) (never executed)
+          ->  Seq Scan on hypertable_snapshot  (cost=0.00..0.00 rows=1 width=0) (actual time=0.001..0.001 rows=0 loops=1)
+                Filter: (audit_run_id = (InitPlan 4).col1)
+  InitPlan 7
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=1)
+          InitPlan 6
+            ->  CTE Scan on latest latest_2  (cost=0.00..0.02 rows=1 width=16) (never executed)
+          ->  Seq Scan on job_snapshot  (cost=0.00..0.00 rows=1 width=0) (actual time=0.001..0.001 rows=0 loops=1)
+                Filter: (scheduled AND (audit_run_id = (InitPlan 6).col1))
+  InitPlan 9
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=1)
+          InitPlan 8
+            ->  CTE Scan on latest latest_3  (cost=0.00..0.02 rows=1 width=16) (never executed)
+          ->  Seq Scan on policy_snapshot  (cost=0.00..0.00 rows=1 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+                Filter: (audit_run_id = (InitPlan 8).col1)
+Planning:
+  Buffers: shared hit=10
+Planning Time: 0.132 ms
+Execution Time: 0.051 ms
+

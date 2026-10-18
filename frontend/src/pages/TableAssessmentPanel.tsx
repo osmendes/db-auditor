@@ -78,12 +78,13 @@ export function TableAssessmentPanel({
   ] as const;
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setTab("overview");
     setAssessment(null);
     setGraph(null);
     setLoading(true);
     api
-      .tableAssessment(...args)
+      .tableAssessment(...args, controller.signal)
       .then((v) => {
         if (!cancelled) {
           setAssessment(v);
@@ -98,14 +99,22 @@ export function TableAssessmentPanel({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
     // key is the canonical identity of this assessment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
     void api
-      .auditBaseline(env, t.database_name, t.schema_name, t.table_name)
+      .auditBaseline(
+        env,
+        t.database_name,
+        t.schema_name,
+        t.table_name,
+        controller.signal,
+      )
       .then((value) => {
         if (active) setBaseline(value);
       })
@@ -119,6 +128,7 @@ export function TableAssessmentPanel({
         t.database_name,
         t.schema_name,
         t.table_name,
+        controller.signal,
       )
       .then((value) => {
         if (active) setScopeScore(value);
@@ -128,6 +138,7 @@ export function TableAssessmentPanel({
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [key]);
 
@@ -159,8 +170,9 @@ export function TableAssessmentPanel({
   useEffect(() => {
     if (tab !== "relationships" || !assessment) return;
     let cancelled = false;
+    const controller = new AbortController();
     api
-      .tableGraph(...args)
+      .tableGraph(...args, 50, controller.signal)
       .then((v) => {
         if (!cancelled) setGraph(v);
       })
@@ -169,72 +181,89 @@ export function TableAssessmentPanel({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, tab, assessment]);
   const columns = useCollection<ColumnSnapshot>(
     assessment !== null && tab === "structure",
     key,
-    (offset, limit) =>
-      api.columns(env, {
-        audit_run_id: t.audit_run_id,
-        database: t.database_name,
-        schema: t.schema_name,
-        table: t.table_name,
-        limit,
-        offset,
-      }),
+    (offset, limit, signal) =>
+      api.columns(
+        env,
+        {
+          audit_run_id: t.audit_run_id,
+          database: t.database_name,
+          schema: t.schema_name,
+          table: t.table_name,
+          limit,
+          offset,
+        },
+        signal,
+      ),
   );
   const constraints = useCollection<ConstraintSnapshot>(
     assessment !== null && tab === "structure",
     key,
-    (offset, limit) =>
-      api.constraints(env, {
-        audit_run_id: t.audit_run_id,
-        database: t.database_name,
-        schema: t.schema_name,
-        table: t.table_name,
-        limit,
-        offset,
-      }),
+    (offset, limit, signal) =>
+      api.constraints(
+        env,
+        {
+          audit_run_id: t.audit_run_id,
+          database: t.database_name,
+          schema: t.schema_name,
+          table: t.table_name,
+          limit,
+          offset,
+        },
+        signal,
+      ),
   );
   const indexes = useCollection<IndexSnapshot>(
     assessment !== null && tab === "structure",
     key,
-    (offset, limit) =>
-      api.indexes(env, {
-        audit_run_id: t.audit_run_id,
-        database: t.database_name,
-        schema: t.schema_name,
-        table: t.table_name,
-        limit,
-        offset,
-      }),
+    (offset, limit, signal) =>
+      api.indexes(
+        env,
+        {
+          audit_run_id: t.audit_run_id,
+          database: t.database_name,
+          schema: t.schema_name,
+          table: t.table_name,
+          limit,
+          offset,
+        },
+        signal,
+      ),
   );
   const dependencies = useCollection<DependencySnapshot>(
     assessment !== null && tab === "relationships",
     key,
-    (offset, limit) => api.tableDependencies(...args, limit, offset),
+    (offset, limit, signal) =>
+      api.tableDependencies(...args, limit, offset, signal),
   );
   const grants = useCollection<GrantSnapshot>(
     assessment !== null && tab === "security",
     key,
-    (offset, limit) => api.tableGrants(...args, limit, offset),
+    (offset, limit, signal) => api.tableGrants(...args, limit, offset, signal),
   );
   const triggers = useCollection<TriggerSnapshot>(
     assessment !== null && tab === "security",
     key,
-    (offset, limit) => api.tableTriggers(...args, limit, offset),
+    (offset, limit, signal) =>
+      api.tableTriggers(...args, limit, offset, signal),
   );
   const policies = useCollection<RLSPolicySnapshot>(
     assessment !== null && tab === "security",
     key,
-    (offset, limit) => api.tableRLSPolicies(...args, limit, offset),
+    (offset, limit, signal) =>
+      api.tableRLSPolicies(...args, limit, offset, signal),
   );
   const findings = useCollection<Finding>(
     assessment !== null && tab === "recommendations",
     key,
-    (offset, limit) => api.tableFindings(...args, limit, offset),
+    (offset, limit, signal) =>
+      api.tableFindings(...args, limit, offset, signal),
   );
   if (!loading && !assessment) {
     return (

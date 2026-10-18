@@ -61,6 +61,7 @@ export function useInventoryObjectLists({
       return () => {};
     }
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setListError(null);
     const params = {
@@ -84,7 +85,7 @@ export function useInventoryObjectLists({
 
     if (kind === "tables") {
       api
-        .tables(envId, params)
+        .tables(envId, params, controller.signal)
         .then((res) => {
           if (!cancelled) {
             setTables(res.items);
@@ -97,7 +98,7 @@ export function useInventoryObjectLists({
         .finally(ok);
     } else if (kind === "indexes") {
       api
-        .indexes(envId, params)
+        .indexes(envId, params, controller.signal)
         .then((res) => {
           if (!cancelled) {
             setIndexes(res.items);
@@ -110,7 +111,7 @@ export function useInventoryObjectLists({
         .finally(ok);
     } else if (kind === "views") {
       api
-        .views(envId, params)
+        .views(envId, params, controller.signal)
         .then((res) => {
           if (!cancelled) {
             setViews(res.items);
@@ -123,7 +124,7 @@ export function useInventoryObjectLists({
         .finally(ok);
     } else if (kind === "functions") {
       api
-        .functions(envId, params)
+        .functions(envId, params, controller.signal)
         .then((res) => {
           if (!cancelled) {
             setFunctions(res.items);
@@ -136,7 +137,7 @@ export function useInventoryObjectLists({
         .finally(ok);
     } else if (kind === "hypertables") {
       api
-        .hypertablesPage(envId, params)
+        .hypertablesPage(envId, params, controller.signal)
         .then((res) => {
           if (!cancelled) {
             setHypertables(res.items);
@@ -149,7 +150,7 @@ export function useInventoryObjectLists({
         .finally(ok);
     } else {
       api
-        .continuousAggregatesPage(envId, params)
+        .continuousAggregatesPage(envId, params, controller.signal)
         .then((res) => {
           if (!cancelled) {
             setPage(res.page);
@@ -177,6 +178,7 @@ export function useInventoryObjectLists({
     }
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [envId, kind, offset, pageSize, q, run, selectedDb, selectedSchema, sort]);
 

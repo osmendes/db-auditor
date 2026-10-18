@@ -39,6 +39,7 @@ describe("resolveInventorySelection (UI-06 extraction)", () => {
     expect(indexes).toHaveBeenLastCalledWith(
       "env-1",
       expect.objectContaining({ audit_run_id: "run-1", offset: 2, limit: 100 }),
+      undefined,
     );
   });
 
@@ -50,5 +51,21 @@ describe("resolveInventorySelection (UI-06 extraction)", () => {
     await expect(
       resolveInventorySelection("env-1", "run-1", target),
     ).resolves.toBeNull();
+  });
+
+  it("forwards the signal and stops paging once aborted (PF-02)", async () => {
+    const controller = new AbortController();
+    indexes.mockImplementationOnce(async () => {
+      controller.abort();
+      return { items: [row("a")], page: { has_more: true } };
+    });
+    await expect(
+      resolveInventorySelection("env-1", "run-1", target, controller.signal),
+    ).rejects.toMatchObject({ name: "AbortError" });
+    expect(indexes).toHaveBeenLastCalledWith(
+      "env-1",
+      expect.anything(),
+      controller.signal,
+    );
   });
 });
