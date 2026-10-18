@@ -4,9 +4,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { CoverageBanner } from "../components/CoverageBanner";
 import { useRunCoverage } from "../hooks/useRunCoverage";
 import dashboardSource from "../pages/DashboardPage.tsx?raw";
-import findingsSource from "../pages/FindingsPage.tsx?raw";
+import findingsPageSource from "../pages/FindingsPage.tsx?raw";
 import { scoreSubtitle, scoreTitle } from "../pages/parts/DashboardKpis";
-import reportsSource from "../pages/ReportsPage.tsx?raw";
+import findingsStateSource from "../pages/parts/useFindingsPage.tsx?raw";
+import reportsStateSource from "../pages/parts/useReportsPage.tsx?raw";
+import reportsPageSource from "../pages/ReportsPage.tsx?raw";
 import { cleanup, flush, render } from "../test/dom";
 import type { AuditRun, AuditRunCoverage, ScopeAggregate } from "../types";
 import {
@@ -180,6 +182,9 @@ describe("CoverageBanner", () => {
   });
 
   it("is the single coverage notice of Dashboard, Findings and Reports", () => {
+    // Page state lives in parts/use<Page>.tsx since the UI-06 split.
+    const findingsSource = findingsPageSource + findingsStateSource;
+    const reportsSource = reportsPageSource + reportsStateSource;
     for (const source of [dashboardSource, findingsSource, reportsSource]) {
       expect(source).toContain("useRunCoverage(");
     }
