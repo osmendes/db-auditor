@@ -73,7 +73,8 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer pool.Close()
+	// Registered before the role cleanup, so it runs after it (LIFO).
+	t.Cleanup(pool.Close)
 	var version int
 	if err = pool.QueryRow(ctx, `SELECT current_setting('server_version_num')::int`).Scan(&version); err != nil {
 		t.Fatal(err)
@@ -114,7 +115,9 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	role("m_cr", "LOGIN IN ROLE "+quoted("g_cr"))
 	role("m_nested", "LOGIN IN ROLE "+quoted("g_mid"))
 	role("m_noinherit", "LOGIN NOINHERIT IN ROLE "+quoted("g_super"))
-	for _, predefined := range postgres.PowerfulPredefinedRoles {
+	// Spelled out, not taken from the collector, so dropping one there fails.
+	predefinedRoles := []string{"pg_execute_server_program", "pg_read_server_files", "pg_write_server_files", "pg_write_all_data"}
+	for _, predefined := range predefinedRoles {
 		role("m_"+predefined, "LOGIN IN ROLE "+predefined)
 	}
 	role("app_user", "LOGIN IN ROLE "+quoted("g_plain"))
@@ -165,7 +168,7 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	}
 	powerful := map[string]got{}
 	for _, f := range out {
-		if f.FindingType == "security.powerful_role" && strings.HasPrefix(f.ObjectName, "r126_") {
+		if f.FindingType == "security.powerful_role" && strings.HasPrefix(f.ObjectName, "r126_") && strings.HasSuffix(f.ObjectName, "_"+suffix) {
 			powerful[f.ObjectName] = got{severity: string(f.Severity), evidence: f.Evidence}
 		}
 	}
@@ -192,7 +195,7 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 		"m_nested":    {"high", "", []string{"superuser:g_super"}},
 		"m_noinherit": {"high", "", []string{"superuser:g_super"}}, // NOINHERIT still allows SET ROLE
 	}
-	for _, predefined := range postgres.PowerfulPredefinedRoles {
+	for _, predefined := range predefinedRoles {
 		expect["m_"+predefined] = struct {
 			severity  string
 			attribute string
