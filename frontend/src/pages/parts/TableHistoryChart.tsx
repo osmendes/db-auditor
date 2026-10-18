@@ -30,9 +30,13 @@ export function TableHistoryChart({
 }) {
   return (
     <>
-      <div className="h-56 w-full" aria-hidden="true">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={history}>
+      <div className="h-56 w-full" aria-hidden="true" inert>
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+          initialDimension={{ width: 600, height: 224 }}
+        >
+          <LineChart accessibilityLayer={false} data={history}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
             <XAxis
               dataKey="bucket"
