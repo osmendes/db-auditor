@@ -8,7 +8,9 @@ import { CoverageBanner } from "../components/CoverageBanner";
 import { PageHeader } from "../components/PageHeader";
 import { Button, Card, ErrorBanner, Select } from "../components/ui";
 import { useApp } from "../context/AppContext";
+import { useEmptyContext } from "../hooks/useEmptyContext";
 import { useRunCoverage } from "../hooks/useRunCoverage";
+import { resolveEmptyCause } from "../lib/emptyCause";
 import { formatError } from "../lib/errors";
 import { downloadBlob } from "../lib/export";
 import { api } from "../services/api";
@@ -75,12 +77,22 @@ export function reportFormReady(
 }
 
 export function ReportsPage() {
-  const { environmentId, environments } = useApp();
+  const { environmentId, environments, setSection } = useApp();
   const [env, setEnv] = useState(environmentId ?? "");
   const [token, setToken] = useState("");
   const [runs, setRuns] = useState<AuditRun[]>([]);
   const [runId, setRunId] = useState("");
   const coverage = useRunCoverage(env || null, runId || null);
+  const [runsLoaded, setRunsLoaded] = useState(false);
+  const noCompletedRun = Boolean(env) && runsLoaded && runs.length === 0;
+  const emptyContext = useEmptyContext(env || null, noCompletedRun);
+  const reportEmptyCause = noCompletedRun
+    ? resolveEmptyCause({
+        filtered: false,
+        dsnMissing: emptyContext.dsnMissing,
+        collected: false,
+      })
+    : null;
   const [kind, setKind] = useState<ReportJob["report_type"]>("executive");
   const [database, setDatabase] = useState("");
   const [databaseOptions, setDatabaseOptions] = useState<string[]>([]);
@@ -112,6 +124,7 @@ export function ReportsPage() {
     if (environmentId) setEnv(environmentId);
   }, [environmentId]);
   useEffect(() => {
+    setRunsLoaded(false);
     if (!env) {
       setRuns([]);
       setRunId("");
@@ -124,13 +137,17 @@ export function ReportsPage() {
           (run) => run.status === "success" || run.status === "partial_success",
         );
         setRuns(completed);
+        setRunsLoaded(true);
         setRunId((current) =>
           completed.some((run) => run.id === current)
             ? current
             : (completed[0]?.id ?? ""),
         );
       })
-      .catch(() => setRuns([]));
+      .catch(() => {
+        setRuns([]);
+        setRunsLoaded(false);
+      });
   }, [env]);
   useEffect(() => {
     if (!env || !runId || kind !== "architecture") {
@@ -526,6 +543,10 @@ export function ReportsPage() {
           jobs={jobs}
           act={act}
           reportJobActions={reportJobActions}
+          emptyCause={reportEmptyCause}
+          onEmptyAction={() =>
+            setSection(reportEmptyCause === "dsn" ? "Ambientes" : "Execuções")
+          }
         />
         {jobs
           .filter(
