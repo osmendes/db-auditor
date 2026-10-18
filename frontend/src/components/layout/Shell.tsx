@@ -3,9 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { useTheme } from "../../context/ThemeContext";
 import { companyName } from "../../lib/company";
+import { applySearchAction, type SearchAction } from "../../lib/globalSearch";
 import { api } from "../../services/api";
 import type { NavigationSection } from "../../types";
 import { Select } from "../ui/Select";
+import { GlobalSearch } from "./GlobalSearch";
 
 export const navigationSections: NavigationSection[] = [
   "Dashboard",
@@ -127,12 +129,33 @@ export function Shell({
   onNavigate,
   onLogout,
 }: ShellProps) {
-  const { environments, environmentId, setEnvironmentId } = useApp();
+  const {
+    environments,
+    environmentId,
+    setEnvironmentId,
+    openFinding,
+    openRun,
+    openInventory,
+    setSection,
+    setSearch,
+  } = useApp();
   const [apiOk, setApiOk] = useState<boolean | null>(null);
   const [dsnDown, setDsnDown] = useState(0);
   const [openFindings, setOpenFindings] = useState(0);
   const [runningRuns, setRunningRuns] = useState(0);
   const [navOpen, setNavOpen] = useState(false);
+  const navigateToSearchHit = (action: SearchAction) => {
+    applySearchAction(action, {
+      environmentId,
+      setEnvironmentId,
+      openFinding,
+      openRun,
+      openInventory,
+      setSection,
+      setSearch,
+    });
+    setNavOpen(false);
+  };
   const [openGroup, setOpenGroup] = useState(
     () => localStorage.getItem("auditor-nav-group") || "Início",
   );
@@ -284,6 +307,10 @@ export function Shell({
             value={environmentId ?? ""}
             onChange={(e) => setEnvironmentId(e.target.value || null)}
             aria-label="Ambiente global"
+          />
+          <GlobalSearch
+            environmentId={environmentId}
+            onNavigate={navigateToSearchHit}
           />
 
           <nav

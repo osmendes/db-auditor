@@ -34,6 +34,10 @@ Uma lista vazia sempre diz o motivo, e cada motivo tem um próximo passo:
 - **Nenhum item neste filtro:** há dados, mas os filtros escondem todos. Limpe os filtros.
 - **Ambiente sem conexão configurada:** falta o DSN. Peça ao operador para concluir a conexão em Ambientes.
 
+### Busca global
+
+O campo **Buscar objeto, regra, execução, finding**, abaixo do seletor de ambiente na barra lateral, procura em findings (título, regra e objeto), execuções (perfil, status, versão ou início do identificador), regras do catálogo e no inventário da última execução concluída do ambiente (tabelas, índices, views e funções). `Ctrl+K` (ou `⌘K`) foca o campo; setas, `Enter` e `Esc` navegam pela lista. Colar o UUID de um finding abre o finding direto; o UUID de uma execução abre a execução. São necessários ao menos 2 caracteres, e cada grupo mostra no máximo 5 resultados: refine o termo se aparecer “mais resultados”. Quem não é operador busca só no ambiente selecionado. A busca lê apenas os dados já coletados pelo auditor e **nunca consulta o banco auditado**.
+
 ## 3. Navegar pelo inventário
 
 Em **Inventário**, escolha banco, esquema e tipo de objeto. Para MongoDB, abra o banco e veja as coleções e índices; a tela mostra contagem estimada de documentos, armazenamento e índices. A busca e os filtros reduzem a lista. Use os controles de página para percorrer objetos; o total indica quantos atendem ao filtro. Clique no cabeçalho de uma coluna para ordenar **todo o resultado filtrado**, inclusive as outras páginas. Abrir uma linha mostra detalhes e histórico do objeto; fechar o painel devolve a URL à lista.

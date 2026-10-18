@@ -125,6 +125,7 @@ export type ApiPath =
   | "/api/v1/retention-policy/apply"
   | "/api/v1/retention-policy/evidence"
   | "/api/v1/retention-policy/plan"
+  | "/api/v1/search"
   | "/api/v1/server-compare"
   | "/api/v1/status";
 
@@ -362,6 +363,34 @@ export interface ScopeScoreCategory {
   penalty: number;
   positive: number;
   findings: number;
+}
+
+export interface SearchHit {
+  kind: string;
+  id: string;
+  title: string;
+  subtitle: string;
+  environment_id?: string;
+  audit_run_id?: string;
+  rule_id?: string;
+  severity?: string;
+  status?: string;
+  object_kind?: string;
+  database?: string;
+  schema?: string;
+  name?: string;
+  signature?: string;
+  at?: string;
+  exact: boolean;
+}
+
+export interface SearchResult {
+  query: string;
+  exact: boolean;
+  groups: Record<string, unknown>;
+  truncated: Record<string, unknown>;
+  items: SearchHit[];
+  limits: Record<string, unknown>;
 }
 
 export interface ViewDetailSnapshot {

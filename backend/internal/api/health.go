@@ -100,6 +100,7 @@ func NewHandlerWithOptions(store InventoryStore, opts HandlerOptions) http.Handl
 	registerHistoryRoutes(mux, store)
 	registerRetentionRoutes(mux, store)
 	registerRuleRoutes(mux, store)
+	registerSearchRoutes(mux, store)
 	registerRunRoutes(mux, store, opts.Runner, opts.Analysis)
 	registerMappingRoutes(mux, store)
 	registerCompareRoutes(mux)

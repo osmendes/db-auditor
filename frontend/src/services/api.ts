@@ -81,6 +81,7 @@ import {
   type HypertableDetailSnapshot,
   type IndexDetailSnapshot,
   type ScopeScore,
+  type SearchResult,
 } from "../types/openapi";
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
@@ -595,6 +596,11 @@ export const api = {
   ready: (signal?: AbortSignal) => getJSON<HealthResponse>("/ready", signal),
   status: (signal?: AbortSignal) =>
     getJSON<StatusResponse>("/api/v1/status", signal),
+  /** UI-07 global search; reads only the snapshot store. */
+  search: (
+    params: { q: string; environment_id?: string; limit?: number },
+    signal?: AbortSignal,
+  ) => getJSON<SearchResult>(`/api/v1/search${qs(params)}`, signal),
   connectionStatus: (signal?: AbortSignal) =>
     getJSON<ItemsResponse<ConnectionStatus>>(
       "/api/v1/environments/connection-status",
