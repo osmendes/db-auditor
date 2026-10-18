@@ -152,7 +152,11 @@ export interface FindingAction {
     validation: string;
     false_positive_risk: string;
     read_only_query?: string;
+    query?: QuerySpec;
+    maintenance?: MaintenanceCost;
   };
+  impact_estimate?: ImpactEstimate;
+  gain?: GainStatement;
   status: string;
   owner: string;
   justification: string;
@@ -1030,9 +1034,63 @@ export interface CompareResult {
   objects: ObjectDiff[];
 }
 
-import type { Finding, FindingChange } from "./openapi";
+import type {
+  Finding,
+  FindingChange,
+  ImpactEstimate,
+  PriorityItem,
+  PriorityRanked,
+} from "./openapi";
 
-export type { Finding, FindingChange };
+export type {
+  Finding,
+  FindingChange,
+  ImpactEstimate,
+  PriorityItem,
+  PriorityRanked,
+};
+
+export interface PrioritiesResponse {
+  items: PriorityItem[];
+  candidates: number;
+  candidate_limit: number;
+  formula: string;
+  max_score: number;
+}
+
+/** Read-only confirmation query contract (AN-05). The auditor never runs it. */
+export interface QuerySpec {
+  sql: string;
+  engine: string;
+  capability: string;
+  min_permission: string;
+  params: string[];
+  row_limit: number;
+  timeout_ms: number;
+  impact_warning: string;
+}
+
+/** Costs to weigh before partitioning, compression, retention or autovacuum review (BA-21). */
+export interface MaintenanceCost {
+  kind: string;
+  capability: string;
+  preconditions: string;
+  read_cost: string;
+  write_cost: string;
+  storage_cost: string;
+  window: string;
+  risk: string;
+  post_validation: string;
+  business_approval: boolean;
+}
+
+/** Hypothesis, predicted gain and measured gain are never merged (BA-21). */
+export interface GainStatement {
+  hypothesis: string;
+  predicted: string;
+  measured: string;
+  measured_status: "not_measured" | "measured" | "not_comparable" | string;
+}
 
 export interface AnalyzeResult {
   produced: number;

@@ -7,9 +7,9 @@ import { api } from "../services/api";
 import type {
   ConnectionStatus,
   DashboardKPIs,
-  Finding,
   FindingsTrendResponse,
   JobHealthResponse,
+  PriorityItem,
   ScopeAggregate,
   StorageGrowthResponse,
 } from "../types";
@@ -34,7 +34,8 @@ export function DashboardPage() {
     null,
   );
   const [scores, setScores] = useState<ScopeAggregate[]>([]);
-  const [priorities, setPriorities] = useState<Finding[]>([]);
+  const [priorities, setPriorities] = useState<PriorityItem[]>([]);
+  const [priorityFormula, setPriorityFormula] = useState<string>();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
@@ -73,15 +74,14 @@ export function DashboardPage() {
           setTrends(t);
           setJobs(j);
           setConnections(c.items);
-          const queue = await api.findings(
-            {
-              environment_id: environmentId ?? undefined,
-              status: "open",
-              limit: 5,
-            },
+          const queue = await api.findingPriorities(
+            { environment_id: environmentId ?? undefined, limit: 5 },
             signal,
           );
-          if (!cancelled) setPriorities(queue.items.slice(0, 5));
+          if (!cancelled) {
+            setPriorities(queue.items.slice(0, 5));
+            setPriorityFormula(queue.formula);
+          }
         }
         if (environmentId) {
           const runs = await api.auditRuns(
@@ -186,6 +186,7 @@ export function DashboardPage() {
         <>
           <DashboardPriorities
             priorities={priorities}
+            formula={priorityFormula}
             setSection={setSection}
             openFinding={openFinding}
           />

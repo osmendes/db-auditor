@@ -1,6 +1,7 @@
 import { Button } from "../../components/ui";
 import { api } from "../../services/api";
 import type { ActionEvent, FindingAction } from "../../types";
+import { FindingImpactGain } from "./FindingImpactGain";
 
 export function FindingActionPlan({
   action,
@@ -73,7 +74,8 @@ export function FindingActionPlan({
               <dd>{action.plan.false_positive_risk}</dd>
             </div>
           </dl>
-          {action.plan.read_only_query ? (
+          <FindingImpactGain action={action} />
+          {action.plan.read_only_query && !action.plan.query ? (
             <details className="mt-3 text-xs text-slate-400">
               <summary>Consulta de confirmação para revisão externa</summary>
               <pre className="mt-2 overflow-auto">

@@ -14,6 +14,7 @@ import type {
 } from "../types";
 import { FindingDetailCard } from "./parts/FindingDetailCard";
 import { FindingsBrowser } from "./parts/FindingsBrowser";
+import { FindingsPriorities } from "./parts/FindingsPriorities";
 import { fetchFindingsList } from "./parts/fetchFindingsList";
 import { bulkTriageFindings } from "./parts/findingsBulk";
 import { exportFindingsCSV, exportFindingsJSON } from "./parts/findingsExport";
@@ -341,6 +342,10 @@ export function FindingsPage() {
   const selectionCount = selectedIds.size;
   return (
     <>
+      <FindingsPriorities
+        environmentId={environmentId}
+        openFinding={openFinding}
+      />
       <FindingsBrowser
         exportRows={exportRows}
         exportJson={exportJson}
