@@ -1,7 +1,7 @@
 %PDF-1.4
 %âãÏÓ
 1 0 obj
-<< /Length 4987 >>
+<< /Length 4995 >>
 stream
 1 1 1 rg 0 0 595 842 re f
 0.08 0.45 0.35 rg BT /F1 18 Tf 42 790 Td (DB Auditor - Relatório de tabela) Tj ET
@@ -33,7 +33,7 @@ stream
 0.08 0.45 0.35 rg BT /F1 13 Tf 42 350 Td (Histórico e referência de comparação) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 329 Td (Referência 00000000-0000-0000-0000-000000000001 | completa | +0 / -0 tabelas, 1 alteradas) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 311 Td (Novos achados de maior prioridade desde a referência) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 294 Td (alta · Este índice não teve uso observado no período disponível. · objeto) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 294 Td (alta · O índice não teve uso observado na janela entre duas coletas. · objeto) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 280 Td (erp.public.orders_old_idx · achado f-unused) Tj ET
 0.08 0.45 0.35 rg BT /F1 13 Tf 42 256 Td (Riscos e prioridades) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 235 Td (Matriz de decisão \(priority-v1\): pontuação = peso da severidade × fator de impacto medido) Tj ET
@@ -43,7 +43,7 @@ stream
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 172 Td (#1 | achado f-unused | pontuação 2.10/7.5 | severidade média | impacto alto | esforço) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 158 Td (médio | confiança média \(70%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 144 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 126 Td ([MÉDIA] Este índice não teve uso observado no período disponível. -) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 126 Td ([MÉDIA] O índice não teve uso observado na janela entre duas coletas. -) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 109 Td (erp.public.orders_old_idx) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 95 Td (ID do achado: f-unused | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 81 Td (Impacto: 41943040 bytes de 104857600 bytes de todos os índices da tabela \(40.0%\) · período) Tj ET
@@ -52,7 +52,7 @@ stream
 endstream
 endobj
 2 0 obj
-<< /Length 3393 >>
+<< /Length 3506 >>
 stream
 1 1 1 rg 0 0 595 842 re f
 0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · de tabela · execução 00000000) Tj ET
@@ -67,24 +67,25 @@ stream
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (Ganho medido: table_size_bytes: antes 1000, depois 600 bytes \(variação -400\) na execução) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (run-after) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (Evidência técnica: {"idx_scan":0}) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras \(mensais,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (fechamento\) antes de considerar remoção.) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (Confiança: 70% | Regra: rules-v3) Tj ET
 0.08 0.45 0.35 rg BT /F1 13 Tf 42 584 Td (Inventário técnico \(apêndice\)) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 563 Td (erp.public.orders | 1048576 bytes | 1000 linhas estimadas | PK: Sim) Tj ET
 0.08 0.45 0.35 rg BT /F1 13 Tf 42 539 Td (Análise final e próximos passos) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 518 Td (Foi observado 1 achado neste recorte, incluindo 0 críticos e 0 altos. Priorize a validação) Tj ET
 0.15 0.20 0.26 rg BT /F1 10 Tf 42 504 Td (dos itens de maior severidade com a equipe responsável pelo banco.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 490 Td (Prioridade 1 \(achado f-unused, média, pontuação 2.10\): Este índice não teve uso observado) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 476 Td (no período disponível. em erp.public.orders_old_idx. Próximo passo: Confira a janela das) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 462 Td (estatísticas e as consultas antes de considerar sua remoção.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 448 Td (Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 434 Td (auditor não aplica mudanças no banco auditado.) Tj ET
-0.08 0.45 0.35 rg BT /F1 13 Tf 42 410 Td (Metodologia e glossário) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 389 Td (Somente dados e observações da execução informada foram usados.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 375 Td (Achado: sinal de diagnóstico que exige validação humana.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 361 Td (Baseline: execução aprovada para comparação temporal.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 347 Td (Cobertura parcial impede conclusões sobre ausência de objetos e achados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 490 Td (Prioridade 1 \(achado f-unused, média, pontuação 2.10\): O índice não teve uso observado na) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 476 Td (janela entre duas coletas. em erp.public.orders_old_idx. Próximo passo: Confirme reset de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 462 Td (estatísticas, réplicas e consultas raras \(mensais, fechamento\) antes de considerar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 448 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 434 Td (Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 420 Td (auditor não aplica mudanças no banco auditado.) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 396 Td (Metodologia e glossário) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 375 Td (Somente dados e observações da execução informada foram usados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 361 Td (Achado: sinal de diagnóstico que exige validação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 347 Td (Baseline: execução aprovada para comparação temporal.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 333 Td (Cobertura parcial impede conclusões sobre ausência de objetos e achados.) Tj ET
 0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 2 de 2) Tj ET
 endstream
 endobj
@@ -107,14 +108,14 @@ xref
 0 8
 0000000000 65535 f 
 0000000015 00000 n 
-0000005053 00000 n 
-0000008497 00000 n 
-0000008623 00000 n 
-0000008749 00000 n 
-0000008846 00000 n 
-0000008909 00000 n 
+0000005061 00000 n 
+0000008618 00000 n 
+0000008744 00000 n 
+0000008870 00000 n 
+0000008967 00000 n 
+0000009030 00000 n 
 trailer
 << /Size 8 /Root 7 0 R >>
 startxref
-8958
+9079
 %%EOF
