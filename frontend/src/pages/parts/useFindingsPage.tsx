@@ -112,6 +112,7 @@ export function useFindingsPage() {
       ? search.category
       : "";
   const rulesOpen = search.view === "rules";
+  const focusRule = rulesOpen ? (search.rule ?? "") : "";
 
   const loadController = useRef<AbortController | null>(null);
   const load = useCallback(async () => {
@@ -363,6 +364,7 @@ export function useFindingsPage() {
     overdueOnly,
     pageSize,
     rulesOpen,
+    focusRule,
     saveAction,
     saveWorkflow,
     search,

@@ -16,9 +16,14 @@ import type { EffectiveRule } from "../../types";
 export function RulesCatalogSheet({
   open,
   onOpenChange,
+  focusRule = "",
+  onClearFocus,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** UI-07: rule chosen in the global search; shows only that rule. */
+  focusRule?: string;
+  onClearFocus?: () => void;
 }) {
   const { environmentId, selectedEnvironment } = useApp();
   const [schema, setSchema] = useState("public");
@@ -73,10 +78,11 @@ export function RulesCatalogSheet({
 
   const visible = items.filter(
     (rule) =>
-      rule.rule_id === "model.wide_table" ||
-      rule.category === "model" ||
-      rule.category === "security" ||
-      rule.category === "performance",
+      (!focusRule || rule.rule_id === focusRule) &&
+      (rule.rule_id === "model.wide_table" ||
+        rule.category === "model" ||
+        rule.category === "security" ||
+        rule.category === "performance"),
   );
 
   return (
@@ -103,6 +109,18 @@ export function RulesCatalogSheet({
             Uma regra desligada deixa de gerar novos sinais nesse esquema. O
             banco analisado não é alterado.
           </p>
+          {focusRule ? (
+            <div className="flex flex-wrap items-center gap-2 text-sm text-slate-300">
+              <span>
+                Mostrando a regra <code>{focusRule}</code>, vinda da busca.
+              </span>
+              {onClearFocus ? (
+                <Button variant="secondary" onClick={onClearFocus}>
+                  Ver todas as regras
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
           {error ? <ErrorBanner message={error} /> : null}
           {loading ? <Skeleton className="h-40 w-full" /> : null}
           {!loading && visible.length === 0 ? (

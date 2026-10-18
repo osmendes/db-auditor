@@ -36,6 +36,7 @@ export function FindingsPage() {
     overdueOnly,
     pageSize,
     rulesOpen,
+    focusRule,
     saveAction,
     saveWorkflow,
     selected,
@@ -164,7 +165,11 @@ export function FindingsPage() {
       </Sheet>
       <RulesCatalogSheet
         open={rulesOpen}
-        onOpenChange={(open) => setSearch({ view: open ? "rules" : null })}
+        focusRule={focusRule}
+        onClearFocus={() => setSearch({ rule: null })}
+        onOpenChange={(open) =>
+          setSearch(open ? { view: "rules" } : { view: null, rule: null })
+        }
       />
     </>
   );
