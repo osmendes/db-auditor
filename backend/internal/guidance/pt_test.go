@@ -59,7 +59,8 @@ func TestFrontendKeepsNoParallelRuleDictionary(t *testing.T) {
 			return err
 		}
 		name := d.Name()
-		if !(strings.HasSuffix(name, ".ts") || strings.HasSuffix(name, ".tsx")) || strings.Contains(name, ".test.") || name == "openapi.ts" {
+		source := strings.HasSuffix(name, ".ts") || strings.HasSuffix(name, ".tsx")
+		if !source || strings.Contains(name, ".test.") || name == "openapi.ts" {
 			return nil
 		}
 		body, err := os.ReadFile(path)
