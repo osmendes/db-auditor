@@ -3,9 +3,11 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -265,14 +267,109 @@ func TestCookieSessionExpiredIsRejectedEvenWithCSRF(t *testing.T) {
 	}
 }
 
+// effectStore is an operator store that serves every auth route, including
+// the account and TOTP routes registerAuthRoutes only mounts for stores that
+// implement them, and counts each state-changing call so a test can prove a
+// request changed nothing.
+type effectStore struct {
+	fakeAuthStore
+	mu      sync.Mutex
+	effects map[string]int
+}
+
+func newEffectStore(t *testing.T) *effectStore {
+	return &effectStore{fakeAuthStore: operatorStore(t), effects: map[string]int{}}
+}
+
+func (s *effectStore) record(name string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.effects[name]++
+}
+
+func (s *effectStore) count(name string) int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.effects[name]
+}
+
+func (s *effectStore) total() int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	n := 0
+	for _, c := range s.effects {
+		n += c
+	}
+	return n
+}
+
+func (s *effectStore) DeleteAuditorSession(context.Context, []byte) error {
+	s.record("DeleteAuditorSession")
+	return nil
+}
+func (s *effectStore) ListAuditorAccounts(context.Context) ([]repository.AuditorAccount, error) {
+	return nil, nil
+}
+func (s *effectStore) ChangeAuditorPassword(context.Context, string, string) error {
+	s.record("ChangeAuditorPassword")
+	return nil
+}
+func (s *effectStore) UpdateAuditorAccount(context.Context, string, repository.AccountChange) (*repository.AuditorAccount, error) {
+	s.record("UpdateAuditorAccount")
+	return &repository.AuditorAccount{}, nil
+}
+func (s *effectStore) RevokeAuditorSessions(context.Context, string) error {
+	s.record("RevokeAuditorSessions")
+	return nil
+}
+func (s *effectStore) TOTPState(context.Context, string) (repository.TOTPState, error) {
+	return repository.TOTPState{}, nil
+}
+func (s *effectStore) BeginTOTPEnrollment(context.Context, string, string) (string, string, []string, error) {
+	s.record("BeginTOTPEnrollment")
+	return "", "", nil, nil
+}
+func (s *effectStore) ConfirmTOTP(context.Context, string, string, time.Time) error {
+	s.record("ConfirmTOTP")
+	return nil
+}
+func (s *effectStore) SetTOTPRequired(context.Context, string, bool) error {
+	s.record("SetTOTPRequired")
+	return nil
+}
+func (s *effectStore) DisableTOTP(context.Context, string) error {
+	s.record("DisableTOTP")
+	return nil
+}
+func (s *effectStore) CreateMFAChallenge(context.Context, string, []byte, time.Time) error {
+	s.record("CreateMFAChallenge")
+	return nil
+}
+func (s *effectStore) ConsumeMFAChallenge(context.Context, []byte, string, time.Time) (string, error) {
+	s.record("ConsumeMFAChallenge")
+	return "", errors.New("no challenge")
+}
+func (s *effectStore) FindAuditorUserByID(context.Context, string) (*repository.AuditorUser, error) {
+	return s.user, nil
+}
+
+var (
+	_ accountStore = (*effectStore)(nil)
+	_ totpGate     = (*effectStore)(nil)
+)
+
 // SameSite=Lax still sends the cookie on a top-level cross-site GET. That
-// navigation must stay read-only: mutation routes do not answer GET, and the
-// same request upgraded to a mutation without the CSRF header is refused.
+// navigation must stay read-only: every mutation route (logout, password, the
+// real TOTP disable route POST /api/v1/auth/totp/disable and session
+// revocation) is mounted and answers GET with 405, nothing in the store
+// changes, and the same request upgraded to POST without the CSRF header is
+// refused before the handler runs.
 func TestCookieSessionCrossSiteTopLevelGETCannotMutate(t *testing.T) {
-	handler := cookieAuthHandler(t, operatorStore(t))
-	cookie, _ := cookieLogin(t, handler)
-	crossSite := func(method, path string) *httptest.ResponseRecorder {
-		r := httptest.NewRequest(method, path, nil)
+	store := newEffectStore(t)
+	handler := cookieAuthHandler(t, store)
+	cookie, csrf := cookieLogin(t, handler)
+	crossSite := func(method, path, body string) *httptest.ResponseRecorder {
+		r := httptest.NewRequest(method, path, strings.NewReader(body))
 		r.AddCookie(cookie)
 		r.Header.Set("Origin", "https://evil.example")
 		r.Header.Set("Referer", "https://evil.example/page")
@@ -283,15 +380,38 @@ func TestCookieSessionCrossSiteTopLevelGETCannotMutate(t *testing.T) {
 		handler.ServeHTTP(response, r)
 		return response
 	}
-	for _, path := range []string{"/api/v1/auth/logout", "/api/v1/auth/password", "/api/v1/auth/totp/disable", "/api/v1/auth/users/00000000-0000-0000-0000-000000000001/sessions/revoke"} {
-		if code := crossSite(http.MethodGet, path).Code; code == http.StatusOK || code == http.StatusCreated {
-			t.Fatalf("cross-site GET %s: status %d, mutation route answered GET", path, code)
+	mutations := []struct{ path, body string }{
+		{"/api/v1/auth/logout", ``},
+		{"/api/v1/auth/password", `{"current":"a-strong-test-password","new":"another-strong-password-123"}`},
+		{"/api/v1/auth/totp/disable", `{"password":"a-strong-test-password","code":"000000"}`},
+		{"/api/v1/auth/totp/require", `{"required":false}`},
+		{"/api/v1/auth/users/00000000-0000-0000-0000-000000000001/sessions/revoke", ``},
+	}
+	for _, m := range mutations {
+		// 405 (not 404) proves the route is really mounted on this handler.
+		if code := crossSite(http.MethodGet, m.path, "").Code; code != http.StatusMethodNotAllowed {
+			t.Fatalf("cross-site GET %s: status %d want 405 from a mounted POST-only route", m.path, code)
+		}
+		if code := crossSite(http.MethodPost, m.path, m.body).Code; code != http.StatusForbidden {
+			t.Fatalf("cross-site POST %s without csrf: status %d want 403", m.path, code)
 		}
 	}
-	if code := crossSite(http.MethodPost, "/api/v1/auth/logout").Code; code != http.StatusForbidden {
-		t.Fatalf("cross-site POST without csrf: status %d want 403", code)
+	if n := store.total(); n != 0 {
+		t.Fatalf("cross-site requests changed state: %v", store.effects)
 	}
-	if code := crossSite(http.MethodGet, "/api/v1/auth/me").Code; code != http.StatusOK {
+	if code := crossSite(http.MethodGet, "/api/v1/auth/me", "").Code; code != http.StatusOK {
 		t.Fatalf("cross-site read-only GET should behave like same-site under Lax: status %d", code)
+	}
+
+	// Positive control: with the session's CSRF token the same TOTP disable
+	// request reaches the handler and changes state exactly once, so the zero
+	// above is meaningful.
+	r := httptest.NewRequest(http.MethodPost, "/api/v1/auth/totp/disable", strings.NewReader(`{"password":"a-strong-test-password"}`))
+	r.AddCookie(cookie)
+	r.Header.Set("X-CSRF-Token", csrf)
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, r)
+	if response.Code != http.StatusOK || store.count("DisableTOTP") != 1 {
+		t.Fatalf("same-site TOTP disable: status %d effects %v body %s", response.Code, store.effects, response.Body.String())
 	}
 }
