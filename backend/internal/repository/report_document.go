@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/osmendes/db-auditor/internal/impact"
 	"github.com/osmendes/db-auditor/internal/report"
 )
 
@@ -81,16 +83,33 @@ FROM database_snapshot d WHERE d.audit_run_id=$1::uuid AND ($2='' OR d.database_
 	if err = s.pool.QueryRow(ctx, `SELECT count(*) FROM table_snapshot WHERE audit_run_id=$1::uuid AND ($2='' OR database_name=$2) AND ($3='' OR schema_name=$3) AND ($4='' OR table_name=$4)`, job.AuditRunID, job.Filters.Database, job.Filters.Schema, job.Filters.Table).Scan(&d.TotalTables); err != nil {
 		return d, err
 	}
-	rows, err = s.pool.Query(ctx, `SELECT f.id::text,left(f.finding_type,128),e.severity,left(e.category,128),left(e.database_name,256),left(e.schema_name,256),left(e.object_name,256),left(e.title,512),left(e.summary,1024),left(e.recommendation,1024),e.confidence,left(e.evidence::text,500),left(e.rule_version,128) FROM finding_event e JOIN finding f ON f.id=e.finding_id WHERE e.audit_run_id=$1::uuid AND e.event_type='observed' AND ($2='' OR e.database_name=$2) AND ($3='' OR e.schema_name=$3) AND ($4='' OR e.object_name=$4) AND ($5='' OR e.severity=$5) ORDER BY e.severity,e.category,e.database_name,e.schema_name,e.object_name,e.title LIMIT 2001`, job.AuditRunID, job.Filters.Database, job.Filters.Schema, job.Filters.Table, job.Filters.Severity)
+	rows, err = s.pool.Query(ctx, `SELECT f.id::text,left(f.finding_type,128),e.severity,left(e.category,128),left(e.database_name,256),left(e.schema_name,256),left(e.object_name,256),left(e.title,512),left(e.summary,1024),left(e.recommendation,1024),e.confidence,left(e.evidence::text,500),left(e.rule_version,128),
+CASE WHEN octet_length(e.evidence::text)<=65536 THEN e.evidence::text ELSE '{}' END,f.first_seen_at,COALESCE(r.started_at,f.last_seen_at),
+m.metric,m.before_value,m.after_value,COALESCE(m.comparable AND m.workload_comparable,false),COALESCE(m.comparison_note,''),COALESCE(m.after_run_id::text,'')
+FROM finding_event e JOIN finding f ON f.id=e.finding_id LEFT JOIN audit_run r ON r.id=e.audit_run_id
+LEFT JOIN LATERAL (SELECT metric,before_value,after_value,comparable,workload_comparable,comparison_note,after_run_id FROM finding_action_measurement x WHERE x.finding_id=f.id ORDER BY recorded_at DESC,id DESC LIMIT 1) m ON true
+WHERE e.audit_run_id=$1::uuid AND e.event_type='observed' AND ($2='' OR e.database_name=$2) AND ($3='' OR e.schema_name=$3) AND ($4='' OR e.object_name=$4) AND ($5='' OR e.severity=$5) ORDER BY e.severity,e.category,e.database_name,e.schema_name,e.object_name,e.title LIMIT 2001`, job.AuditRunID, job.Filters.Database, job.Filters.Schema, job.Filters.Table, job.Filters.Severity)
 	if err != nil {
 		return d, err
 	}
 	for rows.Next() {
 		var item report.Finding
-		if err = rows.Scan(&item.ID, &item.Type, &item.Severity, &item.Category, &item.Database, &item.Schema, &item.Object, &item.Title, &item.Summary, &item.Recommendation, &item.Confidence, &item.Evidence, &item.RuleVersion); err != nil {
+		var evidence string
+		var firstSeen, observedAt time.Time
+		var metric *string
+		var measurement impact.Measurement
+		if err = rows.Scan(&item.ID, &item.Type, &item.Severity, &item.Category, &item.Database, &item.Schema, &item.Object, &item.Title, &item.Summary, &item.Recommendation, &item.Confidence, &item.Evidence, &item.RuleVersion,
+			&evidence, &firstSeen, &observedAt, &metric, &measurement.Before, &measurement.After, &measurement.Comparable, &measurement.Note, &measurement.AfterRunID); err != nil {
 			rows.Close()
 			return d, err
 		}
+		item.Impact = EstimateImpact(item.Type, []byte(evidence), firstSeen, observedAt)
+		var measured *impact.Measurement
+		if metric != nil {
+			measurement.Metric = *metric
+			measured = &measurement
+		}
+		item.Gain = BuildGainStatement(item.Type, []byte(evidence), item.Impact, measured)
 		d.Findings = append(d.Findings, item)
 	}
 	err = rows.Err()
@@ -173,6 +192,9 @@ ORDER BY CASE e.severity WHEN 'critical' THEN 0 ELSE 1 END,e.finding_id LIMIT 5`
 	}
 	if d.Truncated {
 		d.CoverageNotes = append(d.CoverageNotes, "Listagens limitadas a 500 bancos, 5000 tabelas e 2000 findings.")
+	}
+	if report.DetailLimited(d) {
+		d.CoverageNotes = append(d.CoverageNotes, fmt.Sprintf("Detalhamento limitado aos %d achados de maior prioridade; os demais aparecem em uma linha.", report.MaxDetailedFindings))
 	}
 	for i := range d.CoverageNotes {
 		d.CoverageNotes[i] = strings.TrimSpace(d.CoverageNotes[i])

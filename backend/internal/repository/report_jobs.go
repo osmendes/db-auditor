@@ -52,21 +52,25 @@ type ReportJob struct {
 	ExpiresAt       time.Time                     `json:"expires_at"`
 	SHA256          *string                       `json:"sha256,omitempty"`
 	SizeBytes       *int64                        `json:"size_bytes,omitempty"`
+	// LimitNote records any truncation or limit applied while rendering, so
+	// the job never promises completeness the PDF does not have.
+	LimitNote string `json:"limit_note"`
 }
 type ReportArtifact struct {
 	Content     []byte
 	SHA256      string
 	Filename    string
 	ContentType string
+	LimitNote   string
 }
 
-const reportJobSelect = `SELECT j.id::text,j.environment_id::text,j.audit_run_id::text,j.report_type,j.report_format,j.filters,j.requested_by,j.rule_version,j.architecture_template_version,j.status,j.attempts,j.error,j.created_at,j.started_at,j.finished_at,j.expires_at,a.sha256,a.size_bytes,j.architecture_decisions FROM report_job j LEFT JOIN report_artifact a ON a.report_job_id=j.id`
+const reportJobSelect = `SELECT j.id::text,j.environment_id::text,j.audit_run_id::text,j.report_type,j.report_format,j.filters,j.requested_by,j.rule_version,j.architecture_template_version,j.status,j.attempts,j.error,j.created_at,j.started_at,j.finished_at,j.expires_at,a.sha256,a.size_bytes,j.architecture_decisions,j.limit_note FROM report_job j LEFT JOIN report_artifact a ON a.report_job_id=j.id`
 
 func scanReportJob(row scannable) (*ReportJob, error) {
 	var j ReportJob
 	var raw []byte
 	var decisions []byte
-	err := row.Scan(&j.ID, &j.EnvironmentID, &j.AuditRunID, &j.Type, &j.Format, &raw, &j.RequestedBy, &j.RuleVersion, &j.TemplateVersion, &j.Status, &j.Attempts, &j.Error, &j.CreatedAt, &j.StartedAt, &j.FinishedAt, &j.ExpiresAt, &j.SHA256, &j.SizeBytes, &decisions)
+	err := row.Scan(&j.ID, &j.EnvironmentID, &j.AuditRunID, &j.Type, &j.Format, &raw, &j.RequestedBy, &j.RuleVersion, &j.TemplateVersion, &j.Status, &j.Attempts, &j.Error, &j.CreatedAt, &j.StartedAt, &j.FinishedAt, &j.ExpiresAt, &j.SHA256, &j.SizeBytes, &decisions, &j.LimitNote)
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +227,7 @@ func (s *Store) FinishReportJob(ctx context.Context, id string, artifact ReportA
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	var format string
-	err = tx.QueryRow(ctx, `UPDATE report_job SET status='success',finished_at=now() WHERE id=$1::uuid AND status='running' RETURNING report_format`, id).Scan(&format)
+	err = tx.QueryRow(ctx, `UPDATE report_job SET status='success',finished_at=now(),limit_note=left($2,1000) WHERE id=$1::uuid AND status='running' RETURNING report_format`, id, artifact.LimitNote).Scan(&format)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ErrReportConflict
 	}

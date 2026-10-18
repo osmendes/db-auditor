@@ -168,6 +168,55 @@ func TestReportJobLifecycleIntegration(t *testing.T) {
 	if got, err := store.GetReportArtifact(ctx, env, job.ID); err != nil || got != nil {
 		t.Fatalf("expired artifact: %#v %v", got, err)
 	}
+	// BA-03: expiry removes only the artifact; the auditable job trail stays.
+	if trail, err := store.GetReportJob(ctx, env, job.ID); err != nil || trail == nil || trail.Status != "success" || trail.RequestedBy != job.RequestedBy {
+		t.Fatalf("job trail must survive artifact expiry: %#v %v", trail, err)
+	}
+}
+
+// AN-12: a partial run renders, and the limit is recorded on the job state.
+func TestReportLimitNoteRecordedOnJob(t *testing.T) {
+	dsn := os.Getenv("AUDITOR_TEST_DATABASE_URL")
+	if dsn == "" || os.Getenv("AUDITOR_TEST_DISPOSABLE") != "1" {
+		t.Skip("disposable integration database not explicitly enabled")
+	}
+	ctx := context.Background()
+	pool, err := pgxpool.New(ctx, dsn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer pool.Close()
+	if _, err = pool.Exec(ctx, `UPDATE report_job SET status='cancelled' WHERE status='queued'`); err != nil {
+		t.Fatal(err)
+	}
+	store := repository.NewStore(pool)
+	var env, run string
+	if err = pool.QueryRow(ctx, `INSERT INTO audit_environment(name,type,discovery_mode) VALUES(gen_random_uuid()::text,'self_hosted','single_database') RETURNING id::text`).Scan(&env); err != nil {
+		t.Fatal(err)
+	}
+	if err = pool.QueryRow(ctx, `INSERT INTO audit_run(environment_id,profile,status,service_version,collector_version) VALUES($1::uuid,'manual','partial_success','test','test') RETURNING id::text`, env).Scan(&run); err != nil {
+		t.Fatal(err)
+	}
+	for _, stmt := range []string{
+		`INSERT INTO database_snapshot(audit_run_id,environment_id,database_name,size_bytes) VALUES($1::uuid,$2::uuid,'db',1000)`,
+		`INSERT INTO table_snapshot(audit_run_id,environment_id,database_name,schema_name,table_name,has_primary_key) VALUES($1::uuid,$2::uuid,'db','public','orders',true)`,
+		`INSERT INTO analysis_run(audit_run_id,environment_id,status,analyzer_version,rule_manifest_hash) VALUES($1::uuid,$2::uuid,'success','test','manifest-test')`,
+	} {
+		if _, err = pool.Exec(ctx, stmt, run, env); err != nil {
+			t.Fatal(err)
+		}
+	}
+	job, err := store.CreateReportJob(ctx, repository.ReportRequest{EnvironmentID: env, AuditRunID: run, Type: "executive", IdempotencyKey: "limit-note"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = (Worker{Store: store}).ProcessOne(ctx); err != nil {
+		t.Fatal(err)
+	}
+	done, err := store.GetReportJob(ctx, env, job.ID)
+	if err != nil || done == nil || done.Status != "success" || !strings.Contains(done.LimitNote, "cobertura parcial") {
+		t.Fatalf("limit must be recorded on the job: %#v %v", done, err)
+	}
 }
 
 func TestArchitectureReportIntegration(t *testing.T) {

@@ -173,7 +173,7 @@ func TestReportContentGolden(t *testing.T) {
 			t.Fatalf("report missing %q", want)
 		}
 	}
-	if !strings.Contains(joined, "Análise final e próximos passos") || !strings.Contains(joined, "Prioridade 1 (crítica): Uma conta pode ter mais permissões") {
+	if !strings.Contains(joined, "Análise final e próximos passos") || !strings.Contains(joined, "Prioridade 1 (achado ") || !strings.Contains(joined, "Uma conta pode ter mais permissões") {
 		t.Fatal("report is missing its final analysis")
 	}
 	if !strings.Contains(string(mustRenderPDF(t, d)), " re f ") {
@@ -188,4 +188,17 @@ func mustRenderPDF(t *testing.T, d Document) []byte {
 		t.Fatal(err)
 	}
 	return pdf
+}
+
+func TestPDFTextKeepsWinAnsiPunctuation(t *testing.T) {
+	if got := escapePDFText("lacuna — valor… “x” – •"); strings.Contains(got, "?") {
+		t.Fatalf("punctuation replaced: %q", got)
+	}
+	for _, d := range goldenDocuments() {
+		for _, line := range BuildLines(d) {
+			if strings.Contains(escapePDFText(line.Text), "?") && !strings.Contains(line.Text, "?") {
+				t.Fatalf("report text not representable in the PDF font: %q", line.Text)
+			}
+		}
+	}
 }

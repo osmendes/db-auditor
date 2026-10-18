@@ -1,0 +1,653 @@
+title	DB Auditor - Relatório técnico
+body	Nível de redação: sem redação
+body	Ambiente: staging-erp
+body	Execução: 00000000-0000-0000-0000-000000000003
+body	Início: 02/10/2026 12:00 UTC | Estado: concluída
+body	Versão do serviço: 1.4.0 | Regras: rules-v3
+body	Solicitante: operator
+body	Escopo: ambiente inteiro
+body	
+heading	Resumo executivo
+body	1 bancos | 30 tabelas | 40 achados (8 críticos, 8 altos)
+body	Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais observados, não substitui a investigação.
+subheading	Achados por severidade (itens incluídos no PDF)
+bar	Críticos|8|40
+body	Alternativa textual: Críticos = 8 de 40 itens.
+bar	Altos|8|40
+body	Alternativa textual: Altos = 8 de 40 itens.
+bar	Médios|8|40
+body	Alternativa textual: Médios = 8 de 40 itens.
+bar	Baixos|8|40
+body	Alternativa textual: Baixos = 8 de 40 itens.
+bar	Informativos|8|40
+body	Alternativa textual: Informativos = 8 de 40 itens.
+body	Cobertura: completa
+body	Índice indisponível | confiança 0%
+heading	Riscos e prioridades
+body	Matriz de decisão (priority-v1): pontuação = peso da severidade × fator de impacto medido × confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências, equipe e janela antes de executar uma mudança.
+subheading	Matriz impacto × esforço × confiança × risco
+body	#1 | achado f-005 | pontuação 1.33/7.5 | severidade crítica | impacto não estimado | esforço médio | confiança média (50%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#2 | achado f-025 | pontuação 1.33/7.5 | severidade crítica | impacto não estimado | esforço médio | confiança média (50%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#3 | achado f-035 | pontuação 1.33/7.5 | severidade crítica | impacto não estimado | esforço médio | confiança média (50%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#4 | achado f-026 | pontuação 1.28/7.5 | severidade alta | impacto não estimado | esforço médio | confiança média (60%) | risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	#5 | achado f-007 | pontuação 1.12/7.5 | severidade média | impacto não estimado | esforço médio | confiança média (70%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#6 | achado f-017 | pontuação 1.12/7.5 | severidade média | impacto não estimado | esforço médio | confiança média (70%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#7 | achado f-037 | pontuação 1.12/7.5 | severidade média | impacto não estimado | esforço médio | confiança média (70%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#8 | achado f-015 | pontuação 1.00/7.5 | severidade crítica | impacto não estimado | esforço alto | confiança média (50%) | risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	#9 | achado f-006 | pontuação 0.96/7.5 | severidade alta | impacto não estimado | esforço alto | confiança média (60%) | risco: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	#10 | achado f-016 | pontuação 0.96/7.5 | severidade alta | impacto não estimado | esforço alto | confiança média (60%) | risco: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	#11 | achado f-036 | pontuação 0.96/7.5 | severidade alta | impacto não estimado | esforço alto | confiança média (60%) | risco: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	#12 | achado f-008 | pontuação 0.85/7.5 | severidade baixa | impacto não estimado | esforço médio | confiança alta (80%) | risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	#13 | achado f-038 | pontuação 0.85/7.5 | severidade baixa | impacto não estimado | esforço médio | confiança alta (80%) | risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	#14 | achado f-027 | pontuação 0.84/7.5 | severidade média | impacto não estimado | esforço alto | confiança média (70%) | risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	#15 | achado f-020 | pontuação 0.80/7.5 | severidade crítica | impacto não estimado | esforço médio | confiança baixa (0%) | risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	#16 | achado f-001 | pontuação 0.64/7.5 | severidade alta | impacto não estimado | esforço médio | confiança baixa (10%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#17 | achado f-011 | pontuação 0.64/7.5 | severidade alta | impacto não estimado | esforço médio | confiança baixa (10%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#18 | achado f-031 | pontuação 0.64/7.5 | severidade alta | impacto não estimado | esforço médio | confiança baixa (10%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#19 | achado f-018 | pontuação 0.64/7.5 | severidade baixa | impacto não estimado | esforço alto | confiança alta (80%) | risco: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	#20 | achado f-028 | pontuação 0.64/7.5 | severidade baixa | impacto não estimado | esforço alto | confiança alta (80%) | risco: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	Matriz limitada aos 20 itens de maior pontuação; os demais aparecem no detalhamento abaixo.
+subheading	[CRÍTICA] Uma consulta pode fazer leituras amplas. - erp.public.table_005
+body	ID do achado: f-005 | severidade: crítica | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
+body	Confiança: 50% | Regra: rules-v3
+subheading	[CRÍTICA] Este índice não teve uso observado no período disponível. - erp.public.table_025
+body	ID do achado: f-025 | severidade: crítica | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Este índice não teve uso observado no período disponível. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 50% | Regra: rules-v3
+subheading	[CRÍTICA] Uma consulta pode fazer leituras amplas. - erp.public.table_035
+body	ID do achado: f-035 | severidade: crítica | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
+body	Confiança: 50% | Regra: rules-v3
+subheading	[ALTA] Há muitos registros antigos aguardando limpeza. - erp.public.table_026
+body	ID do achado: f-026 | severidade: alta | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de autovacuum (PostgreSQL/TimescaleDB (pg_stat_user_tables))
+body	Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e slots de replicação verificados.
+body	Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por I/O.
+body	Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos acumulam tuplas mortas.
+body	Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização (fora do auditor) reduz arquivo.
+body	Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações exigem janela.
+body	Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas completas.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.
+body	Confiança: 60% | Regra: rules-v3
+subheading	[MÉDIA] Este índice não teve uso observado no período disponível. - erp.public.table_007
+body	ID do achado: f-007 | severidade: média | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Este índice não teve uso observado no período disponível. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 70% | Regra: rules-v3
+subheading	[MÉDIA] Uma consulta pode fazer leituras amplas. - erp.public.table_017
+body	ID do achado: f-017 | severidade: média | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
+body	Confiança: 70% | Regra: rules-v3
+subheading	[MÉDIA] Este índice não teve uso observado no período disponível. - erp.public.table_037
+body	ID do achado: f-037 | severidade: média | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Este índice não teve uso observado no período disponível. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 70% | Regra: rules-v3
+subheading	[CRÍTICA] Esta tabela ocupa muito espaço. - erp.public.table_015
+body	ID do achado: f-015 | severidade: crítica | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
+body	Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.
+body	Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos precisam ser revalidados.
+body	Custo de escrita: Migração reescreve a tabela (cópia ou anexação); gatilhos e FKs podem exigir ajustes; carga de escrita durante a migração.
+body	Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices recriados por partição.
+body	Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com volume representativo.
+body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
+body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o armazenamento.
+body	Confiança: 50% | Regra: rules-v3
+subheading	[ALTA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_006
+body	ID do achado: f-006 | severidade: alta | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.
+body	Confiança: 60% | Regra: rules-v3
+subheading	[ALTA] Esta tabela não tem chave primária identificada. - erp.public.table_016
+body	ID do achado: f-016 | severidade: alta | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Confiança: 60% | Regra: rules-v3
+subheading	[ALTA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_036
+body	ID do achado: f-036 | severidade: alta | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.
+body	Confiança: 60% | Regra: rules-v3
+subheading	[BAIXA] Há muitos registros antigos aguardando limpeza. - erp.public.table_008
+body	ID do achado: f-008 | severidade: baixa | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de autovacuum (PostgreSQL/TimescaleDB (pg_stat_user_tables))
+body	Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e slots de replicação verificados.
+body	Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por I/O.
+body	Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos acumulam tuplas mortas.
+body	Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização (fora do auditor) reduz arquivo.
+body	Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações exigem janela.
+body	Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas completas.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.
+body	Confiança: 80% | Regra: rules-v3
+subheading	[BAIXA] Há muitos registros antigos aguardando limpeza. - erp.public.table_038
+body	ID do achado: f-038 | severidade: baixa | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de autovacuum (PostgreSQL/TimescaleDB (pg_stat_user_tables))
+body	Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e slots de replicação verificados.
+body	Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por I/O.
+body	Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos acumulam tuplas mortas.
+body	Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização (fora do auditor) reduz arquivo.
+body	Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações exigem janela.
+body	Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas completas.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.
+body	Confiança: 80% | Regra: rules-v3
+subheading	[MÉDIA] Esta tabela ocupa muito espaço. - erp.public.table_027
+body	ID do achado: f-027 | severidade: média | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
+body	Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.
+body	Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos precisam ser revalidados.
+body	Custo de escrita: Migração reescreve a tabela (cópia ou anexação); gatilhos e FKs podem exigir ajustes; carga de escrita durante a migração.
+body	Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices recriados por partição.
+body	Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com volume representativo.
+body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
+body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o armazenamento.
+body	Confiança: 70% | Regra: rules-v3
+subheading	[CRÍTICA] Há muitos registros antigos aguardando limpeza. - erp.public.table_020
+body	ID do achado: f-020 | severidade: crítica | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de autovacuum (PostgreSQL/TimescaleDB (pg_stat_user_tables))
+body	Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e slots de replicação verificados.
+body	Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por I/O.
+body	Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos acumulam tuplas mortas.
+body	Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização (fora do auditor) reduz arquivo.
+body	Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações exigem janela.
+body	Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas completas.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.
+body	Confiança: 0% | Regra: rules-v3
+subheading	[ALTA] Este índice não teve uso observado no período disponível. - erp.public.table_001
+body	ID do achado: f-001 | severidade: alta | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Este índice não teve uso observado no período disponível. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 10% | Regra: rules-v3
+subheading	[ALTA] Uma consulta pode fazer leituras amplas. - erp.public.table_011
+body	ID do achado: f-011 | severidade: alta | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
+body	Confiança: 10% | Regra: rules-v3
+subheading	[ALTA] Este índice não teve uso observado no período disponível. - erp.public.table_031
+body	ID do achado: f-031 | severidade: alta | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Este índice não teve uso observado no período disponível. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 10% | Regra: rules-v3
+subheading	[BAIXA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_018
+body	ID do achado: f-018 | severidade: baixa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.
+body	Confiança: 80% | Regra: rules-v3
+subheading	[BAIXA] Esta tabela não tem chave primária identificada. - erp.public.table_028
+body	ID do achado: f-028 | severidade: baixa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Confiança: 80% | Regra: rules-v3
+subheading	[CRÍTICA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_000
+body	ID do achado: f-000 | severidade: crítica | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.
+body	Confiança: 0% | Regra: rules-v3
+subheading	[CRÍTICA] Esta tabela não tem chave primária identificada. - erp.public.table_010
+body	ID do achado: f-010 | severidade: crítica | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Confiança: 0% | Regra: rules-v3
+subheading	[CRÍTICA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_030
+body	ID do achado: f-030 | severidade: crítica | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.
+body	Confiança: 0% | Regra: rules-v3
+subheading	[ALTA] Esta tabela ocupa muito espaço. - erp.public.table_021
+body	ID do achado: f-021 | severidade: alta | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
+body	Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.
+body	Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos precisam ser revalidados.
+body	Custo de escrita: Migração reescreve a tabela (cópia ou anexação); gatilhos e FKs podem exigir ajustes; carga de escrita durante a migração.
+body	Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices recriados por partição.
+body	Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com volume representativo.
+body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
+body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o armazenamento.
+body	Confiança: 10% | Regra: rules-v3
+subheading	[MÉDIA] Há muitos registros antigos aguardando limpeza. - erp.public.table_002
+body	ID do achado: f-002 | severidade: média | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de autovacuum (PostgreSQL/TimescaleDB (pg_stat_user_tables))
+body	Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e slots de replicação verificados.
+body	Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por I/O.
+body	Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos acumulam tuplas mortas.
+body	Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização (fora do auditor) reduz arquivo.
+body	Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações exigem janela.
+body	Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas completas.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.
+body	Confiança: 20% | Regra: rules-v3
+subheading	[MÉDIA] Há muitos registros antigos aguardando limpeza. - erp.public.table_032
+body	ID do achado: f-032 | severidade: média | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de autovacuum (PostgreSQL/TimescaleDB (pg_stat_user_tables))
+body	Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e slots de replicação verificados.
+body	Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por I/O.
+body	Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos acumulam tuplas mortas.
+body	Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização (fora do auditor) reduz arquivo.
+body	Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações exigem janela.
+body	Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas completas.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.
+body	Confiança: 20% | Regra: rules-v3
+subheading	[INFORMATIVA] Este índice não teve uso observado no período disponível. - erp.public.table_019
+body	ID do achado: f-019 | severidade: informativa | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Este índice não teve uso observado no período disponível. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 90% | Regra: rules-v3
+subheading	[INFORMATIVA] Uma consulta pode fazer leituras amplas. - erp.public.table_029
+body	ID do achado: f-029 | severidade: informativa | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
+body	Confiança: 90% | Regra: rules-v3
+subheading	[MÉDIA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_012
+body	ID do achado: f-012 | severidade: média | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.
+body	Confiança: 20% | Regra: rules-v3
+subheading	[MÉDIA] Esta tabela não tem chave primária identificada. - erp.public.table_022
+body	ID do achado: f-022 | severidade: média | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Confiança: 20% | Regra: rules-v3
+subheading	[INFORMATIVA] Esta tabela ocupa muito espaço. - erp.public.table_009
+body	ID do achado: f-009 | severidade: informativa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
+body	Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.
+body	Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos precisam ser revalidados.
+body	Custo de escrita: Migração reescreve a tabela (cópia ou anexação); gatilhos e FKs podem exigir ajustes; carga de escrita durante a migração.
+body	Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices recriados por partição.
+body	Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com volume representativo.
+body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
+body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o armazenamento.
+body	Confiança: 90% | Regra: rules-v3
+subheading	[INFORMATIVA] Esta tabela ocupa muito espaço. - erp.public.table_039
+body	ID do achado: f-039 | severidade: informativa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
+body	Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.
+body	Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos precisam ser revalidados.
+body	Custo de escrita: Migração reescreve a tabela (cópia ou anexação); gatilhos e FKs podem exigir ajustes; carga de escrita durante a migração.
+body	Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices recriados por partição.
+body	Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com volume representativo.
+body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
+body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o armazenamento.
+body	Confiança: 90% | Regra: rules-v3
+subheading	[BAIXA] Este índice não teve uso observado no período disponível. - erp.public.table_013
+body	ID do achado: f-013 | severidade: baixa | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Este índice não teve uso observado no período disponível. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 30% | Regra: rules-v3
+subheading	[BAIXA] Uma consulta pode fazer leituras amplas. - erp.public.table_023
+body	ID do achado: f-023 | severidade: baixa | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
+body	Confiança: 30% | Regra: rules-v3
+subheading	[BAIXA] Esta tabela ocupa muito espaço. - erp.public.table_003
+body	ID do achado: f-003 | severidade: baixa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
+body	Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.
+body	Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos precisam ser revalidados.
+body	Custo de escrita: Migração reescreve a tabela (cópia ou anexação); gatilhos e FKs podem exigir ajustes; carga de escrita durante a migração.
+body	Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices recriados por partição.
+body	Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com volume representativo.
+body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
+body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o armazenamento.
+body	Confiança: 30% | Regra: rules-v3
+subheading	[BAIXA] Esta tabela ocupa muito espaço. - erp.public.table_033
+body	ID do achado: f-033 | severidade: baixa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
+body	Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.
+body	Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos precisam ser revalidados.
+body	Custo de escrita: Migração reescreve a tabela (cópia ou anexação); gatilhos e FKs podem exigir ajustes; carga de escrita durante a migração.
+body	Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices recriados por partição.
+body	Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com volume representativo.
+body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
+body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o armazenamento.
+body	Confiança: 30% | Regra: rules-v3
+subheading	[INFORMATIVA] Há muitos registros antigos aguardando limpeza. - erp.public.table_014
+body	ID do achado: f-014 | severidade: informativa | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de autovacuum (PostgreSQL/TimescaleDB (pg_stat_user_tables))
+body	Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e slots de replicação verificados.
+body	Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por I/O.
+body	Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos acumulam tuplas mortas.
+body	Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização (fora do auditor) reduz arquivo.
+body	Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações exigem janela.
+body	Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.
+body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas completas.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.
+body	Confiança: 40% | Regra: rules-v3
+subheading	[INFORMATIVA] Esta tabela não tem chave primária identificada. - erp.public.table_004
+body	ID do achado: f-004 | severidade: informativa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Confiança: 40% | Regra: rules-v3
+subheading	[INFORMATIVA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_024
+body	ID do achado: f-024 | severidade: informativa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.
+body	Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.
+body	Confiança: 40% | Regra: rules-v3
+subheading	[INFORMATIVA] Esta tabela não tem chave primária identificada. - erp.public.table_034
+body	ID do achado: f-034 | severidade: informativa | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
+body	Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Confiança: 40% | Regra: rules-v3
+heading	Inventário técnico (apêndice)
+body	Banco erp: 1 esquemas, 30 tabelas, 1073741824 bytes
+body	erp.public.table_000 | 0 bytes | 0 linhas estimadas | PK: Não
+body	erp.public.table_001 | 8192 bytes | 10 linhas estimadas | PK: Sim
+body	erp.public.table_002 | 16384 bytes | 20 linhas estimadas | PK: Sim
+body	erp.public.table_003 | 24576 bytes | 30 linhas estimadas | PK: Sim
+body	erp.public.table_004 | 32768 bytes | 40 linhas estimadas | PK: Não
+body	erp.public.table_005 | 40960 bytes | 50 linhas estimadas | PK: Sim
+body	erp.public.table_006 | 49152 bytes | 60 linhas estimadas | PK: Sim
+body	erp.public.table_007 | 57344 bytes | 70 linhas estimadas | PK: Sim
+body	erp.public.table_008 | 65536 bytes | 80 linhas estimadas | PK: Não
+body	erp.public.table_009 | 73728 bytes | 90 linhas estimadas | PK: Sim
+body	erp.public.table_010 | 81920 bytes | 100 linhas estimadas | PK: Sim
+body	erp.public.table_011 | 90112 bytes | 110 linhas estimadas | PK: Sim
+body	erp.public.table_012 | 98304 bytes | 120 linhas estimadas | PK: Não
+body	erp.public.table_013 | 106496 bytes | 130 linhas estimadas | PK: Sim
+body	erp.public.table_014 | 114688 bytes | 140 linhas estimadas | PK: Sim
+body	erp.public.table_015 | 122880 bytes | 150 linhas estimadas | PK: Sim
+body	erp.public.table_016 | 131072 bytes | 160 linhas estimadas | PK: Não
+body	erp.public.table_017 | 139264 bytes | 170 linhas estimadas | PK: Sim
+body	erp.public.table_018 | 147456 bytes | 180 linhas estimadas | PK: Sim
+body	erp.public.table_019 | 155648 bytes | 190 linhas estimadas | PK: Sim
+body	erp.public.table_020 | 163840 bytes | 200 linhas estimadas | PK: Não
+body	erp.public.table_021 | 172032 bytes | 210 linhas estimadas | PK: Sim
+body	erp.public.table_022 | 180224 bytes | 220 linhas estimadas | PK: Sim
+body	erp.public.table_023 | 188416 bytes | 230 linhas estimadas | PK: Sim
+body	erp.public.table_024 | 196608 bytes | 240 linhas estimadas | PK: Não
+body	erp.public.table_025 | 204800 bytes | 250 linhas estimadas | PK: Sim
+body	erp.public.table_026 | 212992 bytes | 260 linhas estimadas | PK: Sim
+body	erp.public.table_027 | 221184 bytes | 270 linhas estimadas | PK: Sim
+body	erp.public.table_028 | 229376 bytes | 280 linhas estimadas | PK: Não
+body	erp.public.table_029 | 237568 bytes | 290 linhas estimadas | PK: Sim
+heading	Análise final e próximos passos
+body	Foram observados 40 achados neste recorte, incluindo 8 críticos e 8 altos. Priorize a validação dos itens de maior severidade com a equipe responsável pelo banco.
+body	Prioridade 1 (achado f-005, crítica, pontuação 1.33): Uma consulta pode fazer leituras amplas. em erp.public.table_005. Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
+body	Prioridade 2 (achado f-025, crítica, pontuação 1.33): Este índice não teve uso observado no período disponível. em erp.public.table_025. Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Prioridade 3 (achado f-035, crítica, pontuação 1.33): Uma consulta pode fazer leituras amplas. em erp.public.table_035. Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
+body	Prioridade 4 (achado f-026, alta, pontuação 1.28): Há muitos registros antigos aguardando limpeza. em erp.public.table_026. Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.
+body	Prioridade 5 (achado f-007, média, pontuação 1.12): Este índice não teve uso observado no período disponível. em erp.public.table_007. Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O auditor não aplica mudanças no banco auditado.
+heading	Metodologia e glossário
+body	Somente dados e observações da execução informada foram usados.
+body	Achado: sinal de diagnóstico que exige validação humana.
+body	Baseline: execução aprovada para comparação temporal.
+body	Cobertura parcial impede conclusões sobre ausência de objetos e achados.

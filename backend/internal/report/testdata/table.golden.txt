@@ -1,0 +1,55 @@
+title	DB Auditor - Relatório de tabela
+body	Nível de redação: sem redação
+body	Ambiente: staging-erp
+body	Execução: 00000000-0000-0000-0000-000000000003
+body	Início: 02/10/2026 12:00 UTC | Estado: concluída
+body	Versão do serviço: 1.4.0 | Regras: rules-v3
+body	Solicitante: operator
+body	Escopo: erp / public / orders
+body	
+heading	Resumo executivo
+body	0 bancos | 1 tabelas | 1 achado (0 críticos, 0 altos)
+body	Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais observados, não substitui a investigação.
+subheading	Achados por severidade (itens incluídos no PDF)
+bar	Críticos|0|1
+body	Alternativa textual: Críticos = 0 de 1 itens.
+bar	Altos|0|1
+body	Alternativa textual: Altos = 0 de 1 itens.
+bar	Médios|1|1
+body	Alternativa textual: Médios = 1 de 1 itens.
+bar	Baixos|0|1
+body	Alternativa textual: Baixos = 0 de 1 itens.
+bar	Informativos|0|1
+body	Alternativa textual: Informativos = 0 de 1 itens.
+body	Cobertura: completa
+body	Índice indisponível | confiança 0%
+heading	Histórico e referência de comparação
+body	Referência 00000000-0000-0000-0000-000000000001 | completa | +0 / -0 tabelas, 1 alteradas
+subheading	Novos achados de maior prioridade desde a referência
+body	alta · Este índice não teve uso observado no período disponível. · objeto erp.public.orders_old_idx · achado f-unused
+heading	Riscos e prioridades
+body	Matriz de decisão (priority-v1): pontuação = peso da severidade × fator de impacto medido × confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências, equipe e janela antes de executar uma mudança.
+subheading	Matriz impacto × esforço × confiança × risco
+body	#1 | achado f-unused | pontuação 2.10/7.5 | severidade média | impacto alto | esforço médio | confiança média (70%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+subheading	[MÉDIA] Este índice não teve uso observado no período disponível. - erp.public.orders_old_idx
+body	ID do achado: f-unused | severidade: média | esforço preliminar: médio (teste e retorno)
+body	Impacto: 41943040 bytes de 104857600 bytes de todos os índices da tabela (40.0%) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto
+body	Unidade: bytes / bytes de todos os índices da tabela | Período de referência: 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Índice sem uso. Hipótese até confirmação humana.
+body	Ganho previsto: no máximo a condição observada (41943040 bytes de 104857600 bytes de todos os índices da tabela (40.0%) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto); o ganho real depende da ação e só é conhecido após nova coleta.
+body	Ganho medido: table_size_bytes: antes 1000, depois 600 bytes (variação -400) na execução run-after
+body	Evidência técnica: {"idx_scan":0}
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 70% | Regra: rules-v3
+heading	Inventário técnico (apêndice)
+body	erp.public.orders | 1048576 bytes | 1000 linhas estimadas | PK: Sim
+heading	Análise final e próximos passos
+body	Foi observado 1 achado neste recorte, incluindo 0 críticos e 0 altos. Priorize a validação dos itens de maior severidade com a equipe responsável pelo banco.
+body	Prioridade 1 (achado f-unused, média, pontuação 2.10): Este índice não teve uso observado no período disponível. em erp.public.orders_old_idx. Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O auditor não aplica mudanças no banco auditado.
+heading	Metodologia e glossário
+body	Somente dados e observações da execução informada foram usados.
+body	Achado: sinal de diagnóstico que exige validação humana.
+body	Baseline: execução aprovada para comparação temporal.
+body	Cobertura parcial impede conclusões sobre ausência de objetos e achados.

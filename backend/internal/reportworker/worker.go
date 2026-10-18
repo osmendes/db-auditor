@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/osmendes/db-auditor/internal/config"
@@ -62,7 +64,8 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 	if err != nil || job == nil {
 		return err
 	}
-	workCtx, cancel := context.WithTimeout(ctx, 2*time.Minute)
+	limit := MaxRenderDuration()
+	workCtx, cancel := context.WithTimeout(ctx, limit)
 	defer cancel()
 	if job.Type == "architecture" {
 		return w.processArchitecture(workCtx, job)
@@ -73,7 +76,8 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 	}
 	document.RedactMetadata(os.Getenv("AUDITOR_REPORT_REDACT_METADATA"))
 	document.RedactSensitive(job.Filters.Redaction)
-	pdf, err := report.RenderPDF(document)
+	limitNote := document.LimitNote()
+	pdf, err := renderWithin(workCtx, limit, document)
 	document = report.Document{}
 	if err != nil {
 		return w.fail(workCtx, job.ID, err)
@@ -90,7 +94,7 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 		return nil
 	}
 	digest := sha256.Sum256(pdf)
-	artifact := repository.ReportArtifact{Content: pdf, SHA256: hex.EncodeToString(digest[:]), Filename: fmt.Sprintf("db-auditor-%s-%s.pdf", job.Type, job.ID), ContentType: "application/pdf"}
+	artifact := repository.ReportArtifact{Content: pdf, SHA256: hex.EncodeToString(digest[:]), Filename: fmt.Sprintf("db-auditor-%s-%s.pdf", job.Type, job.ID), ContentType: "application/pdf", LimitNote: limitNote}
 	err = w.Store.FinishReportJob(workCtx, job.ID, artifact)
 	if errors.Is(err, repository.ErrReportConflict) {
 		return nil
@@ -134,6 +138,45 @@ func (w Worker) processArchitecture(ctx context.Context, job *repository.ReportJ
 		return nil
 	}
 	return err
+}
+
+// DefaultMaxRenderDuration bounds loading plus rendering of one report.
+const DefaultMaxRenderDuration = 2 * time.Minute
+
+// MaxRenderDuration reads AUDITOR_REPORT_MAX_SECONDS (10..900); outside that
+// range the default applies.
+func MaxRenderDuration() time.Duration {
+	if raw := strings.TrimSpace(os.Getenv("AUDITOR_REPORT_MAX_SECONDS")); raw != "" {
+		if seconds, err := strconv.Atoi(raw); err == nil && seconds >= 10 && seconds <= 900 {
+			return time.Duration(seconds) * time.Second
+		}
+	}
+	return DefaultMaxRenderDuration
+}
+
+// ErrRenderTimeout is the explicit failure recorded on the job when a report
+// exceeds its time budget. Memory is bounded inside report.RenderPDF.
+var ErrRenderTimeout = errors.New("relatório excedeu o tempo limite de geração; reduza o escopo ou use filtros")
+
+func renderWithin(ctx context.Context, limit time.Duration, document report.Document) ([]byte, error) {
+	type result struct {
+		pdf []byte
+		err error
+	}
+	if ctx.Err() != nil {
+		return nil, fmt.Errorf("%w (%s)", ErrRenderTimeout, limit)
+	}
+	done := make(chan result, 1)
+	go func() {
+		pdf, err := report.RenderPDF(document)
+		done <- result{pdf, err}
+	}()
+	select {
+	case r := <-done:
+		return r.pdf, r.err
+	case <-ctx.Done():
+		return nil, fmt.Errorf("%w (%s)", ErrRenderTimeout, limit)
+	}
 }
 
 func (w Worker) fail(ctx context.Context, id string, cause error) error {

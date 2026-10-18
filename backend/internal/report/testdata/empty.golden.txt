@@ -1,0 +1,36 @@
+title	DB Auditor - Relatório executivo
+body	Nível de redação: sem redação
+body	Ambiente: staging-erp
+body	Execução: 00000000-0000-0000-0000-000000000003
+body	Início: 02/10/2026 12:00 UTC | Estado: concluída
+body	Versão do serviço: 1.4.0 | Regras: rules-v3
+body	Solicitante: operator
+body	Escopo: ambiente inteiro
+body	
+heading	Resumo executivo
+body	0 bancos | 0 tabelas | 0 achados (0 críticos, 0 altos)
+body	Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais observados, não substitui a investigação.
+subheading	Achados por severidade (itens incluídos no PDF)
+bar	Críticos|0|0
+body	Alternativa textual: Críticos = 0 de 0 itens.
+bar	Altos|0|0
+body	Alternativa textual: Altos = 0 de 0 itens.
+bar	Médios|0|0
+body	Alternativa textual: Médios = 0 de 0 itens.
+bar	Baixos|0|0
+body	Alternativa textual: Baixos = 0 de 0 itens.
+bar	Informativos|0|0
+body	Alternativa textual: Informativos = 0 de 0 itens.
+body	Cobertura: completa
+body	Índice indisponível | confiança 0%
+heading	Riscos e prioridades
+body	Matriz de decisão (priority-v1): pontuação = peso da severidade × fator de impacto medido × confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências, equipe e janela antes de executar uma mudança.
+body	Nenhum achado observado neste escopo da execução.
+heading	Análise final e próximos passos
+body	Não há achados neste recorte. Confira a cobertura antes de concluir que o ambiente não possui riscos.
+body	Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O auditor não aplica mudanças no banco auditado.
+heading	Metodologia e glossário
+body	Somente dados e observações da execução informada foram usados.
+body	Achado: sinal de diagnóstico que exige validação humana.
+body	Baseline: execução aprovada para comparação temporal.
+body	Cobertura parcial impede conclusões sobre ausência de objetos e achados.

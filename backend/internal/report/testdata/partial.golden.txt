@@ -1,0 +1,92 @@
+title	DB Auditor - Relatório técnico
+body	Nível de redação: sem redação
+body	Ambiente: staging-erp
+body	Execução: 00000000-0000-0000-0000-000000000003
+body	Início: 02/10/2026 12:00 UTC | Estado: concluída parcialmente
+body	Versão do serviço: 1.4.0 | Regras: rules-v3
+body	Solicitante: operator
+body	Escopo: ambiente inteiro
+body	
+heading	Resumo executivo
+body	0 bancos | 0 tabelas | 3 achados (0 críticos, 1 alto)
+body	Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais observados, não substitui a investigação.
+subheading	Achados por severidade (itens incluídos no PDF)
+bar	Críticos|0|3
+body	Alternativa textual: Críticos = 0 de 3 itens.
+bar	Altos|1|3
+body	Alternativa textual: Altos = 1 de 3 itens.
+bar	Médios|2|3
+body	Alternativa textual: Médios = 2 de 3 itens.
+bar	Baixos|0|3
+body	Alternativa textual: Baixos = 0 de 3 itens.
+bar	Informativos|0|3
+body	Alternativa textual: Informativos = 0 de 3 itens.
+body	Cobertura: parcial
+body	Índice indisponível | confiança 0%
+body	Limite: Execucao parcial; ausencia de objetos/findings nao e prova de resolucao.
+heading	Evolução de armazenamento
+body	Barras: tamanho total das tabelas (unidade: bytes) por coleta completa. Coletas parciais aparecem como lacuna e não entram na variação.
+bar_bytes	30/09/2026 00000000|1000|1500
+body	Alternativa textual: execução 00000000-0000-0000-0000-000000000001 em 30/09/2026 = 1000 bytes em 3 tabelas (coleta completa).
+body	01/10/2026 00000000: lacuna (coleta parcial) — valor não plotado e fora da comparação.
+bar_bytes	02/10/2026 00000000|1500|1500
+body	Alternativa textual: execução 00000000-0000-0000-0000-000000000003 em 02/10/2026 = 1500 bytes em 3 tabelas (coleta completa).
+body	Variação entre coletas completas: +500 bytes (+50.0%) no período 30/09/2026 12:00 UTC a 02/10/2026 12:00 UTC. Confirme que perfil e cobertura são comparáveis antes de atribuir a mudança a uma ação.
+heading	Riscos e prioridades
+body	Matriz de decisão (priority-v1): pontuação = peso da severidade × fator de impacto medido × confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências, equipe e janela antes de executar uma mudança.
+subheading	Matriz impacto × esforço × confiança × risco
+body	#1 | achado f-unused | pontuação 2.10/7.5 | severidade média | impacto alto | esforço médio | confiança média (70%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	#2 | achado f-pk | pontuação 1.44/7.5 | severidade alta | impacto não estimado | esforço alto | confiança alta (90%) | risco: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	#3 | achado f-growth | pontuação 0.88/7.5 | severidade média | impacto não estimado | esforço médio | confiança média (55%) | risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+subheading	[MÉDIA] Este índice não teve uso observado no período disponível. - erp.public.orders_old_idx
+body	ID do achado: f-unused | severidade: média | esforço preliminar: médio (teste e retorno)
+body	Impacto: 41943040 bytes de 104857600 bytes de todos os índices da tabela (40.0%) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto
+body	Unidade: bytes / bytes de todos os índices da tabela | Período de referência: 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC
+body	Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
+body	Hipótese: Índice sem uso. Hipótese até confirmação humana.
+body	Ganho previsto: no máximo a condição observada (41943040 bytes de 104857600 bytes de todos os índices da tabela (40.0%) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto); o ganho real depende da ação e só é conhecido após nova coleta.
+body	Ganho medido: table_size_bytes: antes 1000, depois 600 bytes (variação -400) na execução run-after
+body	Evidência técnica: {"idx_scan":0}
+body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Confiança: 70% | Regra: rules-v3
+subheading	[ALTA] Esta tabela não tem chave primária identificada. - erp.public.audit_log
+body	ID do achado: f-pk | severidade: alta | esforço preliminar: alto (dependências e janela)
+body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
+body	Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+body	Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Confiança: 90% | Regra: rules-v3
+subheading	[MÉDIA] O tamanho ou a atividade mudou entre duas coletas completas. - erp.public.events
+body	ID do achado: f-growth | severidade: média | esforço preliminar: médio (teste e retorno)
+body	Impacto: impacto não estimado: sem duas coletas completas e comparáveis
+body	Unidade: não informada | Período de referência: não informado
+body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Hipótese: O tamanho ou a atividade mudou entre duas coletas completas. Hipótese até confirmação humana.
+body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
+body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
+subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
+body	Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.
+body	Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos precisam ser revalidados.
+body	Custo de escrita: Migração reescreve a tabela (cópia ou anexação); gatilhos e FKs podem exigir ajustes; carga de escrita durante a migração.
+body	Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices recriados por partição.
+body	Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com volume representativo.
+body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
+body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
+body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
+body	Próximo passo: Trate o número como hipótese. Confirme período, backup e aprovação antes de qualquer manutenção.
+body	Confiança: 55% | Regra: rules-v3
+heading	Análise final e próximos passos
+body	Foram observados 3 achados neste recorte, incluindo 0 críticos e 1 alto. Priorize a validação dos itens de maior severidade com a equipe responsável pelo banco.
+body	Prioridade 1 (achado f-unused, média, pontuação 2.10): Este índice não teve uso observado no período disponível. em erp.public.orders_old_idx. Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Prioridade 2 (achado f-pk, alta, pontuação 1.44): Esta tabela não tem chave primária identificada. em erp.public.audit_log. Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Prioridade 3 (achado f-growth, média, pontuação 0.88): O tamanho ou a atividade mudou entre duas coletas completas. em erp.public.events. Próximo passo: Trate o número como hipótese. Confirme período, backup e aprovação antes de qualquer manutenção.
+body	A cobertura é parcial ou o conteúdo foi limitado. Execute uma coleta completa antes de decidir alterações com base na ausência de achados.
+body	Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O auditor não aplica mudanças no banco auditado.
+heading	Metodologia e glossário
+body	Somente dados e observações da execução informada foram usados.
+body	Achado: sinal de diagnóstico que exige validação humana.
+body	Baseline: execução aprovada para comparação temporal.
+body	Cobertura parcial impede conclusões sobre ausência de objetos e achados.

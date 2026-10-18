@@ -1,0 +1,5 @@
+lines=7968
+pages=159
+bytes=1013947
+sha256=190c7e22c1b39216bc8637026d355a31db009d7bb579fc1cc8eb2b653b5c764f
+headings=Resumo executivo | Riscos e prioridades | Inventário técnico (apêndice) | Análise final e próximos passos | Metodologia e glossário

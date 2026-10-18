@@ -221,12 +221,18 @@ func wrapText(value string, width int) []string {
 	return out
 }
 
+// winAnsiExtra maps the punctuation WinAnsiEncoding places in 0x80-0x9F, so
+// report text is not silently replaced by "?".
+var winAnsiExtra = map[rune]byte{'€': 0x80, '‚': 0x82, '„': 0x84, '…': 0x85, '‘': 0x91, '’': 0x92, '“': 0x93, '”': 0x94, '•': 0x95, '–': 0x96, '—': 0x97, '™': 0x99}
+
 func escapePDFText(value string) string {
 	var out strings.Builder
 	for _, r := range value {
 		b := byte('?')
 		if r >= 32 && r <= 255 {
 			b = byte(r)
+		} else if mapped, ok := winAnsiExtra[r]; ok {
+			b = mapped
 		}
 		switch b {
 		case '\\', '(', ')':
