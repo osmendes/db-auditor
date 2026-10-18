@@ -152,9 +152,14 @@ export function RelationshipDiagram({
       {edges.length === 0 ? (
         <p className="text-sm text-slate-400">Nenhuma FK nesta direção.</p>
       ) : (
+        // Decorative copy of the FK list below. The box scrolls when zoomed,
+        // and browsers make a scroller without focusable children keyboard
+        // focusable; tabIndex=-1 keeps it out of the tab order (it stays
+        // scrollable with the mouse, which inert would block).
         <div
           className="overflow-auto rounded border border-slate-700"
           aria-hidden="true"
+          tabIndex={-1}
         >
           <svg
             viewBox="0 0 600 360"
