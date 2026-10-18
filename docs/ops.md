@@ -130,7 +130,7 @@ O dump não contém senha de alvo. Confira o `.env.prod` à parte antes de subir
 
 ## Retenção e restauração
 
-O worker grava o PDF em streaming: renderiza página a página direto num `COPY` para `report_artifact`, sem montar o arquivo inteiro na memória. Cada job registra `peak_heap_bytes`, `pages` e `bytes` no log `report pdf rendered`. Se o heap do job passar de `AUDITOR_REPORT_MAX_HEAP_MB` (padrão 256), o job falha com o motivo "relatório excedeu o orçamento de memória do worker". Limites de 200 páginas, 16 MiB e 8 MiB de texto também falham com motivo legível. Dimensione o limite de memória do contêiner da API acima desse teto.
+O worker grava o PDF em streaming: renderiza página a página direto num `COPY` para `report_artifact`, sem montar o arquivo inteiro na memória. Os dados também são lidos por seção (visão geral, achados, bancos, tabelas) de um único snapshot `REPEATABLE READ` somente leitura, e cada seção é liberada antes da próxima. O CI gera o maior relatório permitido (cerca de 180 páginas) dentro de um contêiner com 48 MiB e swap desligado. Cada job registra `peak_heap_bytes`, `pages` e `bytes` no log `report pdf rendered`. Se o heap do job passar de `AUDITOR_REPORT_MAX_HEAP_MB` (padrão 256), o job falha com o motivo "relatório excedeu o orçamento de memória do worker". Limites de 200 páginas, 16 MiB e 8 MiB de texto também falham com motivo legível. Dimensione o limite de memória do contêiner da API acima desse teto.
 
 O prazo do PDF fica em `auditor_setting.report_retention_days` (padrão 30). Um artefato vencido não é mais baixado; a linha do job permanece como trilha. Uma atualização não apaga achados, execuções nem jobs.
 

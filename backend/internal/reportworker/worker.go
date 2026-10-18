@@ -105,13 +105,20 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 		}
 	})
 	started := time.Now()
-	document, err := w.Store.LoadReportDocument(renderCtx, *job)
+	// #65: the report data is read section by section from one read-only
+	// snapshot while the PDF is written; it is never loaded as a whole.
+	sections, err := w.Store.OpenReportSections(renderCtx, *job)
 	if err != nil {
 		sampler.Stop()
 		return w.fail(workCtx, job.ID, renderCause(renderCtx, err))
 	}
-	document.RedactMetadata(os.Getenv("AUDITOR_REPORT_REDACT_METADATA"))
-	document.RedactSensitive(job.Filters.Redaction)
+	defer sections.Close(workCtx)
+	// Validate the run, scope and filters before opening the artifact stream.
+	if _, err = sections.Overview(renderCtx); err != nil {
+		sampler.Stop()
+		return w.fail(workCtx, job.ID, renderCause(renderCtx, err))
+	}
+	redaction := &report.Redaction{Metadata: os.Getenv("AUDITOR_REPORT_REDACT_METADATA"), Level: job.Filters.Redaction}
 	current, err := w.Store.GetReportJob(workCtx, job.EnvironmentID, job.ID)
 	if err != nil {
 		sampler.Stop()
@@ -125,11 +132,10 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 	// never held in memory as a whole.
 	var rendered report.PDFResult
 	err = w.Store.FinishReportJobStream(renderCtx, job.ID, fmt.Sprintf("db-auditor-%s-%s.pdf", job.Type, job.ID), "application/pdf", func(out io.Writer) (repository.StreamedArtifact, error) {
-		result, err := report.WritePDF(renderCtx, out, document)
+		result, err := report.WritePDFSections(renderCtx, out, sections, redaction)
 		rendered = result
 		return repository.StreamedArtifact{Bytes: result.Bytes, SHA256: result.SHA256}, err
 	})
-	document = report.Document{}
 	peak := sampler.Stop()
 	if errors.Is(err, repository.ErrReportConflict) {
 		return nil
