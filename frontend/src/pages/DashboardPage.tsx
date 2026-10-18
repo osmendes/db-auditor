@@ -63,10 +63,12 @@ export function DashboardPage() {
         const params = environmentId
           ? { environment_id: environmentId }
           : undefined;
+        // One clock reading for both ends: the API rejects windows over 90 days.
+        const to = new Date();
         const historyParams = {
           ...params,
-          from: new Date(Date.now() - historyDays * 86400000).toISOString(),
-          to: new Date().toISOString(),
+          from: new Date(to.getTime() - historyDays * 86400000).toISOString(),
+          to: to.toISOString(),
           granularity: historyGranularity,
         };
         const [k, s, t, j, c] = await Promise.all([

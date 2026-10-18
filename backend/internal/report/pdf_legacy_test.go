@@ -14,9 +14,14 @@ import (
 	"github.com/osmendes/db-auditor/internal/priority"
 )
 
-// legacyRenderPDF is the pre-PF-07 in-memory renderer, kept verbatim as the
-// byte-for-byte oracle of WritePDF. It writes a deterministic, paginated PDF 1.4 document with no
-// external font or native runtime dependency. All text is WinAnsi encoded.
+// legacyRenderPDF is the pre-PF-07 in-memory renderer, kept as the
+// byte-for-byte oracle of WritePDF: it builds every line and every page in
+// memory before writing. #107 changed the output on purpose (artifact and
+// marked-content operators in the page streams, structure tree, embedded
+// font, Info/XMP title), so the page commands and the structure bookkeeping
+// were updated here independently of pdfLayout; the objects after the
+// content streams come from the shared writeDocumentObjects, whose content
+// is pinned by the #107 tests in pdf_tagged_test.go.
 func legacyRenderPDF(document Document) ([]byte, error) {
 	lines := legacyBuildLines(document)
 	textBytes := 0
@@ -27,6 +32,13 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 		}
 	}
 	pages := [][]string{{}}
+	tags := newTagging()
+	mark := func(elem *int, role string) string {
+		if *elem < 0 {
+			*elem = tags.open(role)
+		}
+		return fmt.Sprintf("/%s << /MCID %d >> BDC ", role, tags.mark(*elem))
+	}
 	y := 790
 	for _, line := range lines {
 		if line.Style == "heading" && y < 110 {
@@ -34,6 +46,7 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 				return nil, fmt.Errorf("relatório excede %d páginas; reduza o escopo ou use filtros", maxPDFPages)
 			}
 			pages = append(pages, []string{})
+			tags.newPage()
 			y = 790
 		}
 		if line.Style == "bar_bytes" {
@@ -42,6 +55,7 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 					return nil, fmt.Errorf("relatório excede %d páginas; reduza o escopo ou use filtros", maxPDFPages)
 				}
 				pages = append(pages, []string{})
+				tags.newPage()
 				y = 790
 			}
 			parts := strings.Split(line.Text, "|")
@@ -53,7 +67,8 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 					if maximum > 0 {
 						width = int(300 * float64(value) / float64(maximum))
 					}
-					command := fmt.Sprintf("0.94 0.96 0.97 rg 42 %d 68 11 re f 0.90 0.93 0.94 rg 165 %d 250 11 re f 0.09 0.55 0.42 rg 165 %d %d 11 re f 0.12 0.18 0.24 rg BT /F1 8 Tf 43 %d Td (%s) Tj ET BT /F1 9 Tf 425 %d Td (%d B) Tj ET\n", y-2, y-2, y-2, width*250/300, y, escapePDFText(parts[0]), y, value)
+					elem := -1
+					command := fmt.Sprintf("/Artifact BMC 0.94 0.96 0.97 rg 42 %d 68 11 re f 0.90 0.93 0.94 rg 165 %d 250 11 re f 0.09 0.55 0.42 rg 165 %d %d 11 re f EMC %s0.12 0.18 0.24 rg BT /F1 8 Tf 43 %d Td (%s) Tj ET BT /F1 9 Tf 425 %d Td (%d B) Tj ET EMC\n", y-2, y-2, y-2, width*250/300, mark(&elem, "P"), y, escapePDFText(parts[0]), y, value)
 					pages[len(pages)-1] = append(pages[len(pages)-1], command)
 					y -= 20
 					continue
@@ -66,6 +81,7 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 					return nil, fmt.Errorf("relatório excede %d páginas; reduza o escopo ou use filtros", maxPDFPages)
 				}
 				pages = append(pages, []string{})
+				tags.newPage()
 				y = 790
 			}
 			parts := strings.Split(line.Text, "|")
@@ -77,7 +93,8 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 					if maximum > 0 {
 						width = 300 * value / maximum
 					}
-					command := fmt.Sprintf("0.94 0.96 0.97 rg 42 %d 68 11 re f 0.90 0.93 0.94 rg 115 %d 300 11 re f 0.09 0.55 0.42 rg 115 %d %d 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 %d Td (%s) Tj ET BT /F1 9 Tf 425 %d Td (%d) Tj ET\n", y-2, y-2, y-2, width, y, escapePDFText(parts[0]), y, value)
+					elem := -1
+					command := fmt.Sprintf("/Artifact BMC 0.94 0.96 0.97 rg 42 %d 68 11 re f 0.90 0.93 0.94 rg 115 %d 300 11 re f 0.09 0.55 0.42 rg 115 %d %d 11 re f EMC %s0.12 0.18 0.24 rg BT /F1 9 Tf 43 %d Td (%s) Tj ET BT /F1 9 Tf 425 %d Td (%d) Tj ET EMC\n", y-2, y-2, y-2, width, mark(&elem, "P"), y, escapePDFText(parts[0]), y, value)
 					pages[len(pages)-1] = append(pages[len(pages)-1], command)
 					y -= 20
 					continue
@@ -109,23 +126,37 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 		if fontSize == 13 {
 			width = 75
 		}
+		elem := -1
+		role := map[string]string{"title": "H1", "heading": "H2", "subheading": "H3"}[line.Style]
+		if role == "" {
+			role = "P"
+		}
 		for _, part := range wrapText(line.Text, width) {
 			if y < 55 {
 				if len(pages) >= maxPDFPages {
 					return nil, fmt.Errorf("relatório excede %d páginas; reduza o escopo ou use filtros", maxPDFPages)
 				}
 				pages = append(pages, []string{})
+				tags.newPage()
 				y = 790
 			}
 			color := "0.15 0.20 0.26"
 			if line.Style == "title" || line.Style == "heading" {
 				color = "0.08 0.45 0.35"
 			}
-			command := fmt.Sprintf("%s rg BT /F1 %d Tf 42 %d Td (%s) Tj ET\n", color, fontSize, y, escapePDFText(part))
+			open := "/Artifact BMC "
+			if strings.TrimSpace(part) != "" {
+				open = mark(&elem, role)
+			}
+			command := fmt.Sprintf("%s%s rg BT /F1 %d Tf 42 %d Td (%s) Tj ET EMC\n", open, color, fontSize, y, escapePDFText(part))
 			pages[len(pages)-1] = append(pages[len(pages)-1], command)
 			y -= step
 			fontSize, step = 10, 14
 		}
+	}
+	font, err := embeddedFont()
+	if err != nil {
+		return nil, err
 	}
 	var out bytes.Buffer
 	out.WriteString("%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
@@ -139,42 +170,25 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 		return nil
 	}
 	pageCount := len(pages)
-	contentID := func(index int) int { return index + 1 }
-	pageID := func(index int) int { return pageCount + index + 1 }
-	fontID := 2*pageCount + 1
-	pagesID := 2*pageCount + 2
-	catalogID := 2*pageCount + 3
+	run := document.RunID
+	if len(run) > 8 {
+		run = run[:8]
+	}
+	header := fmt.Sprintf("/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (%s) Tj ET EMC\n", escapePDFText("DB Auditor · "+reportTypeLabel(document.Type)+" · execução "+run))
 	for index := range pages {
 		commands := pages[index]
 		pages[index] = nil
-		stream := "1 1 1 rg 0 0 595 842 re f\n"
+		stream := "/Artifact BMC 1 1 1 rg 0 0 595 842 re f EMC\n"
 		if index > 0 {
-			run := document.RunID
-			if len(run) > 8 {
-				run = run[:8]
-			}
-			stream += fmt.Sprintf("0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (%s) Tj ET\n", escapePDFText("DB Auditor · "+reportTypeLabel(document.Type)+" · execução "+run))
+			stream += header
 		}
-		stream += strings.Join(commands, "") + fmt.Sprintf("0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (%s) Tj ET\n", escapePDFText(fmt.Sprintf("Página %d de %d", index+1, pageCount)))
+		stream += strings.Join(commands, "") + fmt.Sprintf("/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (%s) Tj ET EMC\n", escapePDFText(fmt.Sprintf("Página %d de %d", index+1, pageCount)))
 		if err := writeObject(fmt.Sprintf("<< /Length %d >>\nstream\n%sendstream", len(stream), stream)); err != nil {
 			return nil, err
 		}
 	}
-	kids := make([]string, pageCount)
-	for index := 0; index < pageCount; index++ {
-		kids[index] = fmt.Sprintf("%d 0 R", pageID(index))
-		body := fmt.Sprintf("<< /Type /Page /Parent %d 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 %d 0 R >> >> /Contents %d 0 R >>", pagesID, fontID, contentID(index))
-		if err := writeObject(body); err != nil {
-			return nil, err
-		}
-	}
-	if err := writeObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>"); err != nil {
-		return nil, err
-	}
-	if err := writeObject(fmt.Sprintf("<< /Type /Pages /Kids [%s] /Count %d >>", strings.Join(kids, " "), pageCount)); err != nil {
-		return nil, err
-	}
-	if err := writeObject(fmt.Sprintf("<< /Type /Catalog /Pages %d 0 R >>", pagesID)); err != nil {
+	catalogID, infoID, err := writeDocumentObjects(writeObject, pageCount, document, tags, font)
+	if err != nil {
 		return nil, err
 	}
 	if catalogID != len(offsets)-1 {
@@ -185,7 +199,7 @@ func legacyRenderPDF(document Document) ([]byte, error) {
 	for _, offset := range offsets[1:] {
 		fmt.Fprintf(&out, "%010d 00000 n \n", offset)
 	}
-	fmt.Fprintf(&out, "trailer\n<< /Size %d /Root %d 0 R >>\nstartxref\n%d\n%%%%EOF\n", len(offsets), catalogID, xref)
+	out.WriteString(pdfTrailer(len(offsets), catalogID, infoID, int64(xref)))
 	if out.Len() > maxPDFBytes {
 		return nil, fmt.Errorf("relatório excede %d bytes; reduza o escopo ou use filtros", maxPDFBytes)
 	}
@@ -323,8 +337,9 @@ func legacyBuildLines(d Document) []Line {
 		}
 		lines = append(lines, Line{"Próximo passo: " + friendly.Next, "body"}, Line{fmt.Sprintf("Confiança: %.0f%% | Regra: %s", f.Confidence*100, f.RuleVersion), "body"})
 		if d.Type == "technical" || d.Type == "table" {
-			if strings.TrimSpace(f.Summary) != "" {
-				lines = append(lines, Line{"Resumo original da regra: " + f.Summary, "body"})
+			// #107: Portuguese rule summary (intentional output change).
+			if summary := strings.TrimSpace(actions.For(f.Type).Evidence); summary != "" {
+				lines = append(lines, Line{"Resumo da regra: " + summary, "body"})
 			}
 			if strings.TrimSpace(f.Recommendation) != "" {
 				lines = append(lines, Line{"Recomendação técnica original: " + f.Recommendation, "body"})

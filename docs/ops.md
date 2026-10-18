@@ -130,7 +130,9 @@ O dump não contém senha de alvo. Confira o `.env.prod` à parte antes de subir
 
 ## Retenção e restauração
 
-O worker grava o PDF em streaming: renderiza página a página direto num `COPY` para `report_artifact`, sem montar o arquivo inteiro na memória. Os dados também são lidos por seção (visão geral, achados, bancos, tabelas) de um único snapshot `REPEATABLE READ` somente leitura, e cada seção é liberada antes da próxima. O CI gera, dentro de um contêiner com 48 MiB e swap desligado, o maior relatório que cabe nos limites (cerca de 160 páginas) e a maior seção de achados (2 000, com detalhamento limitado). Cada job registra `peak_heap_bytes`, `pages` e `bytes` no log `report pdf rendered`. Se o heap do job passar de `AUDITOR_REPORT_MAX_HEAP_MB` (padrão 256), o job falha com o motivo "relatório excedeu o orçamento de memória do worker". Limites de 200 páginas, 16 MiB e 8 MiB de texto também falham com motivo legível. Dimensione o limite de memória do contêiner da API acima desse teto.
+O worker grava o PDF em streaming: renderiza página a página direto num `COPY` para `report_artifact`, sem montar o arquivo inteiro na memória. Os dados também são lidos por seção (visão geral, achados, bancos, tabelas) de um único snapshot `REPEATABLE READ` somente leitura, e cada seção é liberada antes da próxima. O CI gera, dentro de um contêiner com 48 MiB e swap desligado, o maior relatório que cabe nos limites (cerca de 162 páginas) e a maior seção de achados (2 000, com detalhamento limitado). Cada job registra `peak_heap_bytes`, `pages` e `bytes` no log `report pdf rendered`. Se o heap do job passar de `AUDITOR_REPORT_MAX_HEAP_MB` (padrão 256), o job falha com o motivo "relatório excedeu o orçamento de memória do worker". Limites de 200 páginas, 16 MiB e 8 MiB de texto também falham com motivo legível. Dimensione o limite de memória do contêiner da API acima desse teto.
+
+O PDF é autocontido e acessível (#107). Ele embute um subconjunto WinAnsi da Liberation Sans (OFL 1.1, em `backend/internal/report/fonts/`), que tem as métricas da Helvetica, e por isso a paginação não mudou. Também grava título no Info e no XMP, `Lang pt-BR` e uma árvore de estrutura: Document com H1/H2/H3/P na ordem de leitura. Cabeçalho, rodapé, fundo e barras ficam marcados como artefato. Para conferir: `pdffonts relatorio.pdf` (espera `emb yes sub yes`), `pdfinfo relatorio.pdf` (espera `Title:` e `Tagged: yes`) e `pdfinfo -struct relatorio.pdf`. A fonte e a estrutura acrescentam cerca de 40 KB por PDF, mais uns 100 bytes por linha do relatório; o caso volumoso de 162 páginas tem 2,2 MB, bem abaixo do teto de 16 MiB.
 
 O prazo do PDF fica em `auditor_setting.report_retention_days` (padrão 30). Um artefato vencido não é mais baixado e é removido pela limpeza horária do worker; a linha do job permanece como trilha auditável. Uma atualização não apaga achados, execuções nem jobs.
 
@@ -207,17 +209,31 @@ O auditor não cifra disco nem guarda chave. Para a infraestrutura usada, regist
 - **Acesso**: diretório `/backup` com dono do serviço e modo `0700`; dumps e `.sha256` com modo `0600`. O `deploy/snapshot-backup.sh` aplica `umask 077`, corrige o modo do diretório e de dumps antigos a cada execução. Anexe `ls -ld /backup`, `ls -l /backup` e a lista de usuários do host com acesso.
 - **Descarte**: dumps locais saem após `BACKUP_RETENTION_DAYS` (padrão 14) pelo `find -delete` do script; PDFs vencidos saem pela limpeza horária; para mídia/volume descartado, `cryptsetup luksErase` ou destruição de chave KMS. Registre o prazo aprovado em `archive_note`.
 
-### Limites de consultas históricas (BA-03)
+### Limites de consultas históricas (BA-03, #106)
+
+Limites aplicados pela API:
+
+| Endpoint | Janela | Paginação |
+|---|---|---|
+| `analytics/storage`, `analytics/findings-trends` | padrão 90 dias; máximo 90 dias, ou 7 dias com `granularity=hour`; acima disso, 400 | não paginam: no máximo um ponto por período da janela |
+| `environments/{id}/history`, `environments/{id}/tables/history` | padrão 30 dias; mesmo teto de 90 dias (7 por hora) | `limit` padrão 50, de 1 a 500; `offset` ≥ 0; fora disso, 400. A página conta períodos, e a resposta traz `page` (`limit`, `offset`, `total`, `has_more`) |
+| `environments/{id}/tables/workload`, `tables/column-stats` | mesmo teto de 90 dias | `workload` devolve no máximo 200 linhas |
+| `audit-runs` | — | `limit` padrão 50, de 1 a 500; acima disso, 400 |
+
+O teto aceita até 1 h a mais, para o cliente que calcula `from` = agora − 90 dias com o próprio relógio. Séries de 365 dias não ficam expostas: precisam de um agregado por coleta gravado na ingestão, que ainda não existe.
+
+Consultas "últimas N coletas" aplicam o `LIMIT` em `audit_run` antes do join com `table_snapshot`. O crescimento do PDF e as séries paginadas seguem essa regra, e `TestHistoryQueriesLimitBeforeJoinIntegration` confere isso no `EXPLAIN`. Na homologação do #106 (1,3 milhão de linhas em `table_snapshot`), o join antes do `LIMIT` fez seq scan e levou 308 ms; com o `LIMIT` antes, foram 3,8 ms.
 
 Meça e anexe, com o store de homologação restaurado:
 
 ```bash
 psql "$TARGET_DSN" -c "SELECT relname, n_live_tup FROM pg_stat_user_tables WHERE relname IN ('audit_run','table_snapshot','finding','finding_event','report_job') ORDER BY 2 DESC;"
-psql "$TARGET_DSN" -c "EXPLAIN (ANALYZE, BUFFERS) SELECT r.id, r.started_at, sum(t.total_size_bytes) FROM audit_run r LEFT JOIN table_snapshot t ON t.audit_run_id=r.id WHERE r.environment_id='<env>' GROUP BY r.id ORDER BY r.started_at DESC LIMIT 6;"
+psql "$TARGET_DSN" -c "EXPLAIN (ANALYZE, BUFFERS) WITH recent AS (SELECT r.id, r.started_at FROM audit_run r WHERE r.environment_id='<env>' AND r.status IN ('success','partial_success') ORDER BY r.started_at DESC, r.id DESC LIMIT 6) SELECT recent.id, recent.started_at, s.bytes FROM recent CROSS JOIN LATERAL (SELECT sum(t.total_size_bytes) bytes FROM table_snapshot t WHERE t.environment_id='<env>' AND t.audit_run_id=recent.id) s ORDER BY recent.started_at DESC;"
 /usr/bin/time -v curl -sS -o /dev/null -b cookies.txt "https://auditor.exemplo/api/v1/analytics/storage?environment_id=<env>&granularity=day"
+curl -sS -o /dev/null -w '%{http_code}\n' -b cookies.txt "https://auditor.exemplo/api/v1/environments/<env>/tables/history?database=<db>&schema=<schema>&table=<tabela>&limit=501"   # espera 400
 ```
 
-Registre cardinalidade, tempo e pico de memória (`Maximum resident set size`) e o limite operacional decidido.
+Registre cardinalidade, tempo e pico de memória (`Maximum resident set size`) e o limite operacional decidido. O plano da consulta de "últimas 6" não pode ter seq scan em `table_snapshot`.
 
 ### Calibração de regressões (BA-15)
 

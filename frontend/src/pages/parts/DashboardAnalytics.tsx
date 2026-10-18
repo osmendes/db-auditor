@@ -163,7 +163,6 @@ export function DashboardAnalytics({
               >
                 <option value={30}>30 dias</option>
                 <option value={90}>90 dias</option>
-                <option value={365}>365 dias</option>
               </select>
               <select
                 aria-label="Granularidade do histórico"

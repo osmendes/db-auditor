@@ -42,6 +42,7 @@ body	Ganho medido: table_size_bytes: antes 1000, depois 600 bytes (variação -4
 body	Evidência técnica: {"idx_scan":0}
 body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 70% | Regra: rules-v3
+body	Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.
 heading	Inventário técnico (apêndice)
 body	erp.public.orders | 1048576 bytes | 1000 linhas estimadas | PK: Sim
 heading	Análise final e próximos passos

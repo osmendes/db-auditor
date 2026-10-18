@@ -35,6 +35,7 @@ import type {
   FunctionSnapshot,
   GrantSnapshot,
   HealthResponse,
+  HistoryPageResponse,
   HypertableChunkDetail,
   HypertableDimensionDetail,
   HypertableHistoryPoint,
@@ -344,9 +345,13 @@ export type TableScopeParams = {
   database: string;
   schema: string;
   table: string;
+  /** At most 90 days (7 for hour granularity); the API answers 400 above. */
   from?: string;
   to?: string;
   granularity?: "hour" | "day" | "week" | "month";
+  /** History series only: buckets per page, 50 by default, 1 to 500. */
+  limit?: number;
+  offset?: number;
 };
 
 /** Typed API client — frontend never talks to databases directly. */
@@ -1081,7 +1086,7 @@ export const api = {
     params: TableScopeParams,
     signal?: AbortSignal,
   ) =>
-    getJSON<ItemsResponse<TableHistoryPoint>>(
+    getJSON<HistoryPageResponse<TableHistoryPoint>>(
       `/api/v1/environments/${environmentId}/tables/history${qs(params)}`,
       signal,
     ),
@@ -1092,7 +1097,7 @@ export const api = {
     },
     signal?: AbortSignal,
   ) =>
-    getJSON<ItemsResponse<ScopeHistoryPoint>>(
+    getJSON<HistoryPageResponse<ScopeHistoryPoint>>(
       `/api/v1/environments/${environmentId}/history${qs(params)}`,
       signal,
     ),

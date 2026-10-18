@@ -53,6 +53,38 @@ type HistoryFilter struct {
 	From          time.Time
 	To            time.Time
 	Granularity   string
+	// Limit and Offset page the buckets of a series (#106). A zero Limit
+	// means DefaultHistoryPageLimit.
+	Limit  int
+	Offset int
+}
+
+// History pagination (#106): the API defaults to 50 buckets per page and
+// rejects more than 500; the store clamps to the same bounds.
+const (
+	DefaultHistoryPageLimit = 50
+	MaxHistoryPageLimit     = 500
+)
+
+func (f HistoryFilter) page() (limit, offset int) {
+	limit, offset = f.Limit, f.Offset
+	if limit <= 0 {
+		limit = DefaultHistoryPageLimit
+	}
+	if limit > MaxHistoryPageLimit {
+		limit = MaxHistoryPageLimit
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	return limit, offset
+}
+
+func historyGrain(granularity string) string {
+	if granularity == "hour" || granularity == "week" || granularity == "month" {
+		return granularity
+	}
+	return "day"
 }
 
 type TableHistoryPoint struct {
@@ -71,20 +103,15 @@ type TableHistoryPoint struct {
 	Complete       bool       `json:"complete"`
 }
 
-// ListTableHistory returns one representative snapshot per requested bucket.
-// Counter deltas are omitted whenever stats_reset changed or counters regressed.
-func (s *Store) ListTableHistory(ctx context.Context, f HistoryFilter) ([]TableHistoryPoint, error) {
-	grain := "day"
-	if f.Granularity == "hour" || f.Granularity == "week" || f.Granularity == "month" {
-		grain = f.Granularity
-	}
-	rows, err := s.pool.Query(ctx, `
+// tableHistorySQL ranks one table's snapshots per bucket and pages them
+// before audit_run is joined for the run status.
+const tableHistorySQL = `
 WITH ranked AS (
- SELECT date_trunc($1, t.collected_at) bucket, t.audit_run_id, r.status,
+ SELECT date_trunc($1, t.collected_at) bucket, t.audit_run_id,
         t.total_size_bytes,t.row_estimate,t.seq_scan,t.idx_scan,
         (t.n_tup_ins+t.n_tup_upd+t.n_tup_del) dml,t.stats_reset,t.collected_at,
-        row_number() OVER (PARTITION BY date_trunc($1,t.collected_at) ORDER BY t.collected_at DESC) rn
- FROM table_snapshot t JOIN audit_run r ON r.id=t.audit_run_id
+        row_number() OVER (PARTITION BY date_trunc($1,t.collected_at) ORDER BY t.collected_at DESC, t.id DESC) rn
+ FROM table_snapshot t
  WHERE t.environment_id=$2::uuid AND t.database_name=$3 AND t.schema_name=$4 AND t.table_name=$5
    AND t.collected_at >= $6 AND t.collected_at <= $7
 ), points AS (
@@ -93,15 +120,35 @@ WITH ranked AS (
         lag(seq_scan) OVER (ORDER BY bucket) prev_seq,
         lag(idx_scan) OVER (ORDER BY bucket) prev_idx,
         lag(dml) OVER (ORDER BY bucket) prev_dml,
-		lag(stats_reset) OVER (ORDER BY bucket) prev_reset,
-		lag(status) OVER (ORDER BY bucket) prev_status
+        lag(stats_reset) OVER (ORDER BY bucket) prev_reset,
+        lag(audit_run_id) OVER (ORDER BY bucket) prev_run
  FROM ranked WHERE rn=1
+), page AS (
+ SELECT * FROM points ORDER BY bucket LIMIT $8 OFFSET $9
 )
-SELECT bucket,audit_run_id::text,status,total_size_bytes,row_estimate,seq_scan,idx_scan,dml,stats_reset,
-       prev_size,prev_rows,prev_seq,prev_idx,prev_dml,prev_reset,prev_status
-FROM points ORDER BY bucket`, grain, f.EnvironmentID, f.DatabaseName, f.SchemaName, f.TableName, f.From, f.To)
+SELECT p.bucket,p.audit_run_id::text,r.status,p.total_size_bytes,p.row_estimate,p.seq_scan,p.idx_scan,p.dml,p.stats_reset,
+       p.prev_size,p.prev_rows,p.prev_seq,p.prev_idx,p.prev_dml,p.prev_reset,prev.status
+FROM page p JOIN audit_run r ON r.id=p.audit_run_id LEFT JOIN audit_run prev ON prev.id=p.prev_run
+ORDER BY p.bucket`
+
+// ListTableHistory returns one page of representative snapshots, one per
+// bucket, oldest first, and the number of buckets in the window. Counter
+// deltas are omitted whenever stats_reset changed or counters regressed. The
+// page is cut before audit_run is joined (#106): only the snapshots of one
+// table in the window are ranked, and the run status is looked up for the
+// page rows and their previous bucket only.
+func (s *Store) ListTableHistory(ctx context.Context, f HistoryFilter) ([]TableHistoryPoint, int, error) {
+	grain := historyGrain(f.Granularity)
+	limit, offset := f.page()
+	var total int
+	if err := s.pool.QueryRow(ctx, `SELECT count(DISTINCT date_trunc($1,t.collected_at)) FROM table_snapshot t
+WHERE t.environment_id=$2::uuid AND t.database_name=$3 AND t.schema_name=$4 AND t.table_name=$5
+  AND t.collected_at >= $6 AND t.collected_at <= $7`, grain, f.EnvironmentID, f.DatabaseName, f.SchemaName, f.TableName, f.From, f.To).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+	rows, err := s.pool.Query(ctx, tableHistorySQL, grain, f.EnvironmentID, f.DatabaseName, f.SchemaName, f.TableName, f.From, f.To, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 	out := make([]TableHistoryPoint, 0)
@@ -113,7 +160,7 @@ FROM points ORDER BY bucket`, grain, f.EnvironmentID, f.DatabaseName, f.SchemaNa
 		var prevStatus *string
 		if err := rows.Scan(&p.Bucket, &p.AuditRunID, &p.RunStatus, &p.TotalSizeBytes, &p.RowEstimate,
 			&seq, &idx, &dml, &p.StatsReset, &prevSize, &prevRows, &prevSeq, &prevIdx, &prevDML, &prevReset, &prevStatus); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		p.Complete = p.RunStatus == "success"
 		compatible := p.Complete && prevStatus != nil && *prevStatus == "success"
@@ -130,7 +177,7 @@ FROM points ORDER BY bucket`, grain, f.EnvironmentID, f.DatabaseName, f.SchemaNa
 		}
 		out = append(out, p)
 	}
-	return out, rows.Err()
+	return out, total, rows.Err()
 }
 
 func int64Ptr(v int64) *int64 { return &v }
@@ -143,6 +190,9 @@ type ScopeHistoryPoint struct {
 	RowEstimate    int64     `json:"row_estimate"`
 }
 
+// storageHistoryFrom picks the latest complete run of each bucket and cuts
+// the page (LIMIT/OFFSET over buckets) before table_snapshot is joined, so a
+// page reads the snapshots of at most limit runs (#106).
 const storageHistoryFrom = `
 WITH latest_run AS (
  SELECT DISTINCT ON (date_trunc($1::text,r.started_at))
@@ -151,14 +201,15 @@ WITH latest_run AS (
  WHERE r.environment_id=$3::uuid AND r.status='success'
    AND r.started_at BETWEEN $4 AND $5
  ORDER BY date_trunc($1::text,r.started_at),r.started_at DESC,r.id DESC
+), page AS (
+ SELECT bucket,id FROM latest_run ORDER BY bucket LIMIT $9 OFFSET $10
 )
-SELECT latest_run.bucket,$2::text scope, `
+SELECT page.bucket,$2::text scope, `
 
 const storageHistoryTail = ` label,
 SUM(t.total_size_bytes)::bigint,SUM(t.row_estimate)::bigint
-FROM latest_run JOIN table_snapshot t ON t.audit_run_id=latest_run.id
-WHERE t.environment_id=$3::uuid
-AND ($6='' OR t.database_name=$6) AND ($7='' OR t.schema_name=$7) AND ($8='' OR t.table_name=$8)
+FROM page JOIN table_snapshot t ON t.environment_id=$3::uuid AND t.audit_run_id=page.id
+WHERE ($6='' OR t.database_name=$6) AND ($7='' OR t.schema_name=$7) AND ($8='' OR t.table_name=$8)
 GROUP BY bucket,label ORDER BY bucket,label`
 
 var storageHistorySQL = map[string]string{
@@ -169,29 +220,33 @@ var storageHistorySQL = map[string]string{
 }
 
 // ListStorageHistory aggregates complete snapshots by environment, database,
-// schema or table. The label expression comes from a fixed query map.
-func (s *Store) ListStorageHistory(ctx context.Context, f HistoryFilter, scope string) ([]ScopeHistoryPoint, error) {
+// schema or table. The label expression comes from a fixed query map. It
+// returns one page of buckets and the number of buckets in the window.
+func (s *Store) ListStorageHistory(ctx context.Context, f HistoryFilter, scope string) ([]ScopeHistoryPoint, int, error) {
 	if _, ok := storageHistorySQL[scope]; !ok {
 		scope = "table"
 	}
-	grain := "day"
-	if f.Granularity == "hour" || f.Granularity == "week" || f.Granularity == "month" {
-		grain = f.Granularity
+	grain := historyGrain(f.Granularity)
+	limit, offset := f.page()
+	var total int
+	if err := s.pool.QueryRow(ctx, `SELECT count(DISTINCT date_trunc($1::text,r.started_at)) FROM audit_run r
+WHERE r.environment_id=$2::uuid AND r.status='success' AND r.started_at BETWEEN $3 AND $4`, grain, f.EnvironmentID, f.From, f.To).Scan(&total); err != nil {
+		return nil, 0, err
 	}
-	rows, err := s.pool.Query(ctx, storageHistorySQL[scope], grain, scope, f.EnvironmentID, f.From, f.To, f.DatabaseName, f.SchemaName, f.TableName)
+	rows, err := s.pool.Query(ctx, storageHistorySQL[scope], grain, scope, f.EnvironmentID, f.From, f.To, f.DatabaseName, f.SchemaName, f.TableName, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 	out := []ScopeHistoryPoint{}
 	for rows.Next() {
 		var p ScopeHistoryPoint
 		if err := rows.Scan(&p.Bucket, &p.Scope, &p.Label, &p.TotalSizeBytes, &p.RowEstimate); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		out = append(out, p)
 	}
-	return out, rows.Err()
+	return out, total, rows.Err()
 }
 
 func counterDeltas(seq, idx, dml, prevSeq, prevIdx, prevDML int64, resetChanged bool) (seqDelta, idxDelta, dmlDelta *int64, reset bool) {

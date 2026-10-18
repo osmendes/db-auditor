@@ -84,9 +84,9 @@ O PDF é escrito página a página direto no `COPY` de `report_artifact`. Os dad
 - Um contêiner de controle com os mesmos flags precisa ser morto por OOM. Isso prova que o limite é aplicado.
 - `TestLargeReportUnderContainerMemoryLimit` se recusa a rodar se `memory.max` do cgroup não for o limite pedido ou se houver swap.
 - O teste gera três relatórios:
-  - o maior relatório que cabe nos limites: 501 bancos e 5 001 tabelas (ambos truncados) e 200 achados, cerca de 160 páginas;
-  - a maior seção de achados (2 001, truncada em 2 000): só os 100 primeiros da prioridade são detalhados (AN-12), então o relatório sai com cerca de 113 páginas e grava `limit_note`;
+  - o maior relatório que cabe nos limites: 501 bancos e 5 001 tabelas (ambos truncados) e 200 achados, cerca de 162 páginas (2,2 MB com fonte embutida e marcação, #107);
+  - a maior seção de achados (2 001, truncada em 2 000): só os 100 primeiros da prioridade são detalhados (AN-12), então o relatório sai com cerca de 114 páginas e grava `limit_note`;
   - todas as seções no teto ao mesmo tempo: esse precisa falhar com "relatório excede 200 páginas".
 - O passo falha se houver OOM, e o teste falha se `memory.peak` atingir o limite.
 
-Localmente, num cgroup v2 de 48 MiB sem swap, o pico do cgroup foi ≈ 17 MiB. O resultado do runner aparece no resumo do job.
+Localmente, num cgroup v2 de 48 MiB sem swap, o pico do cgroup foi ≈ 21 MiB (com a fonte embutida e a árvore de estrutura do #107). O resultado do runner aparece no resumo do job.

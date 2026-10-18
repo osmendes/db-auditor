@@ -98,15 +98,15 @@ VALUES($1::uuid,$2::uuid,'db','public','orders',$3,$4,$5,1,1,$6,$7) RETURNING id
 		}
 	}
 	f := HistoryFilter{EnvironmentID: envID, DatabaseName: "db", SchemaName: "public", TableName: "orders", From: base.Add(-time.Minute), To: base.Add(5 * time.Hour), Granularity: "hour"}
-	points, err := s.ListTableHistory(ctx, f)
-	if err != nil {
+	points, total, err := s.ListTableHistory(ctx, f)
+	if err != nil || total != 4 {
 		t.Fatal(err)
 	}
 	if len(points) != 4 || points[1].Complete || points[1].SeqScanDelta != nil || points[2].SeqScanDelta != nil || points[3].SeqScanDelta == nil || *points[3].SeqScanDelta != 5 {
 		t.Fatalf("partial-run series invalid: %#v", points)
 	}
-	storage, err := s.ListStorageHistory(ctx, f, "environment")
-	if err != nil {
+	storage, total, err := s.ListStorageHistory(ctx, f, "environment")
+	if err != nil || total != 3 {
 		t.Fatal(err)
 	}
 	if len(storage) != 3 {
@@ -124,11 +124,11 @@ total_size_bytes,row_estimate,seq_scan,idx_scan,n_tup_ins,stats_reset,collected_
 VALUES($1::uuid,$2::uuid,'db','public','orders',200,200,30,1,1,$3,$4)`, newerRun, envID, newReset, newerAt); err != nil {
 		t.Fatal(err)
 	}
-	points, err = s.ListTableHistory(ctx, f)
+	points, _, err = s.ListTableHistory(ctx, f)
 	if err != nil || len(points) != 4 || points[3].TotalSizeBytes != 200 || !points[3].CountersReset || points[3].SeqScanDelta != nil {
 		t.Fatalf("reset in latest same-bucket run: %#v %v", points, err)
 	}
-	storage, err = s.ListStorageHistory(ctx, f, "environment")
+	storage, _, err = s.ListStorageHistory(ctx, f, "environment")
 	if err != nil || len(storage) != 3 || storage[2].TotalSizeBytes != 200 {
 		t.Fatalf("storage must use latest complete run per bucket: %#v %v", storage, err)
 	}

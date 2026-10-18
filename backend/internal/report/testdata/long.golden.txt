@@ -58,6 +58,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
 body	Confiança: 50% | Regra: rules-v3
+body	Resumo da regra: shared_blks_read e shared_blks_hit do fingerprint, com a janela de observação.
 subheading	[CRÍTICA] O índice não teve uso observado na janela entre duas coletas. - erp.public.table_025
 body	ID do achado: f-025 | severidade: crítica | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
@@ -69,6 +70,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 50% | Regra: rules-v3
+body	Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.
 subheading	[CRÍTICA] Uma consulta pode fazer leituras amplas. - erp.public.table_035
 body	ID do achado: f-035 | severidade: crítica | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
@@ -80,6 +82,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
 body	Confiança: 50% | Regra: rules-v3
+body	Resumo da regra: shared_blks_read e shared_blks_hit do fingerprint, com a janela de observação.
 subheading	[ALTA] A relação acumulou tuplas mortas acima do limiar da regra. - erp.public.table_026
 body	ID do achado: f-026 | severidade: alta | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
@@ -99,6 +102,7 @@ body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em nov
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.
 body	Confiança: 60% | Regra: rules-v3
+body	Resumo da regra: n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.
 subheading	[MÉDIA] O índice não teve uso observado na janela entre duas coletas. - erp.public.table_007
 body	ID do achado: f-007 | severidade: média | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
@@ -110,6 +114,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 70% | Regra: rules-v3
+body	Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.
 subheading	[MÉDIA] Uma consulta pode fazer leituras amplas. - erp.public.table_017
 body	ID do achado: f-017 | severidade: média | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
@@ -121,6 +126,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
 body	Confiança: 70% | Regra: rules-v3
+body	Resumo da regra: shared_blks_read e shared_blks_hit do fingerprint, com a janela de observação.
 subheading	[MÉDIA] O índice não teve uso observado na janela entre duas coletas. - erp.public.table_037
 body	ID do achado: f-037 | severidade: média | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
@@ -132,6 +138,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 70% | Regra: rules-v3
+body	Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.
 subheading	[CRÍTICA] A relação passou do limite de tamanho da regra. - erp.public.table_015
 body	ID do achado: f-015 | severidade: crítica | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
@@ -152,6 +159,7 @@ body	Exige aprovação de negócio antes de qualquer execução; o auditor não 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Compare crescimento em coletas completas e a retenção aprovada. Não proponha DROP nem particionamento automático.
 body	Confiança: 50% | Regra: rules-v3
+body	Resumo da regra: pg_total_relation_size da coleta.
 subheading	[ALTA] Um papel tem privilégio mais amplo do que o uso conhecido da aplicação. - erp.public.table_006
 body	ID do achado: f-006 | severidade: alta | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -163,6 +171,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme se o privilégio é operacional antes de qualquer revogação.
 body	Confiança: 60% | Regra: rules-v3
+body	Resumo da regra: Grants efetivos gravados na coleta. A API não executa SQL no alvo.
 subheading	[ALTA] Esta relação não tem chave primária observada na coleta. - erp.public.table_016
 body	ID do achado: f-016 | severidade: alta | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -174,6 +183,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.
 body	Confiança: 60% | Regra: rules-v3
+body	Resumo da regra: pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.
 subheading	[ALTA] Um papel tem privilégio mais amplo do que o uso conhecido da aplicação. - erp.public.table_036
 body	ID do achado: f-036 | severidade: alta | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -185,6 +195,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme se o privilégio é operacional antes de qualquer revogação.
 body	Confiança: 60% | Regra: rules-v3
+body	Resumo da regra: Grants efetivos gravados na coleta. A API não executa SQL no alvo.
 subheading	[BAIXA] A relação acumulou tuplas mortas acima do limiar da regra. - erp.public.table_008
 body	ID do achado: f-008 | severidade: baixa | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
@@ -204,6 +215,7 @@ body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em nov
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.
 body	Confiança: 80% | Regra: rules-v3
+body	Resumo da regra: n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.
 subheading	[BAIXA] A relação acumulou tuplas mortas acima do limiar da regra. - erp.public.table_038
 body	ID do achado: f-038 | severidade: baixa | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
@@ -223,6 +235,7 @@ body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em nov
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.
 body	Confiança: 80% | Regra: rules-v3
+body	Resumo da regra: n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.
 subheading	[MÉDIA] A relação passou do limite de tamanho da regra. - erp.public.table_027
 body	ID do achado: f-027 | severidade: média | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
@@ -243,6 +256,7 @@ body	Exige aprovação de negócio antes de qualquer execução; o auditor não 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Compare crescimento em coletas completas e a retenção aprovada. Não proponha DROP nem particionamento automático.
 body	Confiança: 70% | Regra: rules-v3
+body	Resumo da regra: pg_total_relation_size da coleta.
 subheading	[CRÍTICA] A relação acumulou tuplas mortas acima do limiar da regra. - erp.public.table_020
 body	ID do achado: f-020 | severidade: crítica | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
@@ -262,6 +276,7 @@ body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em nov
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.
 body	Confiança: 0% | Regra: rules-v3
+body	Resumo da regra: n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.
 subheading	[ALTA] O índice não teve uso observado na janela entre duas coletas. - erp.public.table_001
 body	ID do achado: f-001 | severidade: alta | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
@@ -273,6 +288,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 10% | Regra: rules-v3
+body	Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.
 subheading	[ALTA] Uma consulta pode fazer leituras amplas. - erp.public.table_011
 body	ID do achado: f-011 | severidade: alta | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
@@ -284,6 +300,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
 body	Confiança: 10% | Regra: rules-v3
+body	Resumo da regra: shared_blks_read e shared_blks_hit do fingerprint, com a janela de observação.
 subheading	[ALTA] O índice não teve uso observado na janela entre duas coletas. - erp.public.table_031
 body	ID do achado: f-031 | severidade: alta | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
@@ -295,6 +312,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 10% | Regra: rules-v3
+body	Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.
 subheading	[BAIXA] Um papel tem privilégio mais amplo do que o uso conhecido da aplicação. - erp.public.table_018
 body	ID do achado: f-018 | severidade: baixa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -306,6 +324,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme se o privilégio é operacional antes de qualquer revogação.
 body	Confiança: 80% | Regra: rules-v3
+body	Resumo da regra: Grants efetivos gravados na coleta. A API não executa SQL no alvo.
 subheading	[BAIXA] Esta relação não tem chave primária observada na coleta. - erp.public.table_028
 body	ID do achado: f-028 | severidade: baixa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -317,6 +336,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.
 body	Confiança: 80% | Regra: rules-v3
+body	Resumo da regra: pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.
 subheading	[CRÍTICA] Um papel tem privilégio mais amplo do que o uso conhecido da aplicação. - erp.public.table_000
 body	ID do achado: f-000 | severidade: crítica | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -328,6 +348,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme se o privilégio é operacional antes de qualquer revogação.
 body	Confiança: 0% | Regra: rules-v3
+body	Resumo da regra: Grants efetivos gravados na coleta. A API não executa SQL no alvo.
 subheading	[CRÍTICA] Esta relação não tem chave primária observada na coleta. - erp.public.table_010
 body	ID do achado: f-010 | severidade: crítica | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -339,6 +360,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.
 body	Confiança: 0% | Regra: rules-v3
+body	Resumo da regra: pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.
 subheading	[CRÍTICA] Um papel tem privilégio mais amplo do que o uso conhecido da aplicação. - erp.public.table_030
 body	ID do achado: f-030 | severidade: crítica | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -350,6 +372,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme se o privilégio é operacional antes de qualquer revogação.
 body	Confiança: 0% | Regra: rules-v3
+body	Resumo da regra: Grants efetivos gravados na coleta. A API não executa SQL no alvo.
 subheading	[ALTA] A relação passou do limite de tamanho da regra. - erp.public.table_021
 body	ID do achado: f-021 | severidade: alta | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
@@ -370,6 +393,7 @@ body	Exige aprovação de negócio antes de qualquer execução; o auditor não 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Compare crescimento em coletas completas e a retenção aprovada. Não proponha DROP nem particionamento automático.
 body	Confiança: 10% | Regra: rules-v3
+body	Resumo da regra: pg_total_relation_size da coleta.
 subheading	[MÉDIA] A relação acumulou tuplas mortas acima do limiar da regra. - erp.public.table_002
 body	ID do achado: f-002 | severidade: média | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
@@ -389,6 +413,7 @@ body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em nov
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.
 body	Confiança: 20% | Regra: rules-v3
+body	Resumo da regra: n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.
 subheading	[MÉDIA] A relação acumulou tuplas mortas acima do limiar da regra. - erp.public.table_032
 body	ID do achado: f-032 | severidade: média | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
@@ -408,6 +433,7 @@ body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em nov
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.
 body	Confiança: 20% | Regra: rules-v3
+body	Resumo da regra: n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.
 subheading	[INFORMATIVA] O índice não teve uso observado na janela entre duas coletas. - erp.public.table_019
 body	ID do achado: f-019 | severidade: informativa | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
@@ -419,6 +445,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 90% | Regra: rules-v3
+body	Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.
 subheading	[INFORMATIVA] Uma consulta pode fazer leituras amplas. - erp.public.table_029
 body	ID do achado: f-029 | severidade: informativa | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
@@ -430,6 +457,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
 body	Confiança: 90% | Regra: rules-v3
+body	Resumo da regra: shared_blks_read e shared_blks_hit do fingerprint, com a janela de observação.
 subheading	[MÉDIA] Um papel tem privilégio mais amplo do que o uso conhecido da aplicação. - erp.public.table_012
 body	ID do achado: f-012 | severidade: média | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -441,6 +469,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme se o privilégio é operacional antes de qualquer revogação.
 body	Confiança: 20% | Regra: rules-v3
+body	Resumo da regra: Grants efetivos gravados na coleta. A API não executa SQL no alvo.
 subheading	[MÉDIA] Esta relação não tem chave primária observada na coleta. - erp.public.table_022
 body	ID do achado: f-022 | severidade: média | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -452,6 +481,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.
 body	Confiança: 20% | Regra: rules-v3
+body	Resumo da regra: pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.
 subheading	[INFORMATIVA] A relação passou do limite de tamanho da regra. - erp.public.table_009
 body	ID do achado: f-009 | severidade: informativa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
@@ -472,6 +502,7 @@ body	Exige aprovação de negócio antes de qualquer execução; o auditor não 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Compare crescimento em coletas completas e a retenção aprovada. Não proponha DROP nem particionamento automático.
 body	Confiança: 90% | Regra: rules-v3
+body	Resumo da regra: pg_total_relation_size da coleta.
 subheading	[INFORMATIVA] A relação passou do limite de tamanho da regra. - erp.public.table_039
 body	ID do achado: f-039 | severidade: informativa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
@@ -492,6 +523,7 @@ body	Exige aprovação de negócio antes de qualquer execução; o auditor não 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Compare crescimento em coletas completas e a retenção aprovada. Não proponha DROP nem particionamento automático.
 body	Confiança: 90% | Regra: rules-v3
+body	Resumo da regra: pg_total_relation_size da coleta.
 subheading	[BAIXA] O índice não teve uso observado na janela entre duas coletas. - erp.public.table_013
 body	ID do achado: f-013 | severidade: baixa | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela
@@ -503,6 +535,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 30% | Regra: rules-v3
+body	Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.
 subheading	[BAIXA] Uma consulta pode fazer leituras amplas. - erp.public.table_023
 body	ID do achado: f-023 | severidade: baixa | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint
@@ -514,6 +547,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.
 body	Confiança: 30% | Regra: rules-v3
+body	Resumo da regra: shared_blks_read e shared_blks_hit do fingerprint, com a janela de observação.
 subheading	[BAIXA] A relação passou do limite de tamanho da regra. - erp.public.table_003
 body	ID do achado: f-003 | severidade: baixa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
@@ -534,6 +568,7 @@ body	Exige aprovação de negócio antes de qualquer execução; o auditor não 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Compare crescimento em coletas completas e a retenção aprovada. Não proponha DROP nem particionamento automático.
 body	Confiança: 30% | Regra: rules-v3
+body	Resumo da regra: pg_total_relation_size da coleta.
 subheading	[BAIXA] A relação passou do limite de tamanho da regra. - erp.public.table_033
 body	ID do achado: f-033 | severidade: baixa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta
@@ -554,6 +589,7 @@ body	Exige aprovação de negócio antes de qualquer execução; o auditor não 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Compare crescimento em coletas completas e a retenção aprovada. Não proponha DROP nem particionamento automático.
 body	Confiança: 30% | Regra: rules-v3
+body	Resumo da regra: pg_total_relation_size da coleta.
 subheading	[INFORMATIVA] A relação acumulou tuplas mortas acima do limiar da regra. - erp.public.table_014
 body	ID do achado: f-014 | severidade: informativa | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup
@@ -573,6 +609,7 @@ body	Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em nov
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.
 body	Confiança: 40% | Regra: rules-v3
+body	Resumo da regra: n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.
 subheading	[INFORMATIVA] Esta relação não tem chave primária observada na coleta. - erp.public.table_004
 body	ID do achado: f-004 | severidade: informativa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -584,6 +621,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.
 body	Confiança: 40% | Regra: rules-v3
+body	Resumo da regra: pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.
 subheading	[INFORMATIVA] Um papel tem privilégio mais amplo do que o uso conhecido da aplicação. - erp.public.table_024
 body	ID do achado: f-024 | severidade: informativa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -595,6 +633,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Confirme se o privilégio é operacional antes de qualquer revogação.
 body	Confiança: 40% | Regra: rules-v3
+body	Resumo da regra: Grants efetivos gravados na coleta. A API não executa SQL no alvo.
 subheading	[INFORMATIVA] Esta relação não tem chave primária observada na coleta. - erp.public.table_034
 body	ID do achado: f-034 | severidade: informativa | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
@@ -606,6 +645,7 @@ body	Ganho medido: não medido: exige nova coleta completa e comparável depois 
 body	Evidência técnica: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…
 body	Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.
 body	Confiança: 40% | Regra: rules-v3
+body	Resumo da regra: pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.
 heading	Inventário técnico (apêndice)
 body	Banco erp: 1 esquemas, 30 tabelas, 1073741824 bytes
 body	erp.public.table_000 | 0 bytes | 0 linhas estimadas | PK: Não

@@ -29,7 +29,7 @@ func goldenDocuments() map[string]Document {
 	empty := goldenBase("executive", "success", "complete")
 
 	partial := goldenBase("technical", "partial_success", "partial")
-	partial.CoverageNotes = []string{"Execucao parcial; ausencia de objetos/findings nao e prova de resolucao."}
+	partial.CoverageNotes = []string{"Execução parcial; ausência de objetos/achados não é prova de resolução."}
 	partial.Growth = []GrowthPoint{
 		{RunID: "00000000-0000-0000-0000-000000000001", At: goldenStart.Add(-48 * time.Hour), Status: "success", SizeBytes: 1000, Tables: 3},
 		{RunID: "00000000-0000-0000-0000-000000000002", At: goldenStart.Add(-24 * time.Hour), Status: "partial_success", SizeBytes: 10, Tables: 1},
@@ -72,7 +72,7 @@ func volumousDocument() Document {
 	d := goldenBase("technical", "success", "complete")
 	d.Truncated = true
 	d.TotalTables, d.TotalFindings, d.TotalDatabases = 12000, 9000, 600
-	d.CoverageNotes = []string{"Listagens limitadas a 500 bancos, 5000 tabelas e 2000 findings."}
+	d.CoverageNotes = []string{"Listagens limitadas a 500 bancos, 5000 tabelas e 2000 achados."}
 	for i := 0; i < 5000; i++ {
 		d.Tables = append(d.Tables, Table{Database: "db", Schema: "public", Name: fmt.Sprintf("table_%05d", i), SizeBytes: int64(i)})
 	}

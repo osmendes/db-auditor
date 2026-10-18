@@ -132,7 +132,7 @@ func registerPDFReportRoutes(mux *http.ServeMux, store InventoryStore) {
 			IdempotencyKey string                   `json:"idempotency_key"`
 		}
 		if json.NewDecoder(http.MaxBytesReader(w, r.Body, 8192)).Decode(&body) != nil || !uuidPattern.MatchString(body.AuditRunID) || !validReportRequest(body.ReportType, body.Filters) || body.ReportType == "architecture" && body.Format != "markdown" || body.ReportType != "architecture" && body.Format != "" && body.Format != "pdf" || len(body.IdempotencyKey) > 128 {
-			writeError(w, http.StatusBadRequest, CodeValidation, "Pedido de relatorio invalido.")
+			writeError(w, http.StatusBadRequest, CodeValidation, "Pedido de relatório inválido.")
 			return
 		}
 		requestedBy := "report-token"
@@ -141,15 +141,15 @@ func registerPDFReportRoutes(mux *http.ServeMux, store InventoryStore) {
 		}
 		job, err := backend.CreateReportJob(r.Context(), repository.ReportRequest{EnvironmentID: env, AuditRunID: body.AuditRunID, Type: body.ReportType, Format: body.Format, Filters: body.Filters, RequestedBy: requestedBy, IdempotencyKey: body.IdempotencyKey})
 		if errors.Is(err, repository.ErrReportIneligible) {
-			writeError(w, http.StatusConflict, CodeValidation, "Execucao indisponivel para o ambiente.")
+			writeError(w, http.StatusConflict, CodeValidation, "Execução indisponível para o ambiente.")
 			return
 		}
 		if errors.Is(err, repository.ErrReportConflict) {
-			writeError(w, http.StatusConflict, CodeValidation, "Chave idempotente ja pertence a outro pedido.")
+			writeError(w, http.StatusConflict, CodeValidation, "Chave idempotente já pertence a outro pedido.")
 			return
 		}
 		if err != nil {
-			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao solicitar relatorio.")
+			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao solicitar relatório.")
 			return
 		}
 		writeJSON(w, http.StatusAccepted, job)
@@ -179,16 +179,16 @@ func registerPDFReportRoutes(mux *http.ServeMux, store InventoryStore) {
 		}
 		id := r.PathValue("job")
 		if !uuidPattern.MatchString(id) {
-			writeError(w, http.StatusBadRequest, CodeValidation, "Relatorio invalido.")
+			writeError(w, http.StatusBadRequest, CodeValidation, "Relatório inválido.")
 			return
 		}
 		job, err := backend.GetReportJob(r.Context(), env, id)
 		if err != nil {
-			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao consultar relatorio.")
+			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao consultar relatório.")
 			return
 		}
 		if job == nil {
-			writeError(w, http.StatusNotFound, CodeNotFound, "Relatorio nao encontrado.")
+			writeError(w, http.StatusNotFound, CodeNotFound, "Relatório não encontrado.")
 			return
 		}
 		writeJSON(w, http.StatusOK, job)
@@ -203,11 +203,11 @@ func registerPDFReportRoutes(mux *http.ServeMux, store InventoryStore) {
 		}
 		id := r.PathValue("job")
 		if !uuidPattern.MatchString(id) {
-			writeError(w, http.StatusBadRequest, CodeValidation, "Relatorio invalido.")
+			writeError(w, http.StatusBadRequest, CodeValidation, "Relatório inválido.")
 			return
 		}
 		if err := backend.CancelReportJob(r.Context(), env, id); err != nil {
-			writeError(w, http.StatusConflict, CodeValidation, "O relatorio nao pode ser cancelado.")
+			writeError(w, http.StatusConflict, CodeValidation, "O relatório não pode ser cancelado.")
 			return
 		}
 		writeJSON(w, http.StatusOK, map[string]string{"status": "cancelled"})
@@ -222,12 +222,12 @@ func registerPDFReportRoutes(mux *http.ServeMux, store InventoryStore) {
 		}
 		id := r.PathValue("job")
 		if !uuidPattern.MatchString(id) {
-			writeError(w, http.StatusBadRequest, CodeValidation, "Relatorio invalido.")
+			writeError(w, http.StatusBadRequest, CodeValidation, "Relatório inválido.")
 			return
 		}
 		job, err := backend.RetryReportJob(r.Context(), env, id)
 		if err != nil {
-			writeError(w, http.StatusConflict, CodeValidation, "O relatorio nao pode ser reprocessado.")
+			writeError(w, http.StatusConflict, CodeValidation, "O relatório não pode ser reprocessado.")
 			return
 		}
 		writeJSON(w, http.StatusAccepted, job)
@@ -242,16 +242,16 @@ func registerPDFReportRoutes(mux *http.ServeMux, store InventoryStore) {
 		}
 		id := r.PathValue("job")
 		if !uuidPattern.MatchString(id) {
-			writeError(w, http.StatusBadRequest, CodeValidation, "Relatorio invalido.")
+			writeError(w, http.StatusBadRequest, CodeValidation, "Relatório inválido.")
 			return
 		}
 		artifact, err := backend.GetReportArtifact(r.Context(), env, id)
 		if err != nil {
-			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao baixar relatorio.")
+			writeError(w, http.StatusInternalServerError, CodeInternal, "Falha ao baixar relatório.")
 			return
 		}
 		if artifact == nil {
-			writeError(w, http.StatusNotFound, CodeNotFound, "Artefato indisponivel ou expirado.")
+			writeError(w, http.StatusNotFound, CodeNotFound, "Artefato indisponível ou expirado.")
 			return
 		}
 		w.Header().Set("Content-Type", artifact.ContentType)
@@ -267,7 +267,7 @@ func registerPDFReportRoutes(mux *http.ServeMux, store InventoryStore) {
 func reportScope(w http.ResponseWriter, r *http.Request, store InventoryStore) (pdfReportStore, string, bool) {
 	env := r.PathValue("id")
 	if !uuidPattern.MatchString(env) {
-		writeError(w, http.StatusBadRequest, CodeValidation, "Ambiente invalido.")
+		writeError(w, http.StatusBadRequest, CodeValidation, "Ambiente inválido.")
 		return nil, "", false
 	}
 	backend, ok := store.(pdfReportStore)

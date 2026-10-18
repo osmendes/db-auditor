@@ -381,8 +381,10 @@ func (p *sectionPlan) emitFindings(ctx context.Context, d Document, out func(...
 			return err
 		}
 		if d.Type == "technical" || d.Type == "table" {
-			if strings.TrimSpace(f.Summary) != "" {
-				if err := out(Line{"Resumo original da regra: " + f.Summary, "body"}); err != nil {
+			// #107: the analyzer summary is versioned technical text in
+			// English; the report states the rule in Portuguese instead.
+			if summary := ruleSummary(plan); summary != "" {
+				if err := out(Line{"Resumo da regra: " + summary, "body"}); err != nil {
 					return err
 				}
 			}
@@ -395,6 +397,10 @@ func (p *sectionPlan) emitFindings(ctx context.Context, d Document, out func(...
 	}
 	return nil
 }
+
+// ruleSummary is the Portuguese statement of what the rule observed, from the
+// action catalog (the same text the UI shows as the rule's evidence).
+func ruleSummary(plan actions.Plan) string { return strings.TrimSpace(plan.Evidence) }
 
 // findingsByID mirrors the whole-document builder: a later finding with a
 // repeated id replaces the earlier one.

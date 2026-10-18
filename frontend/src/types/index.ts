@@ -1102,6 +1102,14 @@ export interface ItemsResponse<T> {
   items: T[];
 }
 
+/** A history series page (#106): buckets oldest first, 50 by default, at most 500. */
+export interface HistoryPageResponse<T> extends ItemsResponse<T> {
+  from?: string;
+  to?: string;
+  granularity: string;
+  page: PageMeta;
+}
+
 export type InventoryObjectKind =
   | "tables"
   | "hypertables"

@@ -18,7 +18,10 @@ const (
 	reportMaxTables           = 5000
 	reportMaxExecutiveTables  = 20
 	reportMaxFindings         = 2000
-	reportTruncatedListsNotes = "Listagens limitadas a 500 bancos, 5000 tabelas e 2000 findings."
+	reportTruncatedListsNotes = "Listagens limitadas a 500 bancos, 5000 tabelas e 2000 achados."
+	// reportPartialRunNote is printed as a "Limite:" line (#107: with accents).
+	reportDetailLimitNote = "Detalhamento limitado aos %d achados de maior prioridade; os demais aparecem em uma linha."
+	reportPartialRunNote  = "Execução parcial; ausência de objetos/achados não é prova de resolução."
 )
 
 // ReportSections serves one report job's data section by section (#65). All
@@ -80,6 +83,22 @@ func (r *ReportSections) tableLimit() int {
 
 // Overview loads everything except the database, table and finding lists:
 // run metadata, coverage, totals, truncation, score, growth and baseline.
+// reportGrowthSQL picks the last six runs before joining their snapshots
+// (#106): the LIMIT runs on audit_run_latest_idx and each run's total is one
+// index lookup on table_snapshot_env_run_idx, instead of aggregating every
+// snapshot of the environment and keeping six groups.
+const reportGrowthSQL = `WITH recent AS (
+ SELECT r.id,r.started_at,r.status FROM audit_run r
+ WHERE r.environment_id=$1::uuid AND r.status IN ('success','partial_success') AND r.started_at<=$2
+ ORDER BY r.started_at DESC,r.id DESC LIMIT 6
+)
+SELECT recent.id::text,recent.started_at,recent.status,COALESCE(s.bytes,0),s.tables
+FROM recent CROSS JOIN LATERAL (
+ SELECT sum(t.total_size_bytes) bytes,count(*) tables FROM table_snapshot t
+ WHERE t.environment_id=$1::uuid AND t.audit_run_id=recent.id AND ($3='' OR t.database_name=$3)
+) s
+ORDER BY recent.started_at DESC,recent.id DESC`
+
 func (r *ReportSections) Overview(ctx context.Context) (report.Document, error) {
 	job := r.job
 	d := report.Document{Type: job.Type, RunID: job.AuditRunID, RuleVersion: job.RuleVersion, RequestedBy: job.RequestedBy, DatabaseFilter: job.Filters.Database, SchemaFilter: job.Filters.Schema, TableFilter: job.Filters.Table, SeverityFilter: job.Filters.Severity, RedactionLevel: job.Filters.Redaction, CoverageNotes: []string{}}
@@ -93,7 +112,7 @@ func (r *ReportSections) Overview(ctx context.Context) (report.Document, error) 
 	}
 	d.Coverage = completeness.Completeness
 	if completeness.Completeness != "complete" {
-		d.CoverageNotes = append(d.CoverageNotes, "Execucao parcial; ausencia de objetos/findings nao e prova de resolucao.")
+		d.CoverageNotes = append(d.CoverageNotes, reportPartialRunNote)
 	}
 	if job.Filters.Severity != "" {
 		d.CoverageNotes = append(d.CoverageNotes, "O score considera todas as severidades do escopo, inclusive as filtradas desta lista.")
@@ -137,7 +156,7 @@ func (r *ReportSections) Overview(ctx context.Context) (report.Document, error) 
 			d.CoverageNotes = append(d.CoverageNotes, "Score sem cobertura suficiente: "+strings.Join(score.MissingCollectors, ", "))
 		}
 	}
-	rows, err := r.tx.Query(ctx, `SELECT r.id::text,r.started_at,r.status,COALESCE(sum(t.total_size_bytes),0),count(t.id) FROM audit_run r LEFT JOIN table_snapshot t ON t.audit_run_id=r.id AND ($3='' OR t.database_name=$3) WHERE r.environment_id=$1::uuid AND r.status IN ('success','partial_success') AND r.started_at<=$2 GROUP BY r.id,r.started_at,r.status ORDER BY r.started_at DESC LIMIT 6`, job.EnvironmentID, d.RunStarted, job.Filters.Database)
+	rows, err := r.tx.Query(ctx, reportGrowthSQL, job.EnvironmentID, d.RunStarted, job.Filters.Database)
 	if err != nil {
 		return d, err
 	}
@@ -195,7 +214,7 @@ ORDER BY CASE e.severity WHEN 'critical' THEN 0 ELSE 1 END,e.finding_id LIMIT 5`
 	// AN-12: the findings section holds min(listed, 2000) findings; beyond
 	// report.MaxDetailedFindings the PDF lists the rest in one line each.
 	if report.DetailLimitedCount(min(listedFindings, reportMaxFindings)) {
-		d.CoverageNotes = append(d.CoverageNotes, fmt.Sprintf("Detalhamento limitado aos %d achados de maior prioridade; os demais aparecem em uma linha.", report.MaxDetailedFindings))
+		d.CoverageNotes = append(d.CoverageNotes, fmt.Sprintf(reportDetailLimitNote, report.MaxDetailedFindings))
 	}
 	for i := range d.CoverageNotes {
 		d.CoverageNotes[i] = strings.TrimSpace(d.CoverageNotes[i])

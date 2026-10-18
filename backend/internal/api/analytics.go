@@ -353,7 +353,7 @@ func analyticsWindow(r *http.Request) (time.Time, time.Time, string, error) {
 	if granularity != "hour" && granularity != "day" && granularity != "week" && granularity != "month" {
 		return time.Time{}, time.Time{}, "", fmt.Errorf("granularidade inválida")
 	}
-	if !from.Before(to) || to.Sub(from) > 366*24*time.Hour || (granularity == "hour" && to.Sub(from) > 7*24*time.Hour) {
+	if !historyWindowValid(from, to, granularity) {
 		return time.Time{}, time.Time{}, "", fmt.Errorf("intervalo inválido ou maior que o limite")
 	}
 	return from, to, granularity, nil
