@@ -38,10 +38,10 @@ var embeddedFont = sync.OnceValues(func() (*pdfFont, error) { return buildPDFFon
 
 // winAnsiUnicode maps each WinAnsiEncoding code 32-255 to its Unicode code
 // point; 0 marks an undefined code.
-func winAnsiUnicode(code int) rune {
+func winAnsiUnicode(code rune) rune {
 	switch {
 	case code >= 0x20 && code <= 0x7e, code >= 0xa0 && code <= 0xff:
-		return rune(code)
+		return code
 	case code >= 0x80 && code <= 0x9f:
 		return [32]rune{'€', 0, '‚', 'ƒ', '„', '…', '†', '‡', 'ˆ', '‰', 'Š', '‹', 'Œ', 0, 'Ž', 0, 0, '‘', '’', '“', '”', '•', '–', '—', '˜', '™', 'š', '›', 'œ', 0, 'ž', 'Ÿ'}[code-0x80]
 	}
@@ -140,6 +140,33 @@ func glyphIndex(sub []byte, r rune) int {
 	return 0
 }
 
+// int16At reads a big-endian signed 16-bit value.
+func int16At(b []byte) int {
+	v := int(binary.BigEndian.Uint16(b))
+	if v >= 0x8000 {
+		v -= 0x10000
+	}
+	return v
+}
+
+// maxFontProgram bounds the font file, so every table offset, length and
+// count written back fits the TrueType integer fields.
+const maxFontProgram = 1 << 24
+
+func u32(v int) uint32 {
+	if v < 0 || v > maxFontProgram {
+		panic("font program size out of range")
+	}
+	return uint32(v) //nolint:gosec // G115: bounded by maxFontProgram above.
+}
+
+func u16(v int) uint16 {
+	if v < 0 || v > math.MaxUint16 {
+		panic("font table count out of range")
+	}
+	return uint16(v) //nolint:gosec // G115: bounded by MaxUint16 above.
+}
+
 func ttfChecksum(b []byte) uint32 {
 	var sum uint32
 	for i := 0; i < len(b); i += 4 {
@@ -161,6 +188,9 @@ func pad4(b []byte) []byte {
 // are emptied, so glyph ids and hmtx stay valid) and keeps only the tables a
 // PDF TrueType font program needs.
 func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
+	if len(data) > maxFontProgram {
+		return nil, fmt.Errorf("fonte grande demais")
+	}
 	font, err := parseTTF(data)
 	if err != nil {
 		return nil, err
@@ -229,7 +259,7 @@ func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
 	}
 	out := &pdfFont{}
 	keep := map[int]bool{0: true}
-	for code := 32; code <= 255; code++ {
+	for code := rune(32); code <= 255; code++ {
 		g := 0
 		if r := winAnsiUnicode(code); r != 0 {
 			g = glyphIndex(sub, r)
@@ -238,7 +268,7 @@ func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
 			g = 0
 		}
 		keep[g] = true
-		out.widths[code-32] = scale(advance(g))
+		out.widths[int(code)-32] = scale(advance(g))
 	}
 	// Composite glyphs (accented letters) reference their components.
 	queue := make([]int, 0, len(keep))
@@ -249,7 +279,7 @@ func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
 		g := queue[len(queue)-1]
 		queue = queue[:len(queue)-1]
 		start, end := glyphRange(g)
-		if end-start < 10 || end > len(glyf) || int16(binary.BigEndian.Uint16(glyf[start:])) >= 0 {
+		if end-start < 10 || end > len(glyf) || int16At(glyf[start:]) >= 0 {
 			continue
 		}
 		for at := start + 10; at+4 <= end; {
@@ -281,7 +311,7 @@ func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
 	var newGlyf []byte
 	newLoca := make([]byte, 0, 4*(numGlyphs+1))
 	for g := 0; g < numGlyphs; g++ {
-		newLoca = binary.BigEndian.AppendUint32(newLoca, uint32(len(newGlyf)))
+		newLoca = binary.BigEndian.AppendUint32(newLoca, u32(len(newGlyf)))
 		if keep[g] {
 			start, end := glyphRange(g)
 			if start <= end && end <= len(glyf) {
@@ -289,7 +319,7 @@ func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
 			}
 		}
 	}
-	newLoca = binary.BigEndian.AppendUint32(newLoca, uint32(len(newGlyf)))
+	newLoca = binary.BigEndian.AppendUint32(newLoca, u32(len(newGlyf)))
 	newHead := append([]byte(nil), head...)
 	binary.BigEndian.PutUint32(newHead[8:], 0)
 	binary.BigEndian.PutUint16(newHead[50:], 1)
@@ -320,10 +350,10 @@ func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
 	var file bytes.Buffer
 	header := make([]byte, 12, 12+16*n)
 	binary.BigEndian.PutUint32(header, 0x00010000)
-	binary.BigEndian.PutUint16(header[4:], uint16(n))
-	binary.BigEndian.PutUint16(header[6:], uint16(searchRange*16))
-	binary.BigEndian.PutUint16(header[8:], uint16(selector))
-	binary.BigEndian.PutUint16(header[10:], uint16(n*16-searchRange*16))
+	binary.BigEndian.PutUint16(header[4:], u16(n))
+	binary.BigEndian.PutUint16(header[6:], u16(searchRange*16))
+	binary.BigEndian.PutUint16(header[8:], u16(selector))
+	binary.BigEndian.PutUint16(header[10:], u16(n*16-searchRange*16))
 	offset := 12 + 16*n
 	var body []byte
 	headAt := 0
@@ -334,8 +364,8 @@ func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
 		}
 		header = append(header, tag...)
 		header = binary.BigEndian.AppendUint32(header, ttfChecksum(t))
-		header = binary.BigEndian.AppendUint32(header, uint32(offset+len(body)))
-		header = binary.BigEndian.AppendUint32(header, uint32(len(t)))
+		header = binary.BigEndian.AppendUint32(header, u32(offset+len(body)))
+		header = binary.BigEndian.AppendUint32(header, u32(len(t)))
 		body = pad4(append(body, t...))
 	}
 	file.Write(header)
@@ -363,11 +393,11 @@ func buildPDFFont(data []byte, postScriptName string) (*pdfFont, error) {
 	out.program = compressed.Bytes()
 	out.length1 = len(program)
 	for i := range out.bbox {
-		out.bbox[i] = scale(int(int16(binary.BigEndian.Uint16(head[36+2*i:]))))
+		out.bbox[i] = scale(int16At(head[36+2*i:]))
 	}
-	out.ascent = scale(int(int16(binary.BigEndian.Uint16(hhea[4:]))))
-	out.descent = scale(int(int16(binary.BigEndian.Uint16(hhea[6:]))))
-	out.capHeight = scale(int(int16(binary.BigEndian.Uint16(os2[88:]))))
+	out.ascent = scale(int16At(hhea[4:]))
+	out.descent = scale(int16At(hhea[6:]))
+	out.capHeight = scale(int16At(os2[88:]))
 	return out, nil
 }
 
