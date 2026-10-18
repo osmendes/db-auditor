@@ -9,6 +9,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"unicode/utf16"
 )
 
 const maxPDFBytes = 16 << 20
@@ -25,8 +26,9 @@ type PDFResult struct {
 	LimitNote string
 }
 
-// RenderPDF writes a deterministic, paginated PDF 1.4 document with no
-// external font or native runtime dependency. All text is WinAnsi encoded.
+// RenderPDF writes a deterministic, paginated, tagged PDF 1.4 document with
+// an embedded font (#107) and no native runtime dependency. All text is
+// WinAnsi encoded.
 // It buffers the whole file; the report worker streams with WritePDF instead.
 func RenderPDF(document Document) ([]byte, error) {
 	var out bytes.Buffer
@@ -81,9 +83,13 @@ func WritePDFSections(ctx context.Context, w io.Writer, source SectionSource, re
 		return PDFResult{}, layoutErr
 	}
 	pageCount := counter.pages
+	font, err := embeddedFont()
+	if err != nil {
+		return PDFResult{}, err
+	}
 	digest := sha256.New()
 	out := &countingWriter{w: io.MultiWriter(w, digest), limit: maxPDFBytes}
-	if _, err := io.WriteString(out, "%PDF-1.4\n%\xe2\xe3\xcf\xd3\n"); err != nil {
+	if _, err := io.WriteString(out, pdfHeader); err != nil {
 		return PDFResult{}, err
 	}
 	offsets := []int64{0}
@@ -94,17 +100,10 @@ func WritePDFSections(ctx context.Context, w io.Writer, source SectionSource, re
 		}
 		return nil
 	}
-	pageID := func(index int) int { return pageCount + index + 1 }
-	fontID := 2*pageCount + 1
-	pagesID := 2*pageCount + 2
-	catalogID := 2*pageCount + 3
-	run := document.RunID
-	if len(run) > 8 {
-		run = run[:8]
-	}
-	header := fmt.Sprintf("0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (%s) Tj ET\n", escapePDFText("DB Auditor · "+reportTypeLabel(document.Type)+" · execução "+run))
+	header := pageHeader(document)
 	var page strings.Builder
 	index := 0
+	tags := newTagging()
 	flush := func() error {
 		if err := ctx.Err(); err != nil {
 			if cause := context.Cause(ctx); cause != nil {
@@ -112,41 +111,24 @@ func WritePDFSections(ctx context.Context, w io.Writer, source SectionSource, re
 			}
 			return err
 		}
-		stream := "1 1 1 rg 0 0 595 842 re f\n"
-		if index > 0 {
-			stream += header
-		}
-		stream += page.String() + fmt.Sprintf("0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (%s) Tj ET\n", escapePDFText(fmt.Sprintf("Página %d de %d", index+1, pageCount)))
+		stream := pageStream(index, pageCount, header, page.String())
 		page.Reset()
 		index++
 		return writeObject(fmt.Sprintf("<< /Length %d >>\nstream\n%sendstream", len(stream), stream))
 	}
 	writer := newPDFLayout(flush, func(command string) { page.WriteString(command) })
+	writer.tags = tags
 	if err := plan.emitLines(ctx, writer.place); err != nil {
 		return PDFResult{}, err
 	}
 	if err := flush(); err != nil {
 		return PDFResult{}, err
 	}
-	if index != pageCount {
+	if index != pageCount || len(tags.pages) != pageCount {
 		return PDFResult{}, fmt.Errorf("relatório PDF inconsistente")
 	}
-	contentID := func(index int) int { return index + 1 }
-	kids := make([]string, pageCount)
-	for index := 0; index < pageCount; index++ {
-		kids[index] = fmt.Sprintf("%d 0 R", pageID(index))
-		body := fmt.Sprintf("<< /Type /Page /Parent %d 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 %d 0 R >> >> /Contents %d 0 R >>", pagesID, fontID, contentID(index))
-		if err := writeObject(body); err != nil {
-			return PDFResult{}, err
-		}
-	}
-	if err := writeObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>"); err != nil {
-		return PDFResult{}, err
-	}
-	if err := writeObject(fmt.Sprintf("<< /Type /Pages /Kids [%s] /Count %d >>", strings.Join(kids, " "), pageCount)); err != nil {
-		return PDFResult{}, err
-	}
-	if err := writeObject(fmt.Sprintf("<< /Type /Catalog /Pages %d 0 R >>", pagesID)); err != nil {
+	catalogID, infoID, err := writeDocumentObjects(writeObject, pageCount, document, tags, font)
+	if err != nil {
 		return PDFResult{}, err
 	}
 	if catalogID != len(offsets)-1 {
@@ -161,10 +143,226 @@ func WritePDFSections(ctx context.Context, w io.Writer, source SectionSource, re
 			return PDFResult{}, err
 		}
 	}
-	if _, err := fmt.Fprintf(out, "trailer\n<< /Size %d /Root %d 0 R >>\nstartxref\n%d\n%%%%EOF\n", len(offsets), catalogID, xref); err != nil {
+	if _, err := io.WriteString(out, pdfTrailer(len(offsets), catalogID, infoID, xref)); err != nil {
 		return PDFResult{}, err
 	}
 	return PDFResult{Bytes: out.n, Pages: pageCount, SHA256: hex.EncodeToString(digest.Sum(nil)), LimitNote: limitNote(plan.overview, plan.findings)}, nil
+}
+
+const pdfHeader = "%PDF-1.4\n%\xe2\xe3\xcf\xd3\n"
+
+// pageHeader is the running header of every page after the first.
+func pageHeader(document Document) string {
+	run := document.RunID
+	if len(run) > 8 {
+		run = run[:8]
+	}
+	return fmt.Sprintf("/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (%s) Tj ET EMC\n", escapePDFText("DB Auditor · "+reportTypeLabel(document.Type)+" · execução "+run))
+}
+
+// pageStream wraps a page's tagged content with the background, the running
+// header and the footer, all marked as artifacts so screen readers skip them.
+func pageStream(index, pageCount int, header, content string) string {
+	stream := "/Artifact BMC 1 1 1 rg 0 0 595 842 re f EMC\n"
+	if index > 0 {
+		stream += header
+	}
+	return stream + content + fmt.Sprintf("/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (%s) Tj ET EMC\n", escapePDFText(fmt.Sprintf("Página %d de %d", index+1, pageCount)))
+}
+
+// PDFTitle is the document title stored in the Info dictionary and the XMP
+// metadata, shown by viewers instead of the file name (#107).
+func PDFTitle(document Document) string {
+	run := document.RunID
+	if len(run) > 8 {
+		run = run[:8]
+	}
+	parts := []string{"DB Auditor", "Relatório " + reportTypeLabel(document.Type)}
+	if env := strings.TrimSpace(document.Environment); env != "" {
+		parts = append(parts, env)
+	}
+	if run != "" {
+		parts = append(parts, "execução "+run)
+	}
+	return strings.Join(parts, " - ")
+}
+
+// markedRef is one marked-content sequence: an MCID on a page.
+type markedRef struct{ page, mcid int }
+
+// structElem is one report line in the structure tree; a line wrapped across
+// a page break has a marked-content sequence on each page.
+type structElem struct {
+	role string
+	refs []markedRef
+}
+
+// tagging collects the structure tree while pages are laid out (#107). It
+// keeps a few integers per drawn line, never the text.
+type tagging struct {
+	elems []structElem
+	pages [][]int // per page, the element of each MCID
+}
+
+func newTagging() *tagging { return &tagging{pages: [][]int{nil}} }
+
+func (t *tagging) newPage() { t.pages = append(t.pages, nil) }
+
+func (t *tagging) open(role string) int {
+	t.elems = append(t.elems, structElem{role: role})
+	return len(t.elems) - 1
+}
+
+func (t *tagging) mark(elem int) int {
+	page := len(t.pages) - 1
+	mcid := len(t.pages[page])
+	t.pages[page] = append(t.pages[page], elem)
+	t.elems[elem].refs = append(t.elems[elem].refs, markedRef{page: page, mcid: mcid})
+	return mcid
+}
+
+// structRole maps a line style to a standard structure type.
+func structRole(style string) string {
+	switch style {
+	case "title":
+		return "H1"
+	case "heading":
+		return "H2"
+	case "subheading":
+		return "H3"
+	}
+	return "P"
+}
+
+// writeDocumentObjects writes everything after the content streams: page
+// objects, the embedded font, Info and XMP metadata, the structure tree and
+// the catalog. Object ids follow the content streams (1..pageCount) and the
+// page objects (pageCount+1..2*pageCount).
+func writeDocumentObjects(writeObject func(string) error, pageCount int, document Document, tags *tagging, font *pdfFont) (catalogID, infoID int, err error) {
+	pageID := func(index int) int { return pageCount + index + 1 }
+	fontID := 2*pageCount + 1
+	pagesID := 2*pageCount + 2
+	descriptorID := 2*pageCount + 3
+	fileID := 2*pageCount + 4
+	infoID = 2*pageCount + 5
+	metadataID := 2*pageCount + 6
+	rootID := 2*pageCount + 7
+	parentTreeID := 2*pageCount + 8
+	docID := 2*pageCount + 9
+	elemID := func(index int) int { return docID + 1 + index }
+	catalogID = elemID(len(tags.elems))
+	kids := make([]string, pageCount)
+	for index := 0; index < pageCount; index++ {
+		kids[index] = fmt.Sprintf("%d 0 R", pageID(index))
+		body := fmt.Sprintf("<< /Type /Page /Parent %d 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 %d 0 R >> >> /Contents %d 0 R /StructParents %d >>", pagesID, fontID, index+1, index)
+		if err := writeObject(body); err != nil {
+			return 0, 0, err
+		}
+	}
+	fontBody, descriptor, file := font.fontObjects(descriptorID, fileID)
+	if err := writeObject(fontBody); err != nil {
+		return 0, 0, err
+	}
+	if err := writeObject(fmt.Sprintf("<< /Type /Pages /Kids [%s] /Count %d >>", strings.Join(kids, " "), pageCount)); err != nil {
+		return 0, 0, err
+	}
+	if err := writeObject(descriptor); err != nil {
+		return 0, 0, err
+	}
+	if err := writeObject(file); err != nil {
+		return 0, 0, err
+	}
+	title := PDFTitle(document)
+	if err := writeObject(fmt.Sprintf("<< /Title %s /Creator (DB Auditor) /Producer (DB Auditor) >>", pdfTextString(title))); err != nil {
+		return 0, 0, err
+	}
+	xmp := xmpMetadata(title)
+	if err := writeObject(fmt.Sprintf("<< /Type /Metadata /Subtype /XML /Length %d >>\nstream\n%s\nendstream", len(xmp), xmp)); err != nil {
+		return 0, 0, err
+	}
+	if err := writeObject(fmt.Sprintf("<< /Type /StructTreeRoot /K %d 0 R /ParentTree %d 0 R /ParentTreeNextKey %d >>", docID, parentTreeID, pageCount)); err != nil {
+		return 0, 0, err
+	}
+	var nums strings.Builder
+	for page, mcids := range tags.pages {
+		fmt.Fprintf(&nums, "%d [", page)
+		for i, elem := range mcids {
+			if i > 0 {
+				nums.WriteByte(' ')
+			}
+			fmt.Fprintf(&nums, "%d 0 R", elemID(elem))
+		}
+		nums.WriteString("] ")
+	}
+	if err := writeObject(fmt.Sprintf("<< /Nums [%s] >>", strings.TrimSpace(nums.String()))); err != nil {
+		return 0, 0, err
+	}
+	var children strings.Builder
+	for index := range tags.elems {
+		if index > 0 {
+			children.WriteByte(' ')
+		}
+		fmt.Fprintf(&children, "%d 0 R", elemID(index))
+	}
+	if err := writeObject(fmt.Sprintf("<< /Type /StructElem /S /Document /P %d 0 R /K [%s] >>", rootID, children.String())); err != nil {
+		return 0, 0, err
+	}
+	for _, elem := range tags.elems {
+		first := elem.refs[0].page
+		var k strings.Builder
+		for i, ref := range elem.refs {
+			if i > 0 {
+				k.WriteByte(' ')
+			}
+			if ref.page == first {
+				fmt.Fprintf(&k, "%d", ref.mcid)
+			} else {
+				fmt.Fprintf(&k, "<< /Type /MCR /Pg %d 0 R /MCID %d >>", pageID(ref.page), ref.mcid)
+			}
+		}
+		if err := writeObject(fmt.Sprintf("<< /Type /StructElem /S /%s /P %d 0 R /Pg %d 0 R /K [%s] >>", elem.role, docID, pageID(first), k.String())); err != nil {
+			return 0, 0, err
+		}
+	}
+	if err := writeObject(fmt.Sprintf("<< /Type /Catalog /Pages %d 0 R /Lang (pt-BR) /MarkInfo << /Marked true >> /StructTreeRoot %d 0 R /Metadata %d 0 R /ViewerPreferences << /DisplayDocTitle true >> >>", pagesID, rootID, metadataID)); err != nil {
+		return 0, 0, err
+	}
+	return catalogID, infoID, nil
+}
+
+// xmlChar reports whether r is allowed in XML 1.0 text.
+func xmlChar(r rune) bool {
+	return r == 0x9 || r == 0xA || r == 0xD || (r >= 0x20 && r <= 0xD7FF) || (r >= 0xE000 && r <= 0xFFFD) || (r >= 0x10000 && r <= 0x10FFFF)
+}
+
+func pdfTrailer(size, catalogID, infoID int, xref int64) string {
+	return fmt.Sprintf("trailer\n<< /Size %d /Root %d 0 R /Info %d 0 R >>\nstartxref\n%d\n%%%%EOF\n", size, catalogID, infoID, xref)
+}
+
+// pdfTextString encodes a text string as UTF-16BE with a byte order mark, so
+// accents survive in the Info dictionary.
+func pdfTextString(value string) string {
+	var out strings.Builder
+	out.WriteString("<FEFF")
+	for _, unit := range utf16.Encode([]rune(value)) {
+		fmt.Fprintf(&out, "%04X", unit)
+	}
+	out.WriteString(">")
+	return out.String()
+}
+
+// xmpMetadata carries the title and language for tools that read XMP. The
+// title is written as XML character references only, so untrusted text
+// (an environment name) never appears verbatim inside the stream.
+func xmpMetadata(title string) string {
+	var escaped strings.Builder
+	for _, r := range title {
+		if r == '\uFFFD' || !xmlChar(r) {
+			r = '?'
+		}
+		fmt.Fprintf(&escaped, "&#x%X;", r)
+	}
+	return `<?xpacket begin="` + "\ufeff" + `" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:pdf="http://ns.adobe.com/pdf/1.3/" xmlns:xmp="http://ns.adobe.com/xap/1.0/"><dc:title><rdf:Alt><rdf:li xml:lang="x-default">` + escaped.String() + `</rdf:li></rdf:Alt></dc:title><dc:language><rdf:Bag><rdf:li>pt-BR</rdf:li></rdf:Bag></dc:language><pdf:Producer>DB Auditor</pdf:Producer><xmp:CreatorTool>DB Auditor</xmp:CreatorTool></rdf:Description></rdf:RDF></x:xmpmeta><?xpacket end="r"?>`
 }
 
 // errPDFTooLarge keeps the user-facing reason when the byte ceiling is hit.
@@ -196,6 +394,8 @@ type pdfLayout struct {
 	y       int
 	newPage func() error
 	emit    func(string)
+	// tags, when set, receives the structure of every drawn line (#107).
+	tags *tagging
 }
 
 func newPDFLayout(newPage func() error, emit func(string)) *pdfLayout {
@@ -212,7 +412,22 @@ func (l *pdfLayout) breakPage() error {
 		}
 	}
 	l.pages++
+	if l.tags != nil {
+		l.tags.newPage()
+	}
 	return nil
+}
+
+// markText returns the opening operator of a tagged text run. elem is the
+// line's structure element, opened on its first drawn part.
+func (l *pdfLayout) markText(elem *int, role string) string {
+	if l.tags == nil {
+		return "/" + role + " BMC "
+	}
+	if *elem < 0 {
+		*elem = l.tags.open(role)
+	}
+	return fmt.Sprintf("/%s << /MCID %d >> BDC ", role, l.tags.mark(*elem))
 }
 
 func (l *pdfLayout) draw(command string) {
@@ -245,7 +460,8 @@ func (l *pdfLayout) place(line Line) error {
 					width = int(300 * float64(value) / float64(maximum))
 				}
 				if l.emit != nil {
-					l.draw(fmt.Sprintf("0.94 0.96 0.97 rg 42 %d 68 11 re f 0.90 0.93 0.94 rg 165 %d 250 11 re f 0.09 0.55 0.42 rg 165 %d %d 11 re f 0.12 0.18 0.24 rg BT /F1 8 Tf 43 %d Td (%s) Tj ET BT /F1 9 Tf 425 %d Td (%d B) Tj ET\n", l.y-2, l.y-2, l.y-2, width*250/300, l.y, escapePDFText(parts[0]), l.y, value))
+					elem := -1
+					l.draw(fmt.Sprintf("/Artifact BMC 0.94 0.96 0.97 rg 42 %d 68 11 re f 0.90 0.93 0.94 rg 165 %d 250 11 re f 0.09 0.55 0.42 rg 165 %d %d 11 re f EMC %s0.12 0.18 0.24 rg BT /F1 8 Tf 43 %d Td (%s) Tj ET BT /F1 9 Tf 425 %d Td (%d B) Tj ET EMC\n", l.y-2, l.y-2, l.y-2, width*250/300, l.markText(&elem, "P"), l.y, escapePDFText(parts[0]), l.y, value))
 				}
 				l.y -= 20
 				return nil
@@ -269,7 +485,8 @@ func (l *pdfLayout) place(line Line) error {
 					width = 300 * value / maximum
 				}
 				if l.emit != nil {
-					l.draw(fmt.Sprintf("0.94 0.96 0.97 rg 42 %d 68 11 re f 0.90 0.93 0.94 rg 115 %d 300 11 re f 0.09 0.55 0.42 rg 115 %d %d 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 %d Td (%s) Tj ET BT /F1 9 Tf 425 %d Td (%d) Tj ET\n", l.y-2, l.y-2, l.y-2, width, l.y, escapePDFText(parts[0]), l.y, value))
+					elem := -1
+					l.draw(fmt.Sprintf("/Artifact BMC 0.94 0.96 0.97 rg 42 %d 68 11 re f 0.90 0.93 0.94 rg 115 %d 300 11 re f 0.09 0.55 0.42 rg 115 %d %d 11 re f EMC %s0.12 0.18 0.24 rg BT /F1 9 Tf 43 %d Td (%s) Tj ET BT /F1 9 Tf 425 %d Td (%d) Tj ET EMC\n", l.y-2, l.y-2, l.y-2, width, l.markText(&elem, "P"), l.y, escapePDFText(parts[0]), l.y, value))
 				}
 				l.y -= 20
 				return nil
@@ -301,6 +518,8 @@ func (l *pdfLayout) place(line Line) error {
 	if fontSize == 13 {
 		width = 75
 	}
+	elem := -1
+	role := structRole(line.Style)
 	for _, part := range wrapText(line.Text, width) {
 		if l.y < 55 {
 			if err := l.breakPage(); err != nil {
@@ -313,7 +532,12 @@ func (l *pdfLayout) place(line Line) error {
 			color = "0.08 0.45 0.35"
 		}
 		if l.emit != nil {
-			l.draw(fmt.Sprintf("%s rg BT /F1 %d Tf 42 %d Td (%s) Tj ET\n", color, fontSize, l.y, escapePDFText(part)))
+			// A blank spacer line is layout, not content.
+			open := "/Artifact BMC "
+			if strings.TrimSpace(part) != "" {
+				open = l.markText(&elem, role)
+			}
+			l.draw(fmt.Sprintf("%s%s rg BT /F1 %d Tf 42 %d Td (%s) Tj ET EMC\n", open, color, fontSize, l.y, escapePDFText(part)))
 		}
 		l.y -= step
 		fontSize, step = 10, 14

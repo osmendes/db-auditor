@@ -1,196 +1,707 @@
 %PDF-1.4
 %âãÏÓ
 1 0 obj
-<< /Length 5280 >>
+<< /Length 6599 >>
 stream
-1 1 1 rg 0 0 595 842 re f
-0.08 0.45 0.35 rg BT /F1 18 Tf 42 790 Td (DB Auditor - Relatório técnico) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 764 Td (Nível de redação: sem redação) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 750 Td (Ambiente: staging-erp) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 736 Td (Execução: 00000000-0000-0000-0000-000000000003) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 722 Td (Início: 02/10/2026 12:00 UTC | Estado: concluída parcialmente) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 708 Td (Versão do serviço: 1.4.0 | Regras: rules-v3) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 694 Td (Solicitante: operator) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 680 Td (Escopo: ambiente inteiro) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 666 Td () Tj ET
-0.08 0.45 0.35 rg BT /F1 13 Tf 42 642 Td (Resumo executivo) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 621 Td (0 bancos | 0 tabelas | 3 achados \(0 críticos, 1 alto\)) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 607 Td (Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 593 Td (observados, não substitui a investigação.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 575 Td (Achados por severidade \(itens incluídos no PDF\)) Tj ET
-0.94 0.96 0.97 rg 42 556 68 11 re f 0.90 0.93 0.94 rg 115 556 300 11 re f 0.09 0.55 0.42 rg 115 556 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 558 Td (Críticos) Tj ET BT /F1 9 Tf 425 558 Td (0) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (Alternativa textual: Críticos = 0 de 3 itens.) Tj ET
-0.94 0.96 0.97 rg 42 522 68 11 re f 0.90 0.93 0.94 rg 115 522 300 11 re f 0.09 0.55 0.42 rg 115 522 100 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 524 Td (Altos) Tj ET BT /F1 9 Tf 425 524 Td (1) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 504 Td (Alternativa textual: Altos = 1 de 3 itens.) Tj ET
-0.94 0.96 0.97 rg 42 488 68 11 re f 0.90 0.93 0.94 rg 115 488 300 11 re f 0.09 0.55 0.42 rg 115 488 200 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 490 Td (Médios) Tj ET BT /F1 9 Tf 425 490 Td (2) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 470 Td (Alternativa textual: Médios = 2 de 3 itens.) Tj ET
-0.94 0.96 0.97 rg 42 454 68 11 re f 0.90 0.93 0.94 rg 115 454 300 11 re f 0.09 0.55 0.42 rg 115 454 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 456 Td (Baixos) Tj ET BT /F1 9 Tf 425 456 Td (0) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 436 Td (Alternativa textual: Baixos = 0 de 3 itens.) Tj ET
-0.94 0.96 0.97 rg 42 420 68 11 re f 0.90 0.93 0.94 rg 115 420 300 11 re f 0.09 0.55 0.42 rg 115 420 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 422 Td (Informativos) Tj ET BT /F1 9 Tf 425 422 Td (0) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 402 Td (Alternativa textual: Informativos = 0 de 3 itens.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 388 Td (Cobertura: parcial) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 374 Td (Índice indisponível | confiança 0%) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 360 Td (Limite: Execucao parcial; ausencia de objetos/findings nao e prova de resolucao.) Tj ET
-0.08 0.45 0.35 rg BT /F1 13 Tf 42 336 Td (Evolução de armazenamento) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 315 Td (Barras: tamanho total das tabelas \(unidade: bytes\) por coleta completa. Coletas parciais) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 301 Td (aparecem como lacuna e não entram na variação.) Tj ET
-0.94 0.96 0.97 rg 42 285 68 11 re f 0.90 0.93 0.94 rg 165 285 250 11 re f 0.09 0.55 0.42 rg 165 285 166 11 re f 0.12 0.18 0.24 rg BT /F1 8 Tf 43 287 Td (30/09/2026 00000000) Tj ET BT /F1 9 Tf 425 287 Td (1000 B) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 267 Td (Alternativa textual: execução 00000000-0000-0000-0000-000000000001 em 30/09/2026 = 1000) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 253 Td (bytes em 3 tabelas \(coleta completa\).) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 239 Td (01/10/2026 00000000: lacuna \(coleta parcial\) — valor não plotado e fora da comparação.) Tj ET
-0.94 0.96 0.97 rg 42 223 68 11 re f 0.90 0.93 0.94 rg 165 223 250 11 re f 0.09 0.55 0.42 rg 165 223 250 11 re f 0.12 0.18 0.24 rg BT /F1 8 Tf 43 225 Td (02/10/2026 00000000) Tj ET BT /F1 9 Tf 425 225 Td (1500 B) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 205 Td (Alternativa textual: execução 00000000-0000-0000-0000-000000000003 em 02/10/2026 = 1500) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 191 Td (bytes em 3 tabelas \(coleta completa\).) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 177 Td (Variação entre coletas completas: +500 bytes \(+50.0%\) no período 30/09/2026 12:00 UTC a) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 163 Td (02/10/2026 12:00 UTC. Confirme que perfil e cobertura são comparáveis antes de atribuir a) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 149 Td (mudança a uma ação.) Tj ET
-0.08 0.45 0.35 rg BT /F1 13 Tf 42 125 Td (Riscos e prioridades) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (Matriz de decisão \(priority-v1\): pontuação = peso da severidade × fator de impacto medido) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (× confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências,) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (equipe e janela antes de executar uma mudança.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 58 Td (Matriz impacto × esforço × confiança × risco) Tj ET
-0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 1 de 3) Tj ET
+/Artifact BMC 1 1 1 rg 0 0 595 842 re f EMC
+/H1 << /MCID 0 >> BDC 0.08 0.45 0.35 rg BT /F1 18 Tf 42 790 Td (DB Auditor - Relatório técnico) Tj ET EMC
+/P << /MCID 1 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 764 Td (Nível de redação: sem redação) Tj ET EMC
+/P << /MCID 2 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 750 Td (Ambiente: staging-erp) Tj ET EMC
+/P << /MCID 3 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 736 Td (Execução: 00000000-0000-0000-0000-000000000003) Tj ET EMC
+/P << /MCID 4 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 722 Td (Início: 02/10/2026 12:00 UTC | Estado: concluída parcialmente) Tj ET EMC
+/P << /MCID 5 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 708 Td (Versão do serviço: 1.4.0 | Regras: rules-v3) Tj ET EMC
+/P << /MCID 6 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 694 Td (Solicitante: operator) Tj ET EMC
+/P << /MCID 7 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 680 Td (Escopo: ambiente inteiro) Tj ET EMC
+/Artifact BMC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 666 Td () Tj ET EMC
+/H2 << /MCID 8 >> BDC 0.08 0.45 0.35 rg BT /F1 13 Tf 42 642 Td (Resumo executivo) Tj ET EMC
+/P << /MCID 9 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 621 Td (0 bancos | 0 tabelas | 3 achados \(0 críticos, 1 alto\)) Tj ET EMC
+/P << /MCID 10 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 607 Td (Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais) Tj ET EMC
+/P << /MCID 11 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 593 Td (observados, não substitui a investigação.) Tj ET EMC
+/H3 << /MCID 12 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 575 Td (Achados por severidade \(itens incluídos no PDF\)) Tj ET EMC
+/Artifact BMC 0.94 0.96 0.97 rg 42 556 68 11 re f 0.90 0.93 0.94 rg 115 556 300 11 re f 0.09 0.55 0.42 rg 115 556 0 11 re f EMC /P << /MCID 13 >> BDC 0.12 0.18 0.24 rg BT /F1 9 Tf 43 558 Td (Críticos) Tj ET BT /F1 9 Tf 425 558 Td (0) Tj ET EMC
+/P << /MCID 14 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (Alternativa textual: Críticos = 0 de 3 itens.) Tj ET EMC
+/Artifact BMC 0.94 0.96 0.97 rg 42 522 68 11 re f 0.90 0.93 0.94 rg 115 522 300 11 re f 0.09 0.55 0.42 rg 115 522 100 11 re f EMC /P << /MCID 15 >> BDC 0.12 0.18 0.24 rg BT /F1 9 Tf 43 524 Td (Altos) Tj ET BT /F1 9 Tf 425 524 Td (1) Tj ET EMC
+/P << /MCID 16 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 504 Td (Alternativa textual: Altos = 1 de 3 itens.) Tj ET EMC
+/Artifact BMC 0.94 0.96 0.97 rg 42 488 68 11 re f 0.90 0.93 0.94 rg 115 488 300 11 re f 0.09 0.55 0.42 rg 115 488 200 11 re f EMC /P << /MCID 17 >> BDC 0.12 0.18 0.24 rg BT /F1 9 Tf 43 490 Td (Médios) Tj ET BT /F1 9 Tf 425 490 Td (2) Tj ET EMC
+/P << /MCID 18 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 470 Td (Alternativa textual: Médios = 2 de 3 itens.) Tj ET EMC
+/Artifact BMC 0.94 0.96 0.97 rg 42 454 68 11 re f 0.90 0.93 0.94 rg 115 454 300 11 re f 0.09 0.55 0.42 rg 115 454 0 11 re f EMC /P << /MCID 19 >> BDC 0.12 0.18 0.24 rg BT /F1 9 Tf 43 456 Td (Baixos) Tj ET BT /F1 9 Tf 425 456 Td (0) Tj ET EMC
+/P << /MCID 20 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 436 Td (Alternativa textual: Baixos = 0 de 3 itens.) Tj ET EMC
+/Artifact BMC 0.94 0.96 0.97 rg 42 420 68 11 re f 0.90 0.93 0.94 rg 115 420 300 11 re f 0.09 0.55 0.42 rg 115 420 0 11 re f EMC /P << /MCID 21 >> BDC 0.12 0.18 0.24 rg BT /F1 9 Tf 43 422 Td (Informativos) Tj ET BT /F1 9 Tf 425 422 Td (0) Tj ET EMC
+/P << /MCID 22 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 402 Td (Alternativa textual: Informativos = 0 de 3 itens.) Tj ET EMC
+/P << /MCID 23 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 388 Td (Cobertura: parcial) Tj ET EMC
+/P << /MCID 24 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 374 Td (Índice indisponível | confiança 0%) Tj ET EMC
+/P << /MCID 25 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 360 Td (Limite: Execução parcial; ausência de objetos/achados não é prova de resolução.) Tj ET EMC
+/H2 << /MCID 26 >> BDC 0.08 0.45 0.35 rg BT /F1 13 Tf 42 336 Td (Evolução de armazenamento) Tj ET EMC
+/P << /MCID 27 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 315 Td (Barras: tamanho total das tabelas \(unidade: bytes\) por coleta completa. Coletas parciais) Tj ET EMC
+/P << /MCID 28 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 301 Td (aparecem como lacuna e não entram na variação.) Tj ET EMC
+/Artifact BMC 0.94 0.96 0.97 rg 42 285 68 11 re f 0.90 0.93 0.94 rg 165 285 250 11 re f 0.09 0.55 0.42 rg 165 285 166 11 re f EMC /P << /MCID 29 >> BDC 0.12 0.18 0.24 rg BT /F1 8 Tf 43 287 Td (30/09/2026 00000000) Tj ET BT /F1 9 Tf 425 287 Td (1000 B) Tj ET EMC
+/P << /MCID 30 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 267 Td (Alternativa textual: execução 00000000-0000-0000-0000-000000000001 em 30/09/2026 = 1000) Tj ET EMC
+/P << /MCID 31 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 253 Td (bytes em 3 tabelas \(coleta completa\).) Tj ET EMC
+/P << /MCID 32 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 239 Td (01/10/2026 00000000: lacuna \(coleta parcial\) — valor não plotado e fora da comparação.) Tj ET EMC
+/Artifact BMC 0.94 0.96 0.97 rg 42 223 68 11 re f 0.90 0.93 0.94 rg 165 223 250 11 re f 0.09 0.55 0.42 rg 165 223 250 11 re f EMC /P << /MCID 33 >> BDC 0.12 0.18 0.24 rg BT /F1 8 Tf 43 225 Td (02/10/2026 00000000) Tj ET BT /F1 9 Tf 425 225 Td (1500 B) Tj ET EMC
+/P << /MCID 34 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 205 Td (Alternativa textual: execução 00000000-0000-0000-0000-000000000003 em 02/10/2026 = 1500) Tj ET EMC
+/P << /MCID 35 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 191 Td (bytes em 3 tabelas \(coleta completa\).) Tj ET EMC
+/P << /MCID 36 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 177 Td (Variação entre coletas completas: +500 bytes \(+50.0%\) no período 30/09/2026 12:00 UTC a) Tj ET EMC
+/P << /MCID 37 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 163 Td (02/10/2026 12:00 UTC. Confirme que perfil e cobertura são comparáveis antes de atribuir a) Tj ET EMC
+/P << /MCID 38 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 149 Td (mudança a uma ação.) Tj ET EMC
+/H2 << /MCID 39 >> BDC 0.08 0.45 0.35 rg BT /F1 13 Tf 42 125 Td (Riscos e prioridades) Tj ET EMC
+/P << /MCID 40 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (Matriz de decisão \(priority-v1\): pontuação = peso da severidade × fator de impacto medido) Tj ET EMC
+/P << /MCID 41 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (× confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências,) Tj ET EMC
+/P << /MCID 42 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (equipe e janela antes de executar uma mudança.) Tj ET EMC
+/H3 << /MCID 43 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 58 Td (Matriz impacto × esforço × confiança × risco) Tj ET EMC
+/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 1 de 3) Tj ET EMC
 endstream
 endobj
 2 0 obj
-<< /Length 6149 >>
+<< /Length 7638 >>
 stream
-1 1 1 rg 0 0 595 842 re f
-0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (#1 | achado f-unused | pontuação 2.10/7.5 | severidade média | impacto alto | esforço) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (médio | confiança média \(70%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (#2 | achado f-pk | pontuação 1.44/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (alto | confiança alta \(90%\) | risco: Uma mudança sem conhecer dependências e carga pode) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (afetar a aplicação.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (#3 | achado f-growth | pontuação 0.88/7.5 | severidade média | impacto não estimado |) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (esforço médio | confiança média \(55%\) | risco: Bloqueios longos, quebra de FKs/aplicação e) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (plano pior para consultas sem a chave.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 660 Td ([MÉDIA] O índice não teve uso observado na janela entre duas coletas. -) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (erp.public.orders_old_idx) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (ID do achado: f-unused | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Impacto: 41943040 bytes de 104857600 bytes de todos os índices da tabela \(40.0%\) · período) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Unidade: bytes / bytes de todos os índices da tabela | Período de referência: 25/09/2026) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (12:00 UTC a 02/10/2026 12:00 UTC) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (Hipótese: Índice sem uso. Hipótese até confirmação humana.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Ganho previsto: no máximo a condição observada \(41943040 bytes de 104857600 bytes de todos) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (os índices da tabela \(40.0%\) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC ·) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (impacto alto\); o ganho real depende da ação e só é conhecido após nova coleta.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Ganho medido: table_size_bytes: antes 1000, depois 600 bytes \(variação -400\) na execução) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (run-after) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Evidência técnica: {"idx_scan":0}) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras \(mensais,) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (fechamento\) antes de considerar remoção.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (Confiança: 70% | Regra: rules-v3) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 387 Td ([ALTA] Esta relação não tem chave primária observada na coleta. - erp.public.audit_log) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (ID do achado: f-pk | severidade: alta | esforço preliminar: alto \(dependências e janela\)) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Unidade: não informada | Período de referência: não informado) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Hipótese: Esta relação não tem chave primária observada na coleta. Hipótese até) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (confirmação humana.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (uma chave.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Confiança: 90% | Regra: rules-v3) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 212 Td ([MÉDIA] Duas coletas completas mostram mudança de tamanho. - erp.public.events) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 195 Td (ID do achado: f-growth | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 181 Td (Impacto: impacto não estimado: sem duas coletas completas e comparáveis) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 167 Td (Unidade: não informada | Período de referência: não informado) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (sem a chave.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (Hipótese: Duas coletas completas mostram mudança de tamanho. Hipótese até confirmação) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (humana.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 65 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
-0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 2 de 3) Tj ET
+/Artifact BMC 1 1 1 rg 0 0 595 842 re f EMC
+/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET EMC
+/P << /MCID 0 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (#1 | achado f-unused | pontuação 2.10/7.5 | severidade média | impacto alto | esforço) Tj ET EMC
+/P << /MCID 1 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (médio | confiança média \(70%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET EMC
+/P << /MCID 2 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET EMC
+/P << /MCID 3 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (#2 | achado f-pk | pontuação 1.44/7.5 | severidade alta | impacto não estimado | esforço) Tj ET EMC
+/P << /MCID 4 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (alto | confiança alta \(90%\) | risco: Uma mudança sem conhecer dependências e carga pode) Tj ET EMC
+/P << /MCID 5 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (afetar a aplicação.) Tj ET EMC
+/P << /MCID 6 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (#3 | achado f-growth | pontuação 0.88/7.5 | severidade média | impacto não estimado |) Tj ET EMC
+/P << /MCID 7 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (esforço médio | confiança média \(55%\) | risco: Bloqueios longos, quebra de FKs/aplicação e) Tj ET EMC
+/P << /MCID 8 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (plano pior para consultas sem a chave.) Tj ET EMC
+/H3 << /MCID 9 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 660 Td ([MÉDIA] O índice não teve uso observado na janela entre duas coletas. -) Tj ET EMC
+/H3 << /MCID 10 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (erp.public.orders_old_idx) Tj ET EMC
+/P << /MCID 11 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (ID do achado: f-unused | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET EMC
+/P << /MCID 12 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Impacto: 41943040 bytes de 104857600 bytes de todos os índices da tabela \(40.0%\) · período) Tj ET EMC
+/P << /MCID 13 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto) Tj ET EMC
+/P << /MCID 14 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Unidade: bytes / bytes de todos os índices da tabela | Período de referência: 25/09/2026) Tj ET EMC
+/P << /MCID 15 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (12:00 UTC a 02/10/2026 12:00 UTC) Tj ET EMC
+/P << /MCID 16 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET EMC
+/P << /MCID 17 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET EMC
+/P << /MCID 18 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (Hipótese: Índice sem uso. Hipótese até confirmação humana.) Tj ET EMC
+/P << /MCID 19 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Ganho previsto: no máximo a condição observada \(41943040 bytes de 104857600 bytes de todos) Tj ET EMC
+/P << /MCID 20 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (os índices da tabela \(40.0%\) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC ·) Tj ET EMC
+/P << /MCID 21 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (impacto alto\); o ganho real depende da ação e só é conhecido após nova coleta.) Tj ET EMC
+/P << /MCID 22 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Ganho medido: table_size_bytes: antes 1000, depois 600 bytes \(variação -400\) na execução) Tj ET EMC
+/P << /MCID 23 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (run-after) Tj ET EMC
+/P << /MCID 24 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Evidência técnica: {"idx_scan":0}) Tj ET EMC
+/P << /MCID 25 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras \(mensais,) Tj ET EMC
+/P << /MCID 26 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (fechamento\) antes de considerar remoção.) Tj ET EMC
+/P << /MCID 27 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (Confiança: 70% | Regra: rules-v3) Tj ET EMC
+/P << /MCID 28 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (Resumo da regra: idx_scan igual nas duas coletas, sem stats_reset no intervalo.) Tj ET EMC
+/H3 << /MCID 29 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 373 Td ([ALTA] Esta relação não tem chave primária observada na coleta. - erp.public.audit_log) Tj ET EMC
+/P << /MCID 30 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (ID do achado: f-pk | severidade: alta | esforço preliminar: alto \(dependências e janela\)) Tj ET EMC
+/P << /MCID 31 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET EMC
+/P << /MCID 32 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Unidade: não informada | Período de referência: não informado) Tj ET EMC
+/P << /MCID 33 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET EMC
+/P << /MCID 34 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (Hipótese: Esta relação não tem chave primária observada na coleta. Hipótese até) Tj ET EMC
+/P << /MCID 35 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (confirmação humana.) Tj ET EMC
+/P << /MCID 36 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET EMC
+/P << /MCID 37 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET EMC
+/P << /MCID 38 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor) Tj ET EMC
+/P << /MCID 39 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (uma chave.) Tj ET EMC
+/P << /MCID 40 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (Confiança: 90% | Regra: rules-v3) Tj ET EMC
+/P << /MCID 41 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Resumo da regra: pg_constraint sem contype='p' para a relação; a consulta lista as) Tj ET EMC
+/P << /MCID 42 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (constraints primárias e zero linhas confirma a ausência.) Tj ET EMC
+/H3 << /MCID 43 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 170 Td ([MÉDIA] Duas coletas completas mostram mudança de tamanho. - erp.public.events) Tj ET EMC
+/P << /MCID 44 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (ID do achado: f-growth | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET EMC
+/P << /MCID 45 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (Impacto: impacto não estimado: sem duas coletas completas e comparáveis) Tj ET EMC
+/P << /MCID 46 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (Unidade: não informada | Período de referência: não informado) Tj ET EMC
+/P << /MCID 47 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET EMC
+/P << /MCID 48 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (sem a chave.) Tj ET EMC
+/P << /MCID 49 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (Hipótese: Duas coletas completas mostram mudança de tamanho. Hipótese até confirmação) Tj ET EMC
+/P << /MCID 50 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (humana.) Tj ET EMC
+/P << /MCID 51 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET EMC
+/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 2 de 3) Tj ET EMC
 endstream
 endobj
 3 0 obj
-<< /Length 4736 >>
+<< /Length 6399 >>
 stream
-1 1 1 rg 0 0 595 842 re f
-0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (TimescaleDB\)) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (precisam ser revalidados.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (recriados por partição.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (volume representativo.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (principais e latência comparados ao período anterior.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (Próximo passo: Confirme tendência, janela e backup. Não há DROP, DELETE nem retenção) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (automática.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (Confiança: 55% | Regra: rules-v3) Tj ET
-0.08 0.45 0.35 rg BT /F1 13 Tf 42 528 Td (Análise final e próximos passos) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 507 Td (Foram observados 3 achados neste recorte, incluindo 0 críticos e 1 alto. Priorize a) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 493 Td (validação dos itens de maior severidade com a equipe responsável pelo banco.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 479 Td (Prioridade 1 \(achado f-unused, média, pontuação 2.10\): O índice não teve uso observado na) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 465 Td (janela entre duas coletas. em erp.public.orders_old_idx. Próximo passo: Confirme reset de) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 451 Td (estatísticas, réplicas e consultas raras \(mensais, fechamento\) antes de considerar) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 437 Td (remoção.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 423 Td (Prioridade 2 \(achado f-pk, alta, pontuação 1.44\): Esta relação não tem chave primária) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 409 Td (observada na coleta. em erp.public.audit_log. Próximo passo: Valide duplicatas e o) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 395 Td (identificador usado pela aplicação antes de propor uma chave.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 381 Td (Prioridade 3 \(achado f-growth, média, pontuação 0.88\): Duas coletas completas mostram) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 367 Td (mudança de tamanho. em erp.public.events. Próximo passo: Confirme tendência, janela e) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 353 Td (backup. Não há DROP, DELETE nem retenção automática.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 339 Td (A cobertura é parcial ou o conteúdo foi limitado. Execute uma coleta completa antes de) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 325 Td (decidir alterações com base na ausência de achados.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 311 Td (Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 297 Td (auditor não aplica mudanças no banco auditado.) Tj ET
-0.08 0.45 0.35 rg BT /F1 13 Tf 42 273 Td (Metodologia e glossário) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 252 Td (Somente dados e observações da execução informada foram usados.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 238 Td (Achado: sinal de diagnóstico que exige validação humana.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 224 Td (Baseline: execução aprovada para comparação temporal.) Tj ET
-0.15 0.20 0.26 rg BT /F1 10 Tf 42 210 Td (Cobertura parcial impede conclusões sobre ausência de objetos e achados.) Tj ET
-0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 3 de 3) Tj ET
+/Artifact BMC 1 1 1 rg 0 0 595 842 re f EMC
+/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET EMC
+/P << /MCID 0 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET EMC
+/H3 << /MCID 1 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 772 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET EMC
+/H3 << /MCID 2 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 755 Td (TimescaleDB\)) Tj ET EMC
+/P << /MCID 3 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 741 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET EMC
+/P << /MCID 4 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 727 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET EMC
+/P << /MCID 5 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 713 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET EMC
+/P << /MCID 6 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 699 Td (precisam ser revalidados.) Tj ET EMC
+/P << /MCID 7 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET EMC
+/P << /MCID 8 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET EMC
+/P << /MCID 9 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET EMC
+/P << /MCID 10 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (recriados por partição.) Tj ET EMC
+/P << /MCID 11 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET EMC
+/P << /MCID 12 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (volume representativo.) Tj ET EMC
+/P << /MCID 13 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET EMC
+/P << /MCID 14 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET EMC
+/P << /MCID 15 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (principais e latência comparados ao período anterior.) Tj ET EMC
+/P << /MCID 16 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET EMC
+/P << /MCID 17 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (Próximo passo: Confirme tendência, janela e backup. Não há DROP, DELETE nem retenção) Tj ET EMC
+/P << /MCID 18 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (automática.) Tj ET EMC
+/P << /MCID 19 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Confiança: 55% | Regra: rules-v3) Tj ET EMC
+/P << /MCID 20 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (Resumo da regra: Tamanhos das duas coletas, janela e stats_reset. Tuplas mortas são) Tj ET EMC
+/P << /MCID 21 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (estimativa.) Tj ET EMC
+/H2 << /MCID 22 >> BDC 0.08 0.45 0.35 rg BT /F1 13 Tf 42 465 Td (Análise final e próximos passos) Tj ET EMC
+/P << /MCID 23 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 444 Td (Foram observados 3 achados neste recorte, incluindo 0 críticos e 1 alto. Priorize a) Tj ET EMC
+/P << /MCID 24 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 430 Td (validação dos itens de maior severidade com a equipe responsável pelo banco.) Tj ET EMC
+/P << /MCID 25 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 416 Td (Prioridade 1 \(achado f-unused, média, pontuação 2.10\): O índice não teve uso observado na) Tj ET EMC
+/P << /MCID 26 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 402 Td (janela entre duas coletas. em erp.public.orders_old_idx. Próximo passo: Confirme reset de) Tj ET EMC
+/P << /MCID 27 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 388 Td (estatísticas, réplicas e consultas raras \(mensais, fechamento\) antes de considerar) Tj ET EMC
+/P << /MCID 28 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 374 Td (remoção.) Tj ET EMC
+/P << /MCID 29 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 360 Td (Prioridade 2 \(achado f-pk, alta, pontuação 1.44\): Esta relação não tem chave primária) Tj ET EMC
+/P << /MCID 30 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 346 Td (observada na coleta. em erp.public.audit_log. Próximo passo: Valide duplicatas e o) Tj ET EMC
+/P << /MCID 31 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 332 Td (identificador usado pela aplicação antes de propor uma chave.) Tj ET EMC
+/P << /MCID 32 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 318 Td (Prioridade 3 \(achado f-growth, média, pontuação 0.88\): Duas coletas completas mostram) Tj ET EMC
+/P << /MCID 33 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 304 Td (mudança de tamanho. em erp.public.events. Próximo passo: Confirme tendência, janela e) Tj ET EMC
+/P << /MCID 34 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 290 Td (backup. Não há DROP, DELETE nem retenção automática.) Tj ET EMC
+/P << /MCID 35 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 276 Td (A cobertura é parcial ou o conteúdo foi limitado. Execute uma coleta completa antes de) Tj ET EMC
+/P << /MCID 36 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 262 Td (decidir alterações com base na ausência de achados.) Tj ET EMC
+/P << /MCID 37 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 248 Td (Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O) Tj ET EMC
+/P << /MCID 38 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 234 Td (auditor não aplica mudanças no banco auditado.) Tj ET EMC
+/H2 << /MCID 39 >> BDC 0.08 0.45 0.35 rg BT /F1 13 Tf 42 210 Td (Metodologia e glossário) Tj ET EMC
+/P << /MCID 40 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 189 Td (Somente dados e observações da execução informada foram usados.) Tj ET EMC
+/P << /MCID 41 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 175 Td (Achado: sinal de diagnóstico que exige validação humana.) Tj ET EMC
+/P << /MCID 42 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 161 Td (Baseline: execução aprovada para comparação temporal.) Tj ET EMC
+/P << /MCID 43 >> BDC 0.15 0.20 0.26 rg BT /F1 10 Tf 42 147 Td (Cobertura parcial impede conclusões sobre ausência de objetos e achados.) Tj ET EMC
+/Artifact BMC 0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 3 de 3) Tj ET EMC
 endstream
 endobj
 4 0 obj
-<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 1 0 R >>
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 1 0 R /StructParents 0 >>
 endobj
 5 0 obj
-<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 2 0 R >>
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 2 0 R /StructParents 1 >>
 endobj
 6 0 obj
-<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 3 0 R >>
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 3 0 R /StructParents 2 >>
 endobj
 7 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+<< /Type /Font /Subtype /TrueType /BaseFont /DOMGPZ+LiberationSans /FirstChar 32 /LastChar 255 /Widths [278 278 355 556 556 889 667 191 333 333 389 584 278 333 278 278 556 556 556 556 556 556 556 556 556 556 278 278 584 584 584 556 1015 667 667 722 722 667 611 778 722 278 500 667 556 833 722 778 667 778 722 667 611 722 667 944 667 667 611 278 278 278 469 556 333 556 556 500 556 556 278 556 556 222 222 500 222 833 556 556 556 556 333 500 278 556 500 722 500 500 500 334 260 334 584 750 556 750 222 556 333 1000 556 556 333 1000 667 333 1000 750 611 750 750 222 222 333 333 350 556 1000 333 1000 500 333 944 750 500 667 278 333 556 556 556 556 260 556 333 737 370 556 584 333 737 552 400 549 333 333 333 576 537 333 333 333 365 556 834 834 834 611 667 667 667 667 667 667 1000 722 667 667 667 667 278 278 278 278 722 722 778 778 778 778 778 584 778 722 722 722 722 667 667 611 556 556 556 556 556 556 889 500 556 556 556 556 278 278 278 278 556 556 556 556 556 556 556 549 611 556 556 556 556 500 556 500] /Encoding /WinAnsiEncoding /FontDescriptor 9 0 R >>
 endobj
 8 0 obj
 << /Type /Pages /Kids [4 0 R 5 0 R 6 0 R] /Count 3 >>
 endobj
 9 0 obj
-<< /Type /Catalog /Pages 8 0 R >>
+<< /Type /FontDescriptor /FontName /DOMGPZ+LiberationSans /Flags 32 /FontBBox [-544 -303 1302 980] /ItalicAngle 0 /Ascent 905 /Descent -212 /CapHeight 688 /StemV 80 /FontFile2 10 0 R >>
+endobj
+10 0 obj
+<< /Length 31351 /Length1 60672 /Filter /FlateDecode >>
+stream
+xÚìı	xUö8Ÿsï­êª^Òû’tBwÒI HHB IËƒdIBFQ	DQ”}SÄF!"4Wd„QÑq\@EqÁqĞQHª¿çVu‡àÌüşïïı¾ïù?6œÜªºç.u×³İS€ `„y@!4ìš¼xê p  j®½qBİc/u9€¹ ìÎko™å¿êoƒÏ›ÈÂIu“o¼sÂ+€Ô@×<ù†9“Ö¼pîE ó7 FN¹nB­–lx° ô˜2åº	¦Õ¦ œ ™Snœ5ûö÷ßKxğ!€N§o˜~íö§Æõ {t:sã„Ùu¦gèq€oo İôúYÑ=°àÛµêıÌëêZ·\9àÛ—h ì¸ á!€^-¤IÄ&	Ä 2Âìè£å0;
+ é  İ®¸¦?„ÀmŞS†cP×·× î>ú/ ÖKhä¥A.  ĞX‹16 ^†y B¸“N§7Ó;ébº”>Aÿ,Ø…4aŸğp&íOíğx‡_}N_šo oˆoŒ¯Êw‡¯Ù÷†ï=ßÇ¾S¾3>Åoñgø³ıùşîş¾şşñşéş9şEşÕşçı»ı§Ó…twzvz×ô¡é#ÓÇ§ÏO }cúûb†/#'£,ãº 	XéY$+5+3+7«{VŸ¬²îÏz"ksÖö¬—³ŞÈ:õQÖ×Ù}²¯Ì{cî­]İO§?½ô97L	D[¢QõİÖÓYô6:Ÿ.¥Ëéèa!EX%N§AšÒáñë}àóøü¾2_¹/ì«öÍóíğ½åûÀ÷©ïGßÏ~ğÛüÙşËüşbµö×ûgùü+ıëcµ·§g¤wM’~Mzeúüô•jíI†9£sFYFZ{dÛj_5/k}VSÖö¬³ŞÈúSÖ¡¬¯³{e—d×äÖäÎèê~ÚıôÂsx.MñóÚG¿Œî¾}1ú|´9ú\t{t[ô™hÏh~4çÿ‰N|â»ÇO|qâØ‰ÏN|pâ¯'>8qäÄû'Ş=ñ—‡NüùÄÁNì?ñÖ‰7N¼xâ‰kNÜwbÙ‰'n?Q¢ÿ‰< €Æ¯ÿşõw_ÿz÷×Í_?ùõ­ ş¾¶ |5î«a_…øİ—¿ìûeÑ—ù_¦|ñãß}ñÀ|ñ—/}ñúu_ÜğIõ'ãşö
+$şş'¿•ÿ&îÎK>·_òŸ;ÇîŸ„§b_…Ÿ´Kó~,<‰€êñ&œ ã3¾@×CwVw@× k•
+9¢ÔC*’zj‰¤béêØÕi(€4L*Wï†Ç®‰]”FI£¤1RX+UHã¤*i"€t­TÃ¹.NŠ…“cáiqìjI,\—ÅÂåÒ
+i¥´Jz@zXÚ¡>Û	 í’^P¯_”^’^–Ô’^•HHJ•>’ş&},}"}*}&•IŸK_H_JÇ¥¯¤¯¥Ò7Ò·ÒwÒ÷ÒIééïÒ)é´ôéGéŸÒé'égé_Ò/Ò¯ÒYéœÔ"µJŠ•@F™ÈTf²  ‹ ²N– dYÖÈÙ(›ä$Ù,[d«l“í²CvÊ.Ù-{äd á€p îÁ	sÔ¿í~¬8àV€èI€Ä¿Êø_ıIZĞ¯ÀVXß.j¡:7·{¶^‡gÔ«GaÙ¿ÉöhŠ]­†‡aÁoâ]wÃ2Ø Í	Ïjàz˜ÁfØO`áu˜‹ıö_:+ü÷Ã}°¦Á}°¦Á£ d.ùî##à&ò!m„»`¬‡u8V `lÀJwÅ2×Áô2]+ápÌ;ÿHhŒşL-ÏÁİ°VÀ˜
+3„`néıº³¯Á¤¼»©†-ğ¼š¤1VWF¯';i½ VÁdXğ# ²Œ^ÿ/şÄF6ì>†¢ï)p7|Mğ"¬‡C¡++Ç†+F¼fÄğòaC‡\=øªAeW–Ğ¿ß¡’¾—÷éİ«¸gQÂnùy]»ävê˜•ÈH÷yV‹9ÉdĞË’N%¹şÖŒĞ,¿µtB```BY—\ÿ@Ï”]rJk"ş	şHiM„eÊÊÔG	?’=!âŸğ¸&šàLº 3¤a†Ú0Ñâï}xäà€€^ğG–„ı‘Ôë!ê5ËVoLáôô.¹~µV¼¶ş‘Ò[¦,X3 K.n3èûú_§ï’Ûô†şş†.¹é¨Û†ú¢zA:ìµ€dâÅFhÖÀ	µ‘òáxÓÓÃ]rE’Ô(è¯fûGtj–ş©¼ê°Ä¿-wÏâ¥»,0±&ÇX¨0®"B'„»ä.¦/^±æD:D:ßvÜÓ%wàu‘ÜÀ€‘ëàmå>_$F„,KÀ¿ø'ˆ`Mà‡“íŸLˆ=³,?¿ŒşQ‘ÎŞÒ@iÍâÅ¥éâšÅvEçMø-ÅÛŒÆÅukü(¯ˆà„]Ñ—x#¥KÃKÍì½zéˆÁûğÊŠÉ*õO™¡YšUHïéM·¶á”ÿV4Dtı#"oáôtŞKv…`b—ÜôÈ¼áÚ½&z·C(/'!5<fO<Æ9ŠÇÌ‹Ç´%¯	¤wÉ|MÅâËT85Z2!2obÄ?ázŞ1K$égoz`±Íê/Î«¸şÍT;Õ²#"O•˜ Â²y’Åõ&ég-øÁ»8Â²­6qÀ_œÇóXûËOdŞD—ÜHY6FVDBü#¡	±¸-?o``à„šÖL vf$/Pqúµõ.¯ÖÀ©×T¨IbÉ"ş¨¹6–*’7PWş‹khUày†W¼ Áè±mİıŞç‚ĞÂ8²«E„f\\Q;)â«ñÖFü5“üŞôH(Á	á@Åua>ì–Hçc^up„Õ±2²bğ5ÁÃÇVôŒUD‹àÙ±¬d¨ğjÙD„¬ˆ”%ù+ˆ—†#,Ë²ü¥–è×'Â²"º,)¢Ë²DDí)¸ıúø+ĞqìHçc‘Îş×ˆáñûv™
+|8õ/‹ç&òÛÖô/ó¦‡Óµ_—\aYşXÁ!KâZ¢YşË’"$«™úˆ·¥‡zEàº@80Å	•WğwãÍ£¶r¬1Ô6õÕÈvw	Õ%7éƒG¶İğÆŒ”æx7re7ñ¶ì‚èAñhÿb)0øšÅ<ó@,Cˆ¬AàC8ÔÓêåOè@é„€ßâ/Õ&ôâm¡ŸÌSzñLƒj®©è£bQq‡÷6^–ãà‘ıºän#Ğo[ ßÂ…×Œ­xÁà_8²b;AÒ¿¦_x[&.^ñ‚ ¤>%ü)Èoüü†ç4¢b;‘T|ï!€yj,S¨÷×îBX8²é… \»‹hÏ,ZAÙjA! pí.¦Å„âØ®İ%iÏæ©ÏÔß6àMÒ!)$‡ŒÄD¼Û?Ú.„¤@FxÎˆ&ôn›GúPïÂyÛäWÃ˜2†´.u¾èQc+3‚	½êßp8ÜÿºäôL	æÛÊ@-(·‡§,®	óÉ®ÉŠ,Œ` /DH ï6$¢1¢\×/bôãÏKøóí¹ÈŸëı"èÂ.¹‘yÒ¿<‚|TV¤,Ê~ïbË¼§Â9]r[¾êB#PĞ/d"¢@E*Ke@¡ä`ŞA«‹‹­Ak°[¾=İšn·¦[²ëÎ=z5=(4m
+Ï¹Ù·  ^ À-/<ŠR0&K~D3bE!Ä„µ•ŒĞûdœ/ãL'Ê8RÆ2È˜!£CF&ã2~!ãû2¾!ãv7È¸:_Çï.cfò_q“ŒË¸HÆ92’ñr»Èè“Ñ,cTÆS2~,ã;2¾$ã32>&ã2ïqºŒÕ2–±·Œ92ze4ÈØ*ã2~*ãÁ8ş£2.Qñ§ÉX)ã5ÿÎ2&«øEçdü¾}‚‡åPe¬2SÕ$Z]dL“¿×f·Œ[e\'ã\5ë¶J˜e$‡Ôèu2®±AÆCñÒ¯Šÿªg$üªg¶ÿG‹ıf\ğûïp¡$/R<–?W¯ªâÂTh8yµç·öâ2zælÃşı ÆĞ·È¼Ø¸
+„,”èD"Ê’à‘P(	¬*H[<+äúå]ÊœeÎ]ô-|Iˆ/icK`S…9à<šÂ’™GĞuğ¹˜[”ÒRÌ!’Ì6f×»=¢à°Ëz½İ#°£1Í—ÂÒıIÇŒ¦iIhò¥šÁbMv9mV‹	›p˜u…u•–X‡Y‰Éj²
+·ÃNõ²(@^0,	ƒ¶ââ¼¼ªU3¬Á`0h9XPPPxiCw±ÕæVßFıg‹İÇ [>Òtg:Ø9
+ƒö@aº=H9é4İNçE¦|UqÓhå‘7ÜÿùĞ´…oªÀi7U¼×*Çë‡Ò›•7(Sğ!7àŒ´+eÊÊ
+œ@ÁÉF'!r!„–RÒÅhKIéÜ9È4wë¦ÓeºœY>Ÿ3ÓH„î…Éæ‚úğ¡ÎøXgvÆÙº¿êÈ¾”SÈ\òt
+ù°>Õoí†]ŒİRt}YÜáZæ").tÙ,!»»Ì2›Q¦æÁRf¾L±>ÈXM7PRGçQ"P'E¯£ŒäTUUÌ±BĞ“—S=¾*å`N0XUes·çª*­5hğRÿºågeÒ¢è¶v¥…İ{Ğ­ëŠ­¨Ó!êœìÎïú":8#¢2º´)yİòm®ÉúüĞí/¸l‹ã¶›Ÿ{°¢ëŸİë»O\¾ìÁÖq×NWZ6•uëlOç–VNôèVùî»å×§ŸjPú_VZ1{øß6<I<WŒ,ÊRråYäLï=SñI*Sƒ¢gÄ÷…e` 3x¡#aL¨02Ä$³ÑÔÉŞ59Ùn2‹ vwuÛ¶¸vUZrv„-,‰šl²oG˜Ê»*iÖ0µCINNxJJxxQstËG‡ÈÈ.ìŞ#XàÂ ³
+\Îø#ìÈW° İµøş“¯]÷ğS:×ûQúÈcç®{dİã¯{D¨RY9|XeÅˆs§¯;¾¼|Ü˜á¸ıÃŸzüèW­uB£ñØg}÷ÍÇG¶d=÷Äã;ùãÓä­È“ë{ö€BYô¤ĞCXÈƒb¸9TÚ]ºÌ”iOñ¦{íi’ïÊ-Ğ›$S¯Ş®‚‚¥ãğp®ŞRDòÓ<,%EXiÁ=4[J,D¦¡hxXp¯<.(áM<¾ôÌ°çñéT\œcµAqq»Vé–/dtLBŞ –¬®¨5.w"·¨sŠœb¼5Ü}	Íîk¶iÛœÁ{¦~xÇ¤çïÜøà;¿˜¾cF¯U%ÔÔ]Ùµ§2¹vtMíwÏ-¹ê­9'½÷ÊåÆ†+JíB×ƒ}›J×üñ¡ù·ì{ğĞSgr~ıd¢e‹Í)«œ\9ó®Â¡c[üîhíş9ËŠ ¦Ğ·Ğ¯®‰É!%„©«!_ÆVÕØ:¨-€Ğ TÇ…!‹zÊô¨Ù¢÷R€’’„&è–o·ØŠ‚"±Zlî@6±6<ÿò–—¶>ûÊ–Wš‰ÓñÀ;‡•\å;å{¥ë{ğ ú Á¨TœóùSfĞÓóüz/Ì-Dèa³ZHÇ Ëf%9Ï¿¼åå-[_âX”£J÷wŞÅ¿ İøî_(AåsM¢™N¶“V¡’àšP¨(z¦°ËÑI.	)K"LÒ'™LD¯'fËQA8-!‰BÉm×á=oZ‹‹«ª¬AVu]Írn;e	4ˆo£ÔEùú…[×¬½õå›.h0.dc'Ït¶IÊ~tï4ì¬Ö«šÙ•ìq0@ÿP¶ Rj2n"HÍ¤š£H€	ìÙ°ü‹ttD'<%Áªª _ ‚Õã«ªÛm†Ö€5½0İ´¦;Éºû•
+Üx?n$5ÊHÜ|nVFŞÇËÜ¥œÅFødÈY™ ’ é l¬”àÑJ	òÔ©ß³øğô(bcv§¹ã+>Şxıò+Şù±Ö®•x˜#u@Á²eÂKáuxI"B^Õ-³nùöÂtg%ÁÃë×ÂK x'|Ü!=`à£• y9ñQ,:_zıãX9=IŠ…@Á¾“ÀÀÎ‡ª•tbñÑÇ•©áØY? òèIÖ€ÜĞ)ä°‰FÁ“,›ëÃ²:ëÃ496¯Ş-$Á‡nzÆ¯ƒ6øõŸÿ<óÂ¯?ì\öäS«î_¿n5yMY§,Å™x-NÃë•û”‡±Ú”•w”÷•ï0Ö0³ĞzÈ	9˜DˆÁ(0FEQBÀYağ@‰º•ƒyÁX/ò÷N·
+…Y¼×âde/y
+Ç<Ìú|ÙôÕ9ÏÃ “˜QX oÈŸ
+IfÉ™æ4óù¥Ô$›ÍP¶éR!5^†Š=jQ¶âvs)XØW(T#]Ç¾¨.UI¨KB]ºsrğş'×Í¶pNı¦]í=òÕàÕ©_Øm¸ù¹U·ß¾pô¬ywÌ°nz{ÿ#|²iüƒ¥«ı44z’%k \*Ö‰ŞTg† #Ë’*Š/Ë²Z¬–Ya«Ç~×«ÇCÌV´V+õú|ú°OGåú°wM0âUV×]uÿW[mÿéXäJ/èQØ=;ƒ=.x#Qçì€,ù—¯?ˆz^ÌDóÂG·==iâê?Üs÷­÷Ÿwükïûß?¸òñŞóú¯½b={ïüúÆµ3gÜ}Ûô¤g÷¾Y°©³nWé¿< V¤ö§z„R¬‚	´;€YY}X²ZÑ Šè’’ ­8/#"Šµéy~‚òAëÄ$Ô¡ÓéŒ¦Ö)äWŞRV’î&åÁüK”×°d)İÑrõrz«8ŞŞzò*‡Ú¾#¢'YšĞ©0>Th³{ÜØu¢ÇnpÙE–Ö!Å\NI¡‡{VØ!ò¬C—ëuwëˆÖ¶UUU±¡Å¼v»ººÙø’æ ­iÏ·hÀÎ©G¾¥±4å_ß¿ù£GñÉUş¸tĞ%‘<šŞz·÷æ-‡ÿ…ïÂæ?8ÿ²õá{6t-"??¬\1ö˜.È€òPNšU4Ü ‘2­)”›Ã•å¤ú°Ù¸ÂHô‚QÖQÿù©Ê—»¶:·#ÏÔ¡ ÍWúíºl~©ö¿.ò`É?ù{Š?bÉ5›Ÿ{dS·íõ¯µsÍ½w>úÄw­ÆƒG'â¼	*Ÿû6+Ÿ+§+«Ï|ğğS÷7şáğVµı§ªs¯pYÈ!1A Y£	d½<+¬ïûóİÎ[³ [>ê‰3`±aza:3şu{øå¯ĞØj `§”Êbeõë˜DFá=…pô$KÖ@2dBŒ
+uÍ}¦{€İ%›D1¿›KÎè”Ñéæ°9íbFµXRo[t´ËÍ‰kÄ¦Í¥h”6ª­¨0‘Fqv@Ú==ŞXv­á,é=XÊ/ß|}|nı=ÿxçğ?îµ`ÍgÊÙ†{İÑpO`í²E`çûWâ¢×ÿöÁ›‹_v0oóœ'Ş~ãé9Ínæz˜NÍ¾uNÃÍ­-wß³âåÓe j¢'™MXnÈ„‘¡®l:Ñcm4+Û˜nN¯›Í>3I¢f3u:½õa§º.¸u¾¾cÛXh£ÚÆ®ÍÎÉ1¢¾¥-a0ôEfSşõÓ÷ålî±ëÑ&Öiï¬Wÿòé÷?¾±öî»Ö¬™7ôŞ!äSåå¶%z#èGÃØ‘}øi«²akÓ¡m>òÜ•w©k‚º±^*Ù1d§:&Kªam%šÕ.ÉKÜfì…A'Uw·×_§ÓjyàĞ!—º/³^ ƒ	º†’M ’^h’Ù _[i0k;ôZm‡í\î‹vi+ç…µúõCkÕ­úY{è \°2ÖÄíB©È€é$¡DlWˆT¤ù¤Ì#\ûaf%l:[Ç1Ar^UóÉ«ìV7rtÊè¼~ÙòKzÄ'QîSV=Ìß¡+Ø•ô¤Ú%¡N:
+ŒI2'aÌ‚O&T‡AO!<.ÇÃHÌ¡PÕÆŞç´”îÄÂtg-ı²%~I+V¯V`õj€ßE$@™N¢ù¬Íc”a	4À
+  
+fRB¦“uäÈ%Ş¥¨PÆBş.c[¢_>ò0NÇ›QÆTûv$ ë¨î³0"”›î÷$K²@ö'³@¦-Õ,—È$‰Ê~Ÿm¥ÏèAõ¤¦:«Ã©LÛÙ«ÇWyòrÀcy«z|•õâi˜„f¾úêâ{VÌ`ÃÂ “uÌQU^VŠ[IÇ¾CË‡ôÉztéÒI»R}p¡uÅëL|Kí€ŞİëœR^R\\ZÑ{æü¥·ßzÿ½s—ïßP¾Òİ$€
+w†J½ºÎ=¯4ëB!·Û“ĞÍcî)+giGÂŒW}¶÷ÿ ì¶›>#1P£İhïŞ§OÖá>@òÑÆò»wïòA¸;äÅßL›‚Å<>	­ÁœG}	®Y]Õ5§( qGİm=‚î`QŠNŸ…İIf ƒ§ÃÆ‚™En‘22I¡ÅéÌ&ğöIBmi*ê¡»©ş`Ãµ7P±ßë3{¶ñ›e;®•5¼|ÁĞG”Ïöş¨,}ÿ1ìüÖ*¼l}Ñ*åÙ-ÿPÜı+¾ˆ¶àøZŸœÓu­¾öÃÜäŸ/*ïm¨¨(;÷Àó0å©ëqCxüâï| Üxö5å£Ç©S¹'|üDŸWv|1é†Ïï½ğİÇÆ ŒA¨õ0!		(c’Ú¬FR6U¡¦-bÃr¶á®´aóm˜gÃ¸ÌJ
+J‚ÅmMÉ…<¶âb§¢Ói:`PF¨£é4»#[ñDëO¾EJ>"=Z+åänÍÄü|j*®Uj¹l”ı#õš»”nø—cTy# ûNh¸ L	õ2Ø%»×Ë’$7€Ä¨Ïo°§ØSªÃöL;b¶#íkGf¶£E°Û™ ØªÃeŞê0³]¸×TWUÏ¸•£&X İšî·:D]äpº5o2‘‡ì;åïgZß €§—ÎÛ¸CùûÚÕÊn¼âá‡+O*k±~ëz\öò_„F¥é¦4ÇxvæD¥_}kôW…İ¥ñS¢'…9ê¾9>TL-n—$Ë.Mñšİh¢n·İÕa;É"…¤ri¥´^:,“$#•$£Q¬í~/VÅ(rş:ç¯ÚóŸ m#”P.ú¡ï”4ŸÀN¬£¼yøˆ²ÿxöû»^ù|·ØYå=å¬Òª¼‰YCw¼º}ÃñÎÈ³}æŞ¥É7×	 ƒrCn³ N1©:,RÁ\l~'Vµµûy¾ÅA´æj­EmÂuMÊÛZÿïâ$¼g§e”`¯G¿¿“ú›òÂ¡QyXyE´ŸÛ¶Õ6äcCQi›‘¡A–AOuÀŒ&Aª¯ğEç‹bP¢‚ ˆ¬:Œäê0Øü&¬ºp@TiÌ_|âMz6².-÷Ñ‚–?Ó…ÆµJŸGçÚ¶:¬RÛ G(A”ˆHõµ(t:¨ë¨`óxqS°œÂæ%¬éNœLm-ßM¿e_µy¼õM¡q­6V&GO
+ëÕu}b¨·N4İãœr9«ÃàBu¹¼Ôk©{íT_Î×…td¥î˜èt”Íócı~>]¡$ÈYÜi®vòøøh#§ GQ!çÑµá3ëpÈw˜9lGŸ÷;£(hûqñ©«”J2ªNyéÕO•=›È>ƒ³ßÒcöMÊGÊå'å‘eÊz%eæk3Á¯öÛÌ[G)“ Ì`4éHu¸\‡Çt¨Ûı<ÔÕ>hn‘˜u(ét²ºùM¸Ç„®7á<Ö™°Æ„å&äıûÅ—£ñUU9qvşüÊnå­´r¡›Ğ*îŞMÎî&ËZë…ÆÖÍdäÙ­Í_ÀÛU¹ÓÒĞ•ßG
+¶€ùú´pQŸ0"àzë¬°\ÀqZÀ=ñ(í¡%ş|«€+Ûãû¼P}Ğ^¿ ‰”4!ƒ5h}e7_(Á=I§`ÒĞe”ÈIIB­6£¡:l¤ V‡C)»_]²Ëm²¡ß†ñ6Ê«º*ü\FÌ(U*ãq¿òHÿ—lwVO™­ü~æÀ™¾Yw­XL®m	ü>Ö—%j_vyÁ É¼?²1£I¯CÂ˜$Pà‹o°$¨ÊõÛÑé¨S{ƒïlDëÁ]»w“§?oİH6’K[­}ÉŞÖµ-_ÆçZĞøBI¼ODR |:kS9ÖÕZ3¥;7î&oç¼kµ´"!G„Ny ÅbJJIJõR½Go¦ sĞ$ÛÊTœŸŠu©X›ŠR±{*úSÑ‘ŠgRñp*¾‘ŠT„Y©X“Š#UK*²Tœ|\nNÅÕjt¹š>S;“Šï«QóòÕ2Õr\¢&Ñ²c©Xt<ßIÈKËÈÏè¥xFƒãKÅãñ¼æ¥"©SË¥b‰ZHmS|Uÿ›!v‰ˆvÊ­óZ-7WíXÄêœê^$ê0€yèãƒ v@w_,Â U-wë¨¬¾WYÑ3²¦sx«#K”‚2ÖıD7¯]ùÜu-!º§é¦é¯´Œ[òz/èĞéNú—³±±åW÷şòPèõ&c‚I0'P¤6¿÷˜1bÆõfœgÆ:3Ö˜±ÜŒ~sâb *£.\âÍ.äë@¯Ö$AhúŒœ5nf‘	O·TçÊŞ¨ kÏ6 	Ñ“Â‡ÂH‚È¥8%3HàM5ØªÃÆ<ÕafŸ§6vÕoíumû®Mgøº
+Â‡›”7>üHyó)œ‰W}ˆ}~]ùõôÊ/høá
+dß§JóöùGàÏ(/~†:ÌUşªü¤üKÙ]â{°JéÁ
+}B~³ ˆÁf7³ê°Ù,ètI±È~;òöHÜ…ŠÏÓ	*Å°¦0…ïÉ~örî˜2q7ş²=Ê.å¼Cô£·O¶~,4~v ­­ï«u˜ Ü¡¶2¡$”é³%H4É&de;S«ÃN–”Q¦IvƒX6ÌËF6o©<UDrá„øTäT%eÙ¿ÑpÊûÊOï™TÔ§jÔƒ¯÷}KùüÁßhBåe^àÎ:Ó½®gŞÖ?ıüû¶¦ÄhÍ1¡<4í²R–$ƒÉ$3êö‰T‡ívˆ–`›çÁ:ú=ÚîZPriOLRÅ^¬‘9Œ4NX²¥Ê}Ê İäÁ¿#İù®üåéÇ”ŞxğÁ?’A­;…Æ#¯>öAjëôäÜÆÖ_– TEO²_„5Ğ–‡|FHK¸DAp¥Ëëj´Ø]eƒŒaãT#51°+z:Tlw••F&¨)€FfĞäduxz†ÓppRHCYHKfT®×ˆ8BÄ"ŠÔ~^ş¦‰ï«bBšju­Ê¹ˆKdémÛH÷®¤#W8f¦¸4’Btrõbı¢R¾omñ‚ÿğs/ì/™ùxÍÓÏÖ¢Éi%ø²oË#›¶¼kï·L¾:‡Ë:qRVÃ­sî™íÊºªò¶aÏ¿qÿ¶ôºëê¦_1ªwÙ—ÓkäL@è
+Àš9_ƒù¡0¢£²Äu¼»Ğ67nT)ã¹¸mƒf¨Ğ #©–q˜Œùª½Àä£2’1¢ÚhfOË¨=×LêÔ(ÍÆà”µ.nQ¢>‹NÉxXÆ•2ÎSãÊeÌS#«¹¬T‹Ö‡dôËhQ­/©¦ëUÍ¡DmoÊP5ã?.è3#ªÏÇ—ü¹‹”1NrøU%•İË¾:çe_­Ñ GO
+…F°Ã P®É¢cæt$	ôÕa°û¸Ç‰'®wâ<'Ö9±Æ‰åNääÿù…XC	K£‘©.¿*“¬^ˆŒ|ü¬¢,ßıÆ¯¾÷ê*å_;O?E[V¼öö¡}´¶eÕ3¿Ü­ÕG† AßP¶NB(!‚Dõ²__®'ùúıJııi½§G¡j$VUÍˆÛh;A ƒè.Â Mz«õµıxïÈ‘8¿ĞØâÿõWz,^–î^¡’±%õ$Kˆ%Z-LÒéĞ@u&½,›˜#Yğ¦,ñ¢wÏíeÅ^¼Ì‹É^Ô{ñW/~çÅ¼ø'/îòâ"ïÃŞM^:Û‹S½ØË{•w¬—vöbŠ^œÒêÅ“^üÔ‹¼øŠŸñâZ/.ñâí^œæÅq^ìÅ>^Ìñbª^lñâ÷^üÄ‹ïxñå8>,óbƒoôbµ‡x1Ï[â%i^4{±Õ‹§Ôü©ùoõâc^\Áqïğ’J»·»xÑëE“{óâ^üØ‹½¡éø’Ÿõâ£^\æÅ¹jƒ½•^R¬V(Y­Ğ¯j…>U+¤½ÀcêÜ¡¾@•ú—{‘'ğy‘T{¼ë¼»½G½Q¯^”<&S‡É„ïµ U5'ÁñªåNõoã\Ê 'V}iôöø!§mtT¯âc„ëLƒUÚH¡Ù“‹3ì.w›E}ƒÂ‰ãg<]S2£Ç•	ûZ»d{J~ŞùSO¿ìÍ@imùÑ¬µ-µBcKãÆí7!£“[îÿğ@ı*º]Ë]„NC£zS’EP0Péeƒh2zMƒMd‰é%Ó÷&ÊLSwÓ »~¤©Ö4ß´ÚÔlzÃtÜtÆ$õ6a¦	&<cÂMø†	Ÿ1ájÎ5a­	óÕXPc«±ëÕØ:56dÂî&´˜™°ø˜	ßW9¬*‡å00Í2ÑLÓHÓ|S³é¸IàE¯61±		˜òMäVÎFD¦×qjŸrr¼ $ÈíS/83~›Ôzd|Â¤ŒÑg2dÎp¾ B	+åïb}âï)ˆLi}ˆ|BşØú!éÜ:±5 ¡€ºFI	EEDB¸À˜IL/‹@%ê¡e”)JŒ¢í=NÔãH=–ê±‡3õèÒ#ÓãzÄcz<¬Ç7ôÑãz=®ÖckõÒcwÕ¡GĞãÔ3z<GmÖã=®Ôã<=ÎÒcËõ8@~›éñŒçû~<ßj¾³Ô|GªYç«YƒŠù†šÕ|a¤šOf<Ÿb-—jt]<½V/­˜ãzÜ
+ªUÒ2ÑâµäÇÕÔ/©Ôé‘Ô¨çéÑ¬Ç‹¹„Ä3ş·Lâşí¬Nà¸–‘‹^Ïoœ(RåmÖ€Ê©üjëïâ³øÌ»¤¬u)£Å­È:u\Àş ÊZ®
+åH„êd#LoĞÑØşN$”ªÃh›gÀ:Ö°Ü€!Æ˜hMwÍÿÎÎXÈõ\NLg8÷8ÛrŠ~×ò]´‚^»äÜS¼Üû”1¤³p tr R ’Œì§0?…Á{ê×vR»5İ°÷áƒß~«ŒÑİÜøë²Æ‹í¨€ØD|P™ú8>³ài,Ê|:^>Ñ1ä4À~
+ xÉòƒÖ@aºÕòí·ø 2¦Q¬oüe‰–—<Aw
+ bQhºÀTÃBÊÙ)eT–’¥ÎÒTi¿ô‘$ºD	ï,•FKOIô^iô³DEÉ%–&I;¤·$qh¶ÔCš$ñ¨§¤¤¯%©‡t‹zûµô³$r\Z‹K’$iWtÏseƒËxººßÀ2&9¤ÒHiƒÔ,‰7Ï’æ«WïKÇ%‘Gñ›ãÒ~3Rj–ÎHìŠ‘ÒjiƒDùSÂQFJ³$–$íŠÎ{nTÏx^¨Kï¾eD²I3¥íÒ^é]I¬ë'î’î“”1Qš)±bj$R‹Õã«ÆWÍäêúñU3fjx=¾
+J¶WÜÊ„SÔ®¼£üùI¬{g’'ÈœÖäX«Ö_ÑÏ•©l±ò=Pp†dÍøãÅ0rE„ÖË´0İéc›”©wqA*Âõl±	ÇA€Î!'dÑ‰@¨4CpÕĞ) òªÙJƒv'6+;}Ä¶¡+MùÜ¡ÚFO²z6ËC£ı;ëtÎ$sWJÍÎVĞ-Í3<œæòƒU×yxX§³BIš“¦'MJ²Zåa«2¹Ù\_€+p^Ö`M–`¾ú0aJÇÍTIâ«­8¯Í|£½^…“{\‡[‚qİ‘-½ÀåT‰¿³HÂ}ñrÔ%§Ã…ÿaÃ§?ÿ³nöœ›/wÅùş|Yï”ôWÖVŠâÀc¯}$üfÃİ¥ÕÍk66‹¬÷ü™#ÆZ1ó¥mJ×òáº:ËÔºÛ'/ûØ5aFòk‡WÔh2ëùª=ÂpC ªBE„¤$“L™%X‰Óé-;-&Ğ;Izy˜¸"YX’…+³°.}YÍÂcY¸'µ%pæLíıcuq?­r²éü4=''nuA®á·ÑDš2sî‚D"[ÄfÆ
+şxÛÁ×^™½à¡%^8‡d´ş)|­¯AßcûA	_Q1e¬rRùâË7qäı€¼¯éŸØPH†I¡`rØEÎn¢)^‹»<ìs48V8:˜Ãa±øÅ:qxX<&
+ ZÄõvxXÔÉTõzZÖ»|íõ	3¸¨¸½l5u–;	ã¦Fq®íÕ4šw8mşòÔécO}œúBÒÌ©+æ‘Œ¿rƒqí‹èC;ZÑ·ùÁ¤±×¿ªõÅèèIzJ8 ÚWŒuKƒ¤$³[4‹™›3	À@%É_–,4¥<L]+3±.}™ÍÄc™¸'3Ö	RübOIIûNÈŠU•óŸÁ¼Ü®X¨½ˆ6i¡Úì¸|î†BšÅÍT×ú·Ù^¼øÁ…s¶L‹ôc'ÎÁ×ÎÙ7õ°Ìºë¾|ãı£¾½?6ß<l(Ø n•Ú­¢.ÀhÔY©7E&CyØ”Œ–œ,›Í®ò°Ù"Óò°ì:ìÅ=^\ïÅ•^œçÅ:/Öx±Ü‹ù^œqáüjgáÉ»ˆåÖº…¤k½â·:;ª½¢CÇ#«o^–üøeãésç¾ÅO_4¯\p÷Ã"şëÅ?/ëì€)hÄ­¯y?óØVÍ&*€ôşNXšb²£ˆ„8™“¹]zsyX@EZ¶‹ftúÜyîaîjwƒ{…{[gv—¸Ü[İ»İGİ§ÜºŞÕîİn¢ÅQ³;Ï½U}.¸C£kËÜ¡¹e~w¾»ÆMCn¬š‘“£-»œNˆïÕ6,.P%'AÍ0Å°
+ƒªu„ÛÉ{/ƒNœÚüĞCwİ;¸{—ÀÀ¾ïÑ-ƒèÎ»o[}—q‘T:nÂİÚXSÆĞSl0ø¡+¬Õ¦»eÙÇh'«•úh~^ªÙ­w$9²ÊÃKRNy8Éºò°“¡ÈĞÀÀÊG>ÊÇH>®T¯!Ëæã|–ëóq^>æå£9OçãaõB#”ÚH"UQ:>fË”0fÛu§ª²ËîÈ(~ka qª»÷(
+ŠN«…vïŠçCHæ¶w;<o›[‹&Ü~ë¾—ö¬ßÔ•Hìñ¹²»¯Y|ç-+FÍ/SÆ,™—2x8öŞ2e*JèåĞ©:¬ÖõhjySéIßš¿ûº·}¶·ö%u, €jB½V«MÒÙtÉ)v jÓ9©©<L-‡SpO
+FRğ´ú7š‚ÇR°íáú¬KÁ6‚qf|µÚŠKÚK5Ã7kÀ{-U#ÀÅc—÷úÃ‘§Ÿ¿¬fTÃÃÍÍ:¤×_»õÏ­ydËÌéİ#´Ş%Pî¼ü.=X€—«t•n
+•QN3ä03'Â5aM¢rTÆ=ªLg*©‹ËhN'Di"—ajTÕE$nlÉO0bUÍc¬Aë¢ææfÁ¿yóÙc¬×¹·€Dÿ¬Œ‰ÕÉÿ
+mÖSÆ )Éj3›u†ò°Î«UìwÛp…Á†ÓOÙğ°zSbÃ¨·Úpz;=®¿ÉWU8Gm±ázU?LEÎSÓ_µá)5úŠ±Ò†ólXgCŸÍjZÔn5k-qÔ†ÇÔR÷$ ·§ó/AÛ_È¿µ‰¾Ás¾m
+´Æ±rû­…nUÈ³¨yöì!}öÔÚjìÃ‹å%bÙöG>]À¨p °,4Y’Q/ë8‰ÏLFŸ©ÄDøŸjSÔÄÌ&í²Á$›B×Œ.«1Í3­7í16	G9³«İ30YLù¦P,ò˜é´IÖÔé™d€9Á	%%%%îbÏ‡©JüiKNçMŠ/VTÑ|å¾ùÍÍøñ{Ê ü3şıF¥A8Ğ2˜”¼ÖµwÀ¾j¿ßN8™ÎÓğh\3¸NÀyªĞ' YÕMP®p˜€Q5ÉaõyòouÍZÂÅÍÂ³İÕ6] ØPèŒw†¢Î érºß&É~9ç²Ô¬òpªÅc§“qÚÇhN—ÁY›ƒƒs°$srĞ—ƒæü>æàK9øL.ÉÁ¹98={«±†¼şû|GŞªF7ä`eËAoËÁSjâ6„Õ9¨£"°<“ƒÇ³nÈÁi9Ø]2ç`ñ95î¥\¯¦œ¥f=8^5ƒZ€Vüµ^Z¬WÍôp’=jÊ•9XÃk2`~æå äh+t\5öoOw]’Û½ˆ†’‚‚’¶U='Á’ÖV×“eÇ¸îƒˆ[¥]±@}¬ÅS]WïsbJh¯57Ì]‘J{®›±áí£ën¹›lylvd}ë2zÍ+—	¹ÅÃêÇNœvcÍöwøÊøØì­O´.‹÷;ı;
+)0!ÔÇÆ=c¤èS¼©6¸„ò°Ëb2ëÁy8÷¤b$O«£©x,Û®W¢íñø;¶[ÄÓïÄwsZiñeãÂw­i½Lß?ÌÙşG²eÚ-İ·?~şêª¶hÍÓhB–Æ†‚\PÊµªÚ,·GJR	A'×{p¥5½KË=˜ïÁ£¶µú·íäÓ/¤¾Ïşı‡ñ«_¾{åÇ_¶ä'—Êqå;LG+ÉWN)Ÿ{çĞ'|x8Æ;(cX¢ÚV…Š<à³J’rv–•9‰Æ;Í’—d¨¼C6–dãÊl¬ËF_6F³ñX6îÉşO¼C¬Âé®¶Æt&°Ixw8;Z`ÍâdË¼ñí·^¹íisJ>|ï\Î<¼,=©„ñé¬Û${m•rFùô‹½cw?|äOo¶ÑD§ÙP•ş¾74Ò-Y­–4j¡™‹×h‘ì)åaÁ~Î†2ÑŸ‰‡21’‰+ÕkÈÄò£*%>,×gâ¼LÌËDs&ÎÄÃêÅ¥i C¯mÄzŒÖ	X¹	=¡×ğøŸ÷àò¹ë{‰=«kf¤Çãï.~pÑì9÷>¼Ø.t‘c®ëp¿Ğûä¹¸sÃ´JÒ÷½~ùÆßbs‚,dCÁÎOXŠv;€Ñá4‹z3kA0QCäÍïÒZ_£7Öåb“Ärê&efeö©»…ö¹xWÖ’Iú?ê_kn= Î»âèIºƒ†Ë 6ÔG'f8S½& ¯Sd9¹¦êñøÊÃ©Õ—‡uÔeÉEÈÅÓ¹x,÷äbM.ÎËÅ’\´äb[ãÅÎÿytÇ¸Ê-;»jöÃíUn”î8qøO§¯s¯œ·¨¡bbã£w_õŞŸ{/õIóİ7İ6+üƒ+îÔ	s~êe¾1ÃG•§dtrSùêGï\â(rÕà®}.ËÊ¼üª	 ¾èir™Ê49³YfÌåL$¡<l0Ëh¤rH2Ÿó\qk«”ƒ\®·8×¨Õ XdrÚ¾(è:šX€\®úëóg¿ıv°$s€äù‰¼{÷?Şİ:jhI’F/Ü=I¿g½ ªC½m’dÀdCrª×&¨KœËä”Áü¸ÄA°=™juh-ã"IÇ˜m¨{]¼Â±^­#Ô5Ô·<{~# ı•õ=ı‚ ÊzJˆ¨§£LÌ":5â|#Öq¤ÑoD‡™ñ}#¾aÄõF\İGC˜¬Ekq‰«Ïµ|+ÕçŞöÏ—¨Ï«ÏF,úØˆï´(ùï*Ò†s1)7b-FcL…Yıo¶×ß¶L¹´aJ°ä‚éš¢¦íArİåÖ=7õtüy7ëÕêôæÍ·½€ÑVîŠ{|Â-¡(‚U'ÍIÔ.©•:$.IBƒä¤Iv*™Ñh¥:ç-.œäÂ‘.,uafºĞåBæÂ3.üÚ…o¸p»7¸pïcP1.]8õg~áÂ÷]ø–w¨xó]8KEMÌQŒç¸CÍnµšİTg'ºğ¸?P‹ÜáÂ§\¸È…3]ˆ5j™™j¥zQ‹zCÍcZÎ`æ«ÑS£ÖóìCù8×…µjîİ]èuáiµ€w\Ø¬?_-q!±¸\êò^ı›ŠèöçªßTŒ¯ªú-K#7'¸¹Æ Š«‡TÃâ6›£ =¯Œ+²íü[ó—W2åì+Ù¾S—iıâµWºúFHë¦.›ZóY¯ÖtÏ–«hekò«Kh
+  ¸èw¬pdh=·_Ó3Ôqt²A0ç›ğ0q­í¡ªÑ\ª¢ìg7áª2m‡ª-»Åt¯i‰ÖšP4¹LÙ¦RÓh“0YTCó–éÓ×&éaÓG&RkÂÑ<[LÌ’Gÿl¢oğ²M=L¥&V4Éô”i‡ú\0qÁyËû•›0Ã„Èr†D63Ñf®¯[iZo¢³T«È‘qÅß„jÒ›§l½ª³³˜ÊMu&-êô™I4q¶™éqmkuUNBŸUÏœ™3s|ât¼ˆ>>¯Ã^BGÓ•O•÷b£²j&¡q¿²
+ïÅ—•$—$)•øÇÖ3­ï ÊÚÂz‹{Ä°Kf«M/ËÔlc·d7ÛİVÙBy¼÷yğ.Îò`­Gx°Ÿ»{0Óƒ6ñàq¾ëÁ½löà&âNÀw©ø“µ$$Xóo$âcÄƒë=¸Úƒóã„éHPiS¿d<íÁc|ßƒoxş+ü¢cĞØ~rfÚ1Ï%pHy</ğà8É\îÁ<ZÔ‡mV$¿¥ ÿ·0ªÿ£:ıBšùGÌx0a¶gt,tJƒö„OcL"»¯*Èîºq¢U¹fÏq!éjZúÃ«JMÿYË”1†â¿rXakSRÇÏLo’mçŞzvÓ5ê\¾€>ÂÏ#áÄPuˆT”˜A/RFËÃÌŒ:.Õçû|Ã€ÍÜ`ÀÕœoÀY¬5àHU[Øİ€~:<cÀc|ß€{~€ŠŸi@fÀãñl×«hó.…æP1‹Î¨ØZ=6¨9ÖªHÌ€‰Q‰EjZIÇH«•Š¨¥­TõåjÅÁĞÎÓÉd]/áá¤}Ÿ&*N­ããjSç5¤ªõMji}’Ô/¢ÙKµü-¦kÌPÆ…Â@u¨—«CµfPËÌJ–t’î§°Y&‘<i·tH¢f)O&’—ú›Álû)lHo§İŒ	ÁgÌL<´;ä]híİ±°/Z»÷èN•T×	rSotlX4õ¦¯¿çî%•C®¯ORY¢Œyd	N½¹^h`õ7ãõËjœvƒ²vü"'q.œ <zı€°SŠU\ƒW„¾& À|g©&Ü# `w3UYÍû¾!`³€ÔpjUo‡€LÀ)g<®F×©m‰5¹ÏWÇ“õ0'n5NN'Èœ·O´Eïy¨½-º/np~,Á
+]KpJ•5pwÜ].…Ì‹Ë£tã/1@.5zªgÌø/è3ÈS=®Zw>¥ÕİùË]ñ1² >F.KKIXXf–.9%9å§°9yX2ÉKŞ|(™š“ó’‡%ŸJfšœlÍÈüÎğZ-?…­ğ_Œ;'İcgH­±³×ªşÑíLâcDÌÁÂñ•Ã¦„GOVÙgşİ÷\?½nê¢†ùÊ_o¼¯›¸ĞA&`íÓZ¦¬™5‹5°Y7+.~´ aéÌÊiGpÁô,Ùİ°>æšîæì>epÕ·;µL“jÊ•e²‡:÷)³Â³aŸa˜aN74Ö¶N¢!$›Ê—£Û°¼‘“òiNNÎ9q?\[ *TU–O3MBzõÀUƒ+úÏºbúCİîòÍîr×Ì^7“Î¹)]:ç­™ÒÕ˜>îË²Aõ[¬ş,"P  ğ£òîÒÎˆâŞP”ÓB¢(É †tâÚJY¤(Ó•2Ş¥ú—ª‘q„Œıâş¨l2’¸?ªÃ2îUıQ=)ã}q|ÍÕø“X5Ëø”ŒkTV·¨¯F$8°rÉ(Êø³Œïª¹Ÿ—ØÏ—q–š}H5áÔ)AÆ32W³Ö0W'`j±4L&c‘†Ú7ÖT‘Bı8š7®&8¯å™tO(hCüyHF¢ÙkV_Òğé?­ÆÕÿÃ=6S¥&:ÙÚvg õªÇ)òl‹QhÜ¿_“i-ˆ~NÏ
+Ù YÙÄÚİw”İ1»#íQ¤ê{uÎ´Š:îÆå&)ûØwûŠfïIÅYÅXxYÈ²Ãşêı8·6P8~‘Ó[Ñg}ôQóSK’Æf[öÓ»ß`\¹#i#»Õ2¸úó¿Nn„^ ¬\XY°842ÃÀöT;x}>£$±,`İ±ƒl”‡‡½ü˜çVnÏ\bœnl0®3n525J5†².+3†¼ş2£1Ãbq×‡Á2f…³øùö˜21·Ìæ>”f$ú:ˆéc²~ŞbIH/ä–Â µ(…ŸÖâ¦ÛéE¬ÜYÙZıâ‹~ãş·3¶8§_9³{–7¿Ü’†Ekx¤ëú9+Ñóúş97‡×ß¡k¼óÖ;GxÛÏ€ÏaõªÏ£~¡ôÔd
+VC$uêlîŒêôEÂ›SÒeEÂz¦ãµÔŞ=PPƒêA?^e•!â\÷¢En®-rë\N‡Î­ëÈ/ºEÙE	
+ïECk§\;sé¢™¦Ô”¨tİÌE+nœ:iÒĞGªŸùÔÓ3fl$›Ï¬|İˆò	Skn^°xfíÔë†–O:iæÒ›ÿğä-7oøƒfç¢ °[„FpÁ½¡aD”Ì§ËåqÈ$Éj’eÛn³¹©ÙbÖŒ†áa–§v5†:w)£Åè7®72£Ì–­"¶ Å"9m”›}ª.)ªÆWƒ®Ê™QÀû‹ƒÛêAõœ)ï3Õ¯X·|ä;NW˜^”^˜®²ä0^¡4bƒÒ¸]¹ï J#†”Ê}X·î#oŞñHƒòÌkxäòrë²@›m{>èpTèÇ6}"€A›ü5í]ëKXÀ6$,ş¸×½)mëK]û•CS<nHXœ4¯vÚFN«yVñmÅW¹‡â\Z±6½æ1õab‚SqöİqtMRÓ/ò–÷¿²ÿ—ä©ŞàÕ¦Ö •ªÔÀSO‘½Tßòó¹¥ÔĞò“ÖşõÑ‘„„<ªÎt»¥İånİr:¤¥uuX{åXsú]1'§eâ¸Lì™‰ôÅ{ûba_L.B}ŞV„½‹p¾¼Z&¥2R‹ì—ùRlå¢¾™,RÒ‡‡;¤€8<Ì  ¤€;=P—·z²¡Z«|ì-ÚŠâ˜Ôµ  &·D¾4d·	Y‰S=0ìl/’íŠUÇEê_ìÎÍˆUü¾H®~öˆ÷	ïçw4ö™~×ıkGßZ[wİ‰wÿòqÆ…«®ê7÷Á½ÏÌZ3ı=ü|IäÆÆŞÓo] ¸§Á±fØ•ù¥İ}kn~íO~cåêM÷,ñQ1¢xH¯¬.këÂ«;øï½äÑ–wÊ¦t¯ÙmPtroÛ.ìu2V˜ËÇ6d†,:”q‹F	«ÂÀ #õ%ƒÎtî§açZßû#{}×®]»€r°ğ¦°Ìàƒ"h•{ü¹İ²s³%HĞ³8«sçÀşp^áşpA¹sCgbîìëÜĞyEçu£EÈCÈ³äÕåÍË[™w:O”iç¼ÎyÌht¼62–úv˜ÙÛ©
+Ôcûª3Áœvk·¶ $´ênãN	lºö'ômYªHÙ;ÏÏ—ImIŞ|MÙúÚ›Ê³/íÅò×öâğ=ã6*7mT>Ù¸	36mÂì-‹–ßñøàú¾›n~ùğÛ¯œ©™éŸuuÃò:O¸‡¼ò–ï}]Ù¾w¦7mR>yz“òÉÆ˜ùÌ£Ï¬Ì™òÅw>ıKúÀOğ¶O!KH«ğ Üd6çÒt]Ç©.êêš§ët<œä1;Ë’üú¤²$lÉ™y<Ü¡€ÊÊÀf3Û>Û“‡+óp^ÖåaM–ça(/.ÇN°ã
+ÆÎ"óñ“ •&0O‰vy1½]¢aØ± 7ËC§Ùw>öèöÒáı‡ËXÖ5®z05`÷tË4œ±A«Ç6,¾e$Y2kò¬Û	ë3üªŞWë¯Ÿ}ÇÊ^ÒÓÕWÜ?ı–aW0±ßs€À5°ŒùéfÀ
+Å!¿ ‰hÖ'Yõh•˜İ&…S•F3Í£Óiw…˜×¦8HTda!¹ƒôø½EÙ‚#6*[pdëİJËŸV¶áğexc	Öû”¥Êª´„Ë¸O3ò#2@QGÉ³a ÏAÉœ¶C¥Yê¡Xº£eı²7ß×º7û³ˆ` ÖnNtpwè*tíÜÙß%=77Ø%dz$)³°E~fnF0c8«`ØœéË$G³²,YD¦™Á¬¬`&ı­ùàæóA›Úl¶·
+³Åu‰Öà¨gÒT¯:vÊy#k° Ç11”ûhÀàò§Œút]õğ¦å#ÿã¬øË•-¹sú¤¹våIR>°Lyo”JOœ6³ÛE½f7Ü8š,M´›Uıİ~®-6·ÑqdWÌgZNÈi›b²‡:·†©’Í[Ã2wl¢RLíd÷™èo‰ìÚtË-›=ûé'<yê «¦°9·>µñæ›7>uëÕS®¿êªë§Õ=“½®ú«*01Q$IaÔb5š ­ÍŞC:Ôâ,ø<a½pX`÷<ï/Ñ!@;¿[šc<îR†ÜwÇ=ËÊÍ¸d.VnYÕZ±j t&Ar·°¼py¨ƒ)))Rtp¤¦é’MV«şxØú&CòWa8š(Ğ±·[ºåÛ;öÅ¢¾¬ÍÇZñ5N›PqåU*¤{LO46<ğòmµ|‰'¼ûªu½ú4@š6îM÷/;®Ë /éHî–AÌó$'‹B†ÉæóI¯z‹àF¿¦$ÓñğÆ¤]Io'Ñ’¤aI„&%Ñ<O‰g˜‡š<ib`ÜMÍñpêgT:ÎÅÜĞ§ç]+©^ªT×k±ã‰ñî¶µ3hëz¿êh©°ûo{_#w=º\ùÂ¿Ğ¶aı+——»êÊ#Å¦ÇîZ=zlåõÔ;kŞ—¦…«İXvEŸ¥Woœ}ëÄÁ79ˆ< ÊØ6<­Ús§‡ş-7·²XöÑ!eÛæ@_šòšÇRe»‘õ‚0&TàÖë­†„ ı>·˜"–‡S\syØáÒ£¼ÇüxØ{üñ£æí!¾”Û,´íqúëüÉ»ÄÅÿµ.}~Ú­óîkÎ¼,9íŠüÊj^ÿZÿ}ÊáËÖ‹—ly’Ô·¾z Ôè_»·s¶’
+åÊ/ô'¡ÌÜ  š	¢¨§«N‡ÀLTDÈ–,°çµ“İq›NkÀªÍÈt'U÷ÑŒ{ß|–ï¯ŸŠ_?¥¯¾Ğ´i÷$.«ø'¾Š;È#VQÑÀ°ªa:4 ­*Ôd·*CñK °ÁàPf‹%Édb Ìa7„,\”b±$¢[ö“rRCêH„ì!"ÕB·_O9xŞZÜtİ‘®	©»2tEAîæKåïÅéİ²î¿''éŠiÇo}M‡!;jép­.å$HîPÏf—„ü²$éDÜ©"ğ^ŒŠŸÈx<aVrßŠš—bÕWrÜÄĞª+,ânøÊßûÓ»s?$Áiä†Å³µ¦MÓèe/YBŞRíf®]·›¡ãa ~ZN©L)wVw<,v*n>“çÁ¨…K¯“şD³ò^dëÆmÛŸÁÊ*§Ü0®òºéã˜íåwö¿úÊ~å¶Gî^°fÕ²Å ïïT2Zšôz+òıOÿS•If!O˜.4h«â%÷÷ ÷yD'Æ/ÈŸ7â%òhù´‰_mÄaËÒp:Îò)ËJ”ûÛ.£QèıDÜ+4Z²aî7`é¨SÈ¯ $Ò]­‡x<€xó…ñVÌ¢?¶‚Î¡dbÎ3O74îæªëc‘æå"1{ ¤7µ°ÊZØ-ŸÍAjYËx.Ô`é¨•báæ®¼=îV6°ÑêœÎ€êPwY’üééàñ$sãñÌ€-UJe¤¯­Ì0Óó¾¹òRKRÉôÔC©$ÕŸ‰Uš‡Ò¸C+MÔ“`‰Õ¶Ğuï‹%Ø‹‚Iº˜*Í:…wç¨~åÅ¾º”–FÌx½à7]u±×÷ïçïªúOÛ²!“·—Ü‡€g±Z…lbÛı¼Ùædº¬k!p¸T~ ‘ğ4Ö«­x‚D|¥ß5 à
+™ˆÍ&d7¸­çKˆãëÄ6ü á«•J!)Ùã‹ÛÛğ3ğ H	™©š€r£w»–BMr>Í¹x²ÁBÈ	¥Q’M)q÷pã@7^ã®w“÷D7¡ZU&²°J
+µùêĞmT×JLõ&vj¥Ì*›LÁ ƒ¤$`ÔéÒœL6V‡Í2JT–A°HÜ¿‘@™Lç]Ÿ”´ù‰N'5ëÅÅ1~Õªùä²rŸ\ça@‡étë'oí#[Ø­2y©u õ·¤?˜ªÁÏ4×\1§Gìï%­wE£0EÊıWÙ²![/·¡ ÆØ¡W‡‹œïsÕG“Úçbã¤D'h4
+Ù\-İÔl²€¾İ8¹0jãyc'£9 _iÃ÷ã­Z&“¶]ÑSÍ6ã%ËØŞ–&ç @ZH&jÍZvE¿k¶$iÉ´îçéd Ü¦Ö-À*ÊÖ©%1&d£°+úZ³ IcËH|_©ö&Ÿdº8ra4}€L•6\ÿ»êèEA²Qz¤İ;è Hwq{~ÆßÔÑKÔÚ”Pµ±êHŠùì2F†rœIî$Ñîv›Ğ ÒR]&>¦ìf@?pƒ»:l°[u˜PmœW±´ó{Şsš=ÈızY5_,Í¿—SuraKzDóî¥yúz„=óòµF¹^õôEÓI÷òÅı}‘eÜÙ—Rüˆb[ˆñ>üêüî›ßOhó“’„ltİÁ˜Ğöªßµíbco‡¶Fy½B6IİıksªO‚vmzaÉŠ­Q<7ËÛ! _iÃ÷ã‘Øš“š*d“t–î=_B_'¶áğµ„:eîŠşÔœ™É:moK“jc•ª©(ñíŠF›}iZ²xgó3Ÿ3«·udzQ" z‰šŒ C$çÍhïøKÆ"İ2êd\•õSp<Ÿª<‰5“”uÊZ¼
+'bÍdeVOU6(ë§âå1  peôáŒğ"8 2a`(àñ§96H“`ÈÎò¹S2¸kc)Õa³s0™4¶q!ê¥ñ¬u¢l+w ã.
+ê\´{Gt nÌdÄèü¼qö«ooáş_şõôœ=û7¿>±µ÷mÍgPh1_G^¿}ûÊ/š+ºUÿØƒƒ¹˜›îûñUå•c+[©Ä.hÿê:ªBù+okÕÏ…Úÿ=ccf™¶–8B6:wE¿ivz˜¹]ÿ\˜Æ‡?ÄÖ+Æ‘åpÇ$â+mø~|(6N!S Åq¾„6üímøøx|­âµ"èÙUš=.-ÑùµJ=¯Ö«O¬^‡cõ’…l”¯Lj«W‚/!¸ G(Õ®E]èÀíìÕa=÷x£ô¢DE.Wå¹99ztpÕ	?)áä„ÚÜÛ|7ëã5ÊÄİ»ñ¾SHölØÀ}	=ü49:oßtåC¡±å³÷>ĞºçQn^=ÉV ÜºÂgËõtıF#@Ç\?+fzĞéAÑƒ9FL1"÷pã<ÆLšé-g‚ßIen%^ÄaAT~Tµm‘1¿5Õq¡®û<‹X£wó0nG“ÙÆ™aÕ»GœVÅ·.¶âå¦gêH÷õÇM5a\eq^…÷Ş¸zIó÷ß¼úùŒaE#òwaÇ5ì¶!­Óèa¡I½zÌ}ym—ü‘CªÖ?ÙBıòë'®˜\Ö--»w±ÿvPÇ‡z†W8nË†êŞÚ_ı¨géÖÍšM
+vEh.(¤)íÆà…inÁ‘±u‹§éfèÖ= ÿ½8>YÓÊ((°f“"®¸.êvÉ2^iKó8ü”P¯^»¢Çš{•^2ÍÜ¶z]ßÇ×.Š’Â]Ñ?5µdçÇ®šN¬o+k-Jñtİ»ótE»¢o·U1–(ô‹÷²¡ĞºCoh
+OëĞ¡‹Í˜Ñ½7¢«{÷B[a¶N’²mÙ}./ìX6¢ƒ3ô™™=ËÃ™W§áa—Ëì/ICsÚô4b ii~JyØo1ç—‡Í.=+ŸÒá<êtz—êO1á@_»ƒĞm²ëâX«ó„º­¸vªãŸâôÓ¸ºİaiw~²3K;­ú ÍÒNyÒ·Éš¥±cÊîIÃŞ½ïéMÿñôô9wÎ0½Ü—Ÿ½ö–ãøiKùë÷,ëW[5éá1ägóÊ÷‹ø/ëó¯jç@qéÍ›×l‰0Ö{ÁôòqVÌ\²¤õ5ÑÂë®3!üèè7yì™ÇbãSÊÏÛ²¡4Fûc´_§)&]Vbß{Ô1YÇŸjã%%ÅšM¼»¢Ç›½ŒÖ‹ÆKbš[°.6yš”‘)iñ‰øïÅñÉBuLòı×ëµf¿äO9_BşÜ¶ü¯‡_â4?¯%X‡T-EÍ¯Àíjş	`¡ÿúÍgUi¾½Ò| H^ş-%1šÏš¬¤=Í÷ ™*¼Ç%ß‹Ó|ÖlÔ“‹h>	€
+sãøpıÇm4Ÿ•Ó|ä4?SÓQøNÕ3×‡2SÍ“Şæt$Ù“Air§Î6“SÏv»Yô•‡¥rEnŸâ×éË2İ”l†*SÑ ²Ì Yç?4£îš30MÓ§¹yTµ3îâõP‡¦pÉî(ewºÜYftÙÒĞBOvßüòË©Eão¼Cyïo7Şó—ò±X€ï=³å×>ËÖ>¶jåª'p ùç¥÷G3ï™9~Ì•™ıæ×[«\ÿ¨œSş‰?íyvËîW·oUÛi) ıQ]«†³ókoY>.0SÈÌ7%'ô™zîHí³±±zT«n·5›xøXõxÅötÙ…inÁÉ±±ÊÓ¸¹SÄv´¢†ÿ^Ÿ,„Ó±±êñX³I¦¹E¸¨N¯´á?ÿŠá«•ò›ü¹—ÀŸÛVŸëál|ló”x™7YL$)\GY&»YÕàªĞeÔ` Ib"&IŞ©\"&*±—e#l	ÃuH×åÏU9íœ Ÿši:CT¢øÙÆÖ—è—­/n¤¯îÜ©<yß}JÃÎ*í˜ıkfãÀ)w„†º:xívğêAŸHszüFyØl´POyX¤®ÓêA£•ª íèQ$şdê &Ë31?Ÿt¡¡Ì%©Î8_¬SIÎBKŒâÔig,âYÅÙ¿¿~KíÓ»®Á¯ö×W>ıìğWÜJÚ€EO.i}Îƒ_ô_úø2íÙÄY,>Nò+§î¿çtã¸Ö?Wşô®Q¤Ûp.sZ=Iÿ¡›
+Qk'5Sš©»¢'›S}É¦vcíÂ4·à˜-ÇÓx½â	ñß‹ã“…pJ+#5Õšé»¢-ÍéŞK–1·­Œëá‡8©.¦èÛıg³/MKv~¯VíµÕº‹Ío¬nnk6º{¸Sd["¹˜Ÿ£€Ò¡oÈ—Êìv‡Óà0dì^f–L&_yØä’<üÈ wS×ş°|½i?ïWÃÚvfÉ-nf¢z6.vZ|ĞvFN8À½j¨ã>–£ûâ'äÚŞknÛ{]/ÅÛC€èåt·7Y¶%´ ìÀ[¸ıêC¯j¾ƒÍàÌTm?ÛD53OÍpT³½)1:”·2Á–4gZûô=?ğÒZÕ„Ô›f®š&$ i³Õ¬@ÛL@kâ‰/¶=o$~éó±—:{Á™ä½ÍêÉxÕghôgİSÂRp€ŸËB; O²Ù,F·İîhzF’µ:œ”d78ìÕa‡Í`¬¨ä­KŒ8«ÃÄŞ	'Î/ş:zYƒšâ6]øAã"Ï½²
+Š¬ÙÚ'Xè‰ş+”W”X‡¥Ó¦ÒûZ>%'Z“éÕç¦è;ÈüSuz¼‡áÕ8Ç„­blS¾P~RÎ(€º–Ô¨çm³ îL·œŞ\ ¯¨Óe''{-´K×\î$,7Wv»;—‡İ§Án²w(Û-¦ ùÜ?È)ç‰(ŠòE$fÛéâÜwÇæ¶ââö>AüÅ¸_wtNAÿR
+j$ëÚæ&DùaÎíÊ÷?×ú#&ß|'2ü´¥dñº'ïÇË6¬¤º¼‡ìÜÉOÊ¢“·mk}ÍÓñãÃG>P®9Œ¡˜+‘hTóSªòº=T4ëcûp×®B6æÛó{‰{˜zvR]·F«{Ş"x6†Ÿ“cÍÆ.Ğ%ØnÏÓxÜím<nNE$Ëœ76É ±¹môœêGL­Óå±:õŒ•¡×s£ÕhÃÄ2ÔsjªbuZ«­¥z½5»¢gš6Î¯¥€°GJ_¶€ú‡:A¯·$N—[6%™ÊÃbR’Şn'ÃÃf{ƒ}«Úõ—Û^(Xã½É{ÌŒA]€³(X¤H¥‚½û„ì)ï%Qš•‡¼¦ù¸gX©à7_5~ÑİgßºÜıĞÃÚw˜€m#k„÷@†ôY–¸Ï/z”VW"ä%nŞœ	tè…ö Y3õcòÍ”ï°7›690éâ¼ A¢5è‘^*¯ -òg8qÇï¦|C>Ê¶aÏM]‚l%q‹õªÿªP^\‡/›—…OsC4ŸLd*Óu.sS:Œ6Ğut7=E%ªjí¸z_¥?ÿ¿{ymíòåµ×®¸ahÏâ¡W÷îuµppİÒeµ=‡íY4b¸j‹ğ-ÛFv¯€›°PÔ™,{“IXös×ˆüÀåî'òLT¦&mEX‚Ç’qY2ÎIÆ©ÉX™Œƒ’±8s’Ñ›Œr2şœŒ_'ãÉ¸&ïMÆYÉ81G$c¿d,HÆŒd´%#IÆÉ?&ãÉø~2îIÆH2>™Œ÷%ã¼dœO0 »'cf2º’‘%ãiÿ°Š¿=?_- 6G'ci2öˆ É¨åÿn2¾‘ŒÍÉ¸!^¡[’q’Šß/1?ıÉhQ…fNÆcjŞPë´!W«eÔ%cM2–'Ô	Ô
+#¯OÆ•	µÇdñâ×'#Y©¾_]2–$c^2ú’Ñœ|~ë©¾ğ€Ê¥ì¡«ÿËöş›‡Ü|º@MÕïfj¼LÜô$£+Q?)Ö—:`AQ0	ñäe#‡^é+ê!Wò‡—ä:°C­uœµ–mËê’Õ·xÒÔË³ºdİºz6  ¾Îf’«B·P&pŸpfôa	C–‡%8·âQ0”S†š¹ÌFÀZ˜îd3ñõE‹b>ñu	âyÕ½Èÿ(/	ÎçÕ@wa™êS1²	²¬0èA·¶R€M•úç´su£Ë:²ræT‡é®û&ÜßÑ¯_œ—À$É —tk+%º©Rº0/Œ*ˆeÚçŸØé©+BoSÍK9‹eğºöÍÇ¶¼è¦J´¶Ryí²Êº(« ú!©×5]Û`º‹TÇ¾SrU(Ûl·ëş¢²U/ëUo][	 7ë7U23İêÄuNÕ—{0ş‰ hï?>noŒô¶+|0ó²ÛÆW´şoêú/¼óõx+]T‹^oe&Ir’M¶ñºØ¬k+)5ÙL›*%Û_—¶Ú®HuF—9ã+ö*ÏÇ›·ê¾Aï|}oå¶¶QÎ’jx=VŸ,µ>jk'ÙlNG¼"’Íj[[©³¶U'/¡:óV½ç•ö—¬O 7±>Áêû¯\xçë+c]…°8zıNõıSòd	@'2ş}Q½áµ°N¿7,°×Â:aoXyü¿9mfš	<Ò 
+¤YN²ÈUïRÖcMê‡©8~sn9›éİ†³•…i4ÿ(Ñzú­p œÜ?ŠQ’Ñdæß‘±#:¬”Y¸Ìe³¿6ÛöVšŒ¯…Í¦½•fôZ˜éöV|-ÌÈŞJêg‡Õ¯¦Å«äÆubîØhW+‹Ú³œYö€](ìøå!œbÙjÁ©Êƒ))8EyÈ²Õ¢<ˆSSè7m•õ*;”¼Ò”…8;mƒ¯„á¸ŠÜN_øùü0šVPšO	5Ë(C^ÕÁ˜Õrû½Üş‡[f<ñdİ¬?’¦Ÿª¯_÷„J»¢@ü>Éº†\üÛßœw‘¨Ñ$ ,ÉV2Ô#í<¨ªvÌ>˜ƒØioËÎ=-Ï¿ş±úĞAQô'İÛÂ2 mßw.ÁøE(Ú5Ë—õ|% ¡H}¾NL¥—]ş|e¨È¢3é¯t™ŠLC®îŞG¸W÷•½í÷²§æìg¤î¬Ìè¶#œa×'ï3ıÎJfßfŒP°Í‚S‡`Õ4‹‡`ÎtÁ_‡àCpÿ|i><çÁI*B!˜<å!8õ×!øıütn‚k†àœ!8MÅè­b†`ëüh¾£"<:—Åq*ãÅxÕb¾W‹IÌ¤xf«eôüu~­FïPk±dHh†‡`éìÜ>ùKCğÙ!ˆ«ÕšÖÁÁC°DÅ0Áãj%"C¬‚+†`İ¬‚¡!è‚0ä¼K£„]³ú¿óãûäyç½±ok·ı-Cšu&ÿûÒ°5v«y`ø­Ol¿ñëy>ÿøvËCkV<´jõ«°kÿa#K<ˆt¸è¶^ôHh4îÜŞüâËÛŸoV¼gö­÷ÎŸsû‡=Áï.z°ŒWí˜²B.Q¨^æÆÉíl“Ï»ßm³HÆ—´>@Ã22"'•q×õ"ÏSÌ§‹"ÛçÙf…1ã§áçM • 2Qhló+LT/Üq¿Â¼#”3«éş©*uİ¿˜¨^(V¿Ü&(ö•W*ê¨ÓÉ²”J|xößÊÇzìCŞÜµk8	´~6£.ÊŸs1ßÄÑ“l´°r )4Õß±#ëìËÌL²6}R²ÇCYËí’a±Z†‡;«G€²ùA®ã
+ã:£`uÌSÍ3RÙò™­>kµ•ò`…u«•™­+¬Ä@­Ü;Yj}8Ù©ÓA}˜ê’Û‰ñb>ƒ)Æ·;(”ğ!ÛøÆÔ>Â‘ÕæÄ”Š‚‹EA[Â!/]º.ŸtK×¥w@ò\íì¤:|¼å£ÖÏtšMéúNş_>ŞúqÚIs®_ş _í¤\K¾ÑI¹Áõäµ•InDYãĞÑˆç6=’TY»ååOßNÙ¯?ÏÛşer›.Yı–‚†…rœ.“^o°ØíMMsx’=
+›€Ëï*wÍs1êtVc2…õUT\â“ÿÜšÒÌ7Áfõó6ªS«æ53İ)>*¾¾áCç½zÔ|ÕÆ]ç:İ%‹ÉmdšËßú>ög‡µõEªk=xÙ|¬åWòPëòĞôé /á«x'y(BM¦ªD'Á9[£2Û¾…mW¿Š¯~ò‰êßX8Klâi ;äF&êÖ‘­d7¡dO5Š­W•r°mÇÊ*º¸^ùÓ¡„³¥}¡ñ°eÂY<ı?ÉÇ^Xt
+Ü¸öOÂYÇiÅègá,Y#* C÷PšÆƒhĞÓuÒV‰Hórºr“Ä”ƒUÅ—d‹Î³Çb’cÉÇévyç‡¼oL%½aİJ	×.çx=Ï³Ê/d•…³§œK–8ù™á,+nÿ?=³#œUÏì`ô[á,Ù¡ÁƒB—9œÎdI–=këû7¬íÅ¬‘vïÿ€9Î^Ài}$ùáû†vìQmîóø$şŞıú?ÛÕuî©Öûõ×ë> 	ˆšBM§ë«…şúæsO½M}ìyÛOßG8È¯Hq¼@>„1¬dV.]FC.€)¤	Hi¤³ÍPKŠai‚JR/ñ´¬ÊY=¬eõ0™ÕÃPVy¬F°z˜Âêa*«‡0«‡šş.¶®ãù¨a=Œ”|ğ„0˜06
+û`Š°6òkö%l‹a2¿'Åğ
+ğ«Ïëa£Ø¤âòø	ÂèX¨¥«b_BWa<.ŒY·da4tFCö%\AŠá¾ØûZèk gõÑÏI\ÏêÕwŸÏ@Gó{Ri±ëå¸á¾èŸÀbÜ‹Å&XÈêaa,~>	PLŠÛİÃ tÂ¾h+p3 \C6CqÀN²Í0N­KüÈêa«‡^¬f°ú¨ÂqX=Ô“&è"|>ò3¤°z¸Fmÿ&¨äÏØ´è)„ÛX-\Aš 3i/i‚2¶–²«¡œ4Á?IÜJš œœ/O/n†1Ä¾„»cí~H µ/Fk}R2)†å¤8ú.)æïIñ~¸ØfX.Ã•j_$Âhèëßå±v¿tiĞÁùû8bĞ“bX@Š£ï‘bbí¿4¶‡Z¸‚}	¹¬–´Şõ°˜‡ü]y¾…û`
+ƒndßÃhşş¼¬Ø¸óŸB>9şo…j¾õ°<–¯Gwi F¢ïj ãpøø¼ Å°Wøšè2XÄçî‹>¬–ê;.æó÷Ae,¼“‡d”öœlVCîK¬ì¥†ìHTöÃùµÚ¯Z}Û…Àİ2­ş|ÄÂÆXØS— Å¿ò9«Î›/¡+ğÅïùxásé¿Õù¾/ÚªÎw­ÕyÏçŞ…!ŸÇÜP´‚C©ï:_ñ5ôÂ>¨Lèë$ñ6g¸º®ÍRû;,
+0
+öeô-V{Ô>T@¯3ªëÅbRâı€ûÀÁ ’t~>¢‡ùÚ¡Î“O`‚P£Åa‚0F‹28øØŒÍ·‰`ûn èkG¼Ä#ğ¸P	÷çÔ:>.vÕŞ™}	}ù–Ï¾Tß½”ƒ*6N]—Çòµ˜>]éWÉË!ˆĞ¡ğÛ3ù o‚ò>Ø(ÕÂh©A[géZXÌŸé–ÃF1Æç)~€û¢‹âcà¿í£Ø|i7ßøzÃçüEó!Ö~7õİÆÁ Ü½/±ÎñtR)ld?j{oëK”s%_.1ÿÛÍWRJŠ£|İ‘Hqôì…õĞÆwt·Â±wœÚöÎïq¢wBzÛ<
+6³`4û ªØ½P›İ.¬ÏoÍ»¶zÄÆ;y'ºI¸’ÓÑ|¿Òyàêº®g>¾Sx}À•¼,öGÒõàF«õê,T€+w@l=ù³ğuÛûòıÊ/ÕÆÖÛ;cûçå`HÂ:¬®ÛÂ·0†>eô(LPÈÌ08aıÍfÃxF@ÇN‹·KpxpŒ&Á ò8 ¹	Ì¸îe÷Ãİb,ŠÁBV}BİoPÓ¯Ñb	Œa“Ô}9'Æ`9i?ËU (Æ}ÑÅÄ}÷Eï"ï¨4‚/¶—§°¥0’ÕÄ÷t€™u¯Ú~#¡‹lÜ ö5@e,Ôú-Ë™©ï8î¥] ÒŞp¯úî|®Óí„ÑºŒ–0Zx:ÓéĞYØ>1Ò„«`±`†ÅôHf=áZ¡:r V˜ÀK£ßâ÷0¿‡Nø=¸ÈwPK?ŠşHVERi¸aîƒÜ·¨kSüLšà,ùt'‚`Œ&kÒ¤ö3&L%M$M°4Á±ûş1ºâ+RÛTˆç×O$@iŠ~Jš`m,rÒı–4‹4E¿&M@ÉêèØjÉ.È%ëñºP¬¿HLŒhùò¼ 1oÇ`™<ïè	µ,Ns6ÁâD ]¡í
+nÒ½ Z[ ” ”ç¢ß(? ´> |}
+@áÏÜ Ñ JCo?@4»ÿ$†ûèP	-ˆP @_-ÏèÕ Ñ! ÑÁ 
+ÏËªÑå-Q­<^Vôa€èU1ÜW´ôÜ²\yA«C¼\å‘„:ïİ?Ğú,€ Ê× Ñ?hé£ ”'¢Y ÑZ7(Ï€@Ù ] <}1V	 z%@´@y@YƒSÚ»µº ¢³bùËw–Ê7 Ñ ğ@ô
+ ewì½®Ñ õ ­ÏßsP^P^ˆ¾{Ï¿(”·””d€èµ Ñ1 J€²ƒ4Á¯¤	n&MpšºïáaŒG9ÈÇŠ0biô'±9ú#µE¿¢/‰…+D!úî‹Fâü›…
+¸<FŸ^§m9ÅŸ	 óBÆ&ğ|¿¹Aå=FCq"ÜÌùq+¬âû³J+ó5s=Œ¦« ”ÕÃõœ§P×”õ0š=¢®A:6K‹§Ôuñú6<–KbkÕèÚº)ÜÃØ2˜O?†Ñì4Œ¦!ç)äÃ(§ĞÄNëDªeñõ¦îáÏØ#PÏj@»B±®	RyÈæB¹X#Ø!°ÇÍd c9?F{ÃBd} @4AWö\«óÃSbÌ®ƒZuO«…|ŸFÃMØ1Ğ±7Á%|ØM0ˆî ½:ñ2Ø*3†ï1¼<ºÊ9ÄöŸÅ|ÏRÛ{,gËÎÓejÈûcl¿‡®llö¨üJUŒ&Öñ½Kºl’6ŠG +Û¤âlœP¤†¼ÏC±¾ãé§™_ë®…Tvú«8{`£š.¶v<çx*Î¯ª}î„"Ñ	·¨¼æ÷°Qëu£`£nlGAWSÍƒç7•×GØ5êŞø Ìæûù–³gTÚoŒ0tôèÆfÃrt,fÏ€AmƒiÚş¦îY1~•6A€ïÅâê^âfÀr–·‰Ó`¹ø , º{ÔgË¯'¨{5¯Ò«å;Õ¹SÌÇ)ş¢Ò!0ˆóÔ²ôj=f«ãTàõĞ7ÃL¦€Y,';NİÃğŠğ<,*€1 Q×v+á^ñ	˜#Ì…Û¤áñ4,dG †>~±úwgâ FĞÅCé!˜ Ë…Qbô`_C¼ nÃ˜x¹1z¦œqİŒº®)/D×iĞú@K@Ë4µgÃr!Œå€#6¶æÓoa#½Š·E4J¾‡PO³ZXÆûŸ÷j?l‚ê»Ÿzátfƒ “JËMƒå:6
+y°\öÀFñgX(ŠĞ—å@ ÎG¨¼ï«z•ĞÅC>fx¿é&C7adó±Ãr``,¼M›ø¼ƒ^	úxÈÇy¼®|°)°ŒSu¬ÄêÔÆòŠÏ%NüŞFsrş&!¼¨]ÀN÷´µo,üMuLåãÏ•7»0ŒÕ‘ÏE>Õ9³§­ ŞNma*x¾ºİP©£0Z÷Ôˆ÷Â(aÔ0;ŒÒ½6İ•`à¼€N§Ök2§Á„_¡«pØAŸAñ6‹×3ÎCjû%ä Do€ñ P
+ Pviûv´óyÙÖúsìù8-h™FD¯×â£µ8Å‹¯áğ_k“–_4 ¼ ü¨¿^ƒq1ˆÄÀ÷SÜÃãX#‰Ç“bx1~M%à²ÃBA„~l?Œ ¡„q:Ól!k (€-B1là÷¬:² ”³Ë¡T¸¶PÄŸÓ4(J È6BgÖ÷°Ïa“@ÏÆí‚¹<ğ!…p9³Á–8P|ÈŞƒé/àÎA²*ç	A²:?¦Â6€~øøâë ù|ï£=À¢®³cëç3>ƒ¾ì3¸‚}yºe0†n„şmüDNlVuÎñ½ï- |Ù[P’ ›»†—E§Áìcè¬®ƒ|nÒÖK¡îäcƒ®¶ÃÀ@‡C!ı„>´ºÑ2ğÓ_ ŸŞ]q4\Kæƒ•N‚nä0taNèNg@W:º2äP3t§aèB×Bz\F§CGvœ…Şälô$eĞ›€.T€±T€Şä×,…d)äóxìãÉÏ€*j†*ï”ñPÆâ^ğS3TÒ~ÃñÈ}ÑR??:5ä> T„ŞôèEvÃ~pç¨™ÇEÿI0QeèÇÑàtCô>UÆY}ElŠîcõÑçX}tiŠ>ÎAôWRİ®òCõ°€`"›CÄApîƒ¬:°èÀ–‚¾MfZiB3ŒÉHÌ	rÕùœÖçûõDŸVûD“£v‹íYmü%ŸÃ*_Ù*b´Òå¸/ºJ•5Œƒ”ÁrBd?I¥Ğ@W<¹¼M©j°X9+¹,Å~0û%A¨`÷C%j¾FÍPM“ š
+Ğ‹‘]‡ı¢[q/dP3Øi
+ô¤"T’÷aoKòô!ŸAWòd‘3Ğ•|} >¿çDïP6(o(ï'„5ˆNÓÓÈæ_&Ê&ÏË;ü/e–œîãıt	å…!oóâ÷¤8ú<î‹ŞÎi‰ı«Êr.crÉEZ=ß‹…ğ=‹‹Ã6ÙÎo„ÿ…ÌäÂöK”]ÆÃY±pä’a^J–y‰Pú¯eš£AÑjß—şSxÑ>9ºM.xI9¨ÖW`ˆ­‡\¦3F¥Öi4ò%åãZØí?Äÿ7á3»ıV<)†á¸O¥…^æcè?ôyÖoÆÇå°ÿ!¼°â2Øÿ¶“G_"TyÀq½Œx\v”pPyÆK€ØÌbt7€'â¼åo¸Ìâ
+$x$\=’/z–ƒ¦ã}N D—r fŠ ±UàiÑ³*\J_Ãûá10‹$uİ~Ôıûß€xHº-à‘làÑm‰âüí¿…j0‹Õ éNG…%qˆ~Ë!ŞîñvLàÅ-±µjtœ—óÓşŸöãÿ°_ ú)‡ÿ­÷şwuOMÇˆ-Te{ÖKÖû.Èï‚~â?!Cü'ô‹­©—i=…û¢kp_ôî‹îÇ}Ñ·q_ôVÜ}’GÿÄõ^ô:ğÓë`Lbš‹ÆÁ2˜¯Bì>¦gì"~ƒu¸ÏÒıNxçRí£»Æ‰E¿Õu„qb5ä©²õİà$ 	 â!y€  Ruàª9uıLœˆ~ õD¹ìêj®·åx¬^KÏAÕ½L‹~“ÍÆáNÒƒ LÕWÖÃBr†K€®XCb´¿
+¼l	 çÁ(r„Cti‚
+ÒağiŠîÁÑŠª‡OHg‰•ßÓ:¸‡è`˜K¾‚´î¥7Âò=\GGÀ-ä9J½0‰öƒIt L¦Å0™ö‚Yd\F‡Ãm4&‘³p9ùz¨´)—éş
+=X=$Åä6Ü&€¯ı½b{x²´—Ëa£nØÅw ™yËò-ÂhmÏ” :³u­LVíF«m¨òÿÂIX <ªsÂ@²ìÒğ2×K /‹Yp;º% Ñï¡FÜåâfÈˆ…—‹›aµ¸š@o	ğIh¹0Œ_Ó3Ğ“}L\ßÍğ—‘ÇÛ’ÕBPh†1º#ø°]¤[ôqV=Uıó3P+Ô²Z(QïÀcªíÃ’Á  <ıY ü«ğY¦^_^ø‘‡i÷?}şß @{ G„g`²z}€¹ìˆä¸‘ƒ ºïñqİ÷¸*Ò3 ±#ğ4{&²#°ı·bGğav:s @½”ƒÛ¤iøİ(,ÿ– ÃEÀa"àË"`®X'~ÇBĞ[A¶&1'ô“ Ş` oˆZ?Z@«‡dÜ©¬>úOa4¤ÄèÅrR½­–Ó¦q}Ü'0½:éjÅU:©{6ÒÉ°œËZI\“×? üx˜)†H ”õH¤ò±CçA-.Ğ€¤qàü5—m«<óFè¬òê1=‘WylÎ_7ÀX•×NúÅáb>?ú"Y}Gãñ£/¶ãñ ¨·óõ—àéUÙÀ~¡¦ûV"”´pİE+@KÄ×HÕv(úîƒÛqÜEÆÂõd,”‘‡ TX ]Èúè·4ü¤,ú \Ÿ eçë`Z­ -šF…Ocë¬97–VqkĞ†{p]KË€sß´8÷”ö¼õF/SşĞò+@ëm ­“ Zh ´ôº0/Ü”bp(ò1°—õÀ6FÄB¥Ô¥lÆ`]Ø(£5Ìdc +ÙÈ£õ:7=bO-Ğ9–şêO-pu¬ìD(Å—Æqcxyl³1Pj’X…	åõ õşêZ`Ê…y'äa=F³10†p,M-0lÅ€_÷¤5¼’‰@-jØƒâô¢5\u!üF=.|aÔ¢¶e~Â;óöN‹µs^¬?â}“ë—²Xÿ‹÷i¬Kú\íÿX¿·«€R_?øøÑ éü>På(ÿÆÄ}Ñ½¸/z÷E_‰…{á?ÑÒ1:ìĞoá#ßw÷Çt`ûa#€r  Z |
+ ÕûPLg÷i,ü+€² õ¤ª8û`ïñÏkºÉóÀi6ìòè4øºÅ×$Êã ®a"ôP²®×Çuj1‚ìêö@* ÈF z@(Ë t7 èÖÇ(´Z ©@®_Ï è3ô#ô0ä 7˜rLß $m0Ì§,/X% ë ë [w ÛC ö
+ Ç Î \ Ü€{!€Çà©H$HYà5xgx›Ò¦ ¤è°ÀgğıÀ? }-@Æ€À|€Ài€ìr€tĞù4Àe} .«¸ìe€\?@n9@îZ€./t]WoÈ?Ğ­ à8@p5@÷N …ã zøzD zn(Pü@¯·z¿ĞÇ¯™|\¾ o ä À ú× |àÊN Wt5ÀU€«\uàê C®Z0Lv`x-Àˆ= ×H #û Œ*u`´`t*À˜
+€1*  b5@8`¬`l-@¥ òv€Êµ ã:Œ[PÕ	 j3@Õ€ñ€ñ=ª@5§ T?Pı6@u@Í €	`B.À„€	+&¼0¡`b.ÀÄ
+€‰&¾píl€k7\û	@­ ¶@m@íF€ë, ×}0É0)0©`ÒF€I˜\0…Ãj€)o Lù`j.ÀÔZ€©k¦À´N ÓÆL[
+0íe€i§nğÜp5À·Ü¸qÀïÜ$ÜÔà¦) 7=pÓ€éWÔ… êfÔm ¨û+ÀÀŒÀŒo fúÿï€úÿ¿‡Y€›sÿ`ÀÍKÿ_„=—€Ó ·dş/Cóïğ;ü¿Ãÿp+ Üzõÿ"×à¶î¿Ãïğ;ü¿Ãïğ;ü¿Ãïğ;ü¿Ãïğ;ü¿Ãïğ;üÿÃ<€Û´‡¹€¹µ s#ÜŞàö wTÄàm€;çÜù>@CşoCãéöp× €»V'Àÿî6şÿÌı?„3ÿß{ò‡ßáwø¯a6À={ îM¸wÀ½/,ù;ü¿Ãïğÿ ÷ôˆ#`$ŒX Æ„³~ÖÀ%~W¤ƒŒ%€X£°o,ì‡!p€¯ÀøÀ‡½!ˆ½`ö„ ‡ê Á§ş]‡,Ô„{Zqk+B+ê‡Cÿ9ü©¼“ïÇÒN¾”^æ;]šã«>ÕpŠ˜O;U}jÅ©­§ÃWÇ;ø¾ü¢ÔgşC_”º|Ÿ+õ:vôØ©c4t,Ø£ôX©Ç÷÷¢¾ğ›Q'Ë¾õ]Œúö›oF(ƒQ_CÔ÷éåGGE:ê³Ëé¨OhÔg>â;BÔ?¡?y¼¥‡öâ+{úø^+Ïö½üj'_ô,ßU·kŞ.Ê¿îİe+(õí,Ù9lçô;×íÜºSçÙuÛ×ol§æí¸òyŒ<æçQ2?WòÜ©çè¼ÈÊ‰DöDGhŞÖ’­dı³‘gÉg?Kò6—l&ëÁ=M‡›È°M+6‘¼MÓ7íŞİÄÖ>šé+§¯ÁİkpMišïÕnŸyµouÃê«£«…üU¡UdŞ*¬[1oY¹÷¬8¼‚[Z½túRzoiÔ·îœw7ß¬ú_}y¶oúM}|7•úRĞ3*9è¥ÒQ"újÊ³}ÕåÙ¾q¥İ|•cË|cK»ùì¶QÒQ¬€º¢‘ö¡WÓèíT85<ªNBÃ{–††gu*=TƒJı¾²ÒBß•¥…¾­¥x´ôT)™WŠ®ç(+šGY
+Ì£Â(ôùÌ%æjsƒ™™Íyæaæéææ£æ¨YWbn0Ÿ2Óé€Ã ç¹PÀ]¸rÛÈkrrïÒEGèÊ+#¸0’uÿ>6".ŒÀ¨±•Û—‡ïY¶ú¥\S©IÔ^S	ñ‹y×TD,iÛ\Ğ/\?«~ÖÍÜÏ|j0+'§¾_!¿ËÑâÔ+Ì©Ï_?«>sfİõ9õ³°¾~ÔÏšU?«Ç××Ïª¯‡úúœúzÌÌúœXşm9ÍÊÉ_Ÿ9ãëgiEÔ×¯¯¯ÇúúúXqñğÿ YÏ»
+endstream
+endobj
+11 0 obj
+<< /Title <FEFF00440042002000410075006400690074006F00720020002D002000520065006C0061007400F300720069006F0020007400E90063006E00690063006F0020002D002000730074006100670069006E0067002D0065007200700020002D00200065007800650063007500E700E3006F002000300030003000300030003000300030> /Creator (DB Auditor) /Producer (DB Auditor) >>
+endobj
+12 0 obj
+<< /Type /Metadata /Subtype /XML /Length 983 >>
+stream
+<?xpacket begin="ï»¿" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:pdf="http://ns.adobe.com/pdf/1.3/" xmlns:xmp="http://ns.adobe.com/xap/1.0/"><dc:title><rdf:Alt><rdf:li xml:lang="x-default">&#x44;&#x42;&#x20;&#x41;&#x75;&#x64;&#x69;&#x74;&#x6F;&#x72;&#x20;&#x2D;&#x20;&#x52;&#x65;&#x6C;&#x61;&#x74;&#xF3;&#x72;&#x69;&#x6F;&#x20;&#x74;&#xE9;&#x63;&#x6E;&#x69;&#x63;&#x6F;&#x20;&#x2D;&#x20;&#x73;&#x74;&#x61;&#x67;&#x69;&#x6E;&#x67;&#x2D;&#x65;&#x72;&#x70;&#x20;&#x2D;&#x20;&#x65;&#x78;&#x65;&#x63;&#x75;&#xE7;&#xE3;&#x6F;&#x20;&#x30;&#x30;&#x30;&#x30;&#x30;&#x30;&#x30;&#x30;</rdf:li></rdf:Alt></dc:title><dc:language><rdf:Bag><rdf:li>pt-BR</rdf:li></rdf:Bag></dc:language><pdf:Producer>DB Auditor</pdf:Producer><xmp:CreatorTool>DB Auditor</xmp:CreatorTool></rdf:Description></rdf:RDF></x:xmpmeta><?xpacket end="r"?>
+endstream
+endobj
+13 0 obj
+<< /Type /StructTreeRoot /K 15 0 R /ParentTree 14 0 R /ParentTreeNextKey 3 >>
+endobj
+14 0 obj
+<< /Nums [0 [16 0 R 17 0 R 18 0 R 19 0 R 20 0 R 21 0 R 22 0 R 23 0 R 24 0 R 25 0 R 26 0 R 26 0 R 27 0 R 28 0 R 29 0 R 30 0 R 31 0 R 32 0 R 33 0 R 34 0 R 35 0 R 36 0 R 37 0 R 38 0 R 39 0 R 40 0 R 41 0 R 42 0 R 42 0 R 43 0 R 44 0 R 44 0 R 45 0 R 46 0 R 47 0 R 47 0 R 48 0 R 48 0 R 48 0 R 49 0 R 50 0 R 50 0 R 50 0 R 51 0 R] 1 [52 0 R 52 0 R 52 0 R 53 0 R 53 0 R 53 0 R 54 0 R 54 0 R 54 0 R 55 0 R 55 0 R 56 0 R 57 0 R 57 0 R 58 0 R 58 0 R 59 0 R 59 0 R 60 0 R 61 0 R 61 0 R 61 0 R 62 0 R 62 0 R 63 0 R 64 0 R 64 0 R 65 0 R 66 0 R 67 0 R 68 0 R 69 0 R 70 0 R 71 0 R 72 0 R 72 0 R 73 0 R 74 0 R 75 0 R 75 0 R 76 0 R 77 0 R 77 0 R 78 0 R 79 0 R 80 0 R 81 0 R 82 0 R 82 0 R 83 0 R 83 0 R 84 0 R] 2 [85 0 R 86 0 R 86 0 R 87 0 R 87 0 R 88 0 R 88 0 R 89 0 R 89 0 R 90 0 R 90 0 R 91 0 R 91 0 R 92 0 R 93 0 R 93 0 R 94 0 R 95 0 R 95 0 R 96 0 R 97 0 R 97 0 R 98 0 R 99 0 R 99 0 R 100 0 R 100 0 R 100 0 R 100 0 R 101 0 R 101 0 R 101 0 R 102 0 R 102 0 R 102 0 R 103 0 R 103 0 R 104 0 R 104 0 R 105 0 R 106 0 R 107 0 R 108 0 R 109 0 R]] >>
+endobj
+15 0 obj
+<< /Type /StructElem /S /Document /P 13 0 R /K [16 0 R 17 0 R 18 0 R 19 0 R 20 0 R 21 0 R 22 0 R 23 0 R 24 0 R 25 0 R 26 0 R 27 0 R 28 0 R 29 0 R 30 0 R 31 0 R 32 0 R 33 0 R 34 0 R 35 0 R 36 0 R 37 0 R 38 0 R 39 0 R 40 0 R 41 0 R 42 0 R 43 0 R 44 0 R 45 0 R 46 0 R 47 0 R 48 0 R 49 0 R 50 0 R 51 0 R 52 0 R 53 0 R 54 0 R 55 0 R 56 0 R 57 0 R 58 0 R 59 0 R 60 0 R 61 0 R 62 0 R 63 0 R 64 0 R 65 0 R 66 0 R 67 0 R 68 0 R 69 0 R 70 0 R 71 0 R 72 0 R 73 0 R 74 0 R 75 0 R 76 0 R 77 0 R 78 0 R 79 0 R 80 0 R 81 0 R 82 0 R 83 0 R 84 0 R 85 0 R 86 0 R 87 0 R 88 0 R 89 0 R 90 0 R 91 0 R 92 0 R 93 0 R 94 0 R 95 0 R 96 0 R 97 0 R 98 0 R 99 0 R 100 0 R 101 0 R 102 0 R 103 0 R 104 0 R 105 0 R 106 0 R 107 0 R 108 0 R 109 0 R] >>
+endobj
+16 0 obj
+<< /Type /StructElem /S /H1 /P 15 0 R /Pg 4 0 R /K [0] >>
+endobj
+17 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [1] >>
+endobj
+18 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [2] >>
+endobj
+19 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [3] >>
+endobj
+20 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [4] >>
+endobj
+21 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [5] >>
+endobj
+22 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [6] >>
+endobj
+23 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [7] >>
+endobj
+24 0 obj
+<< /Type /StructElem /S /H2 /P 15 0 R /Pg 4 0 R /K [8] >>
+endobj
+25 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [9] >>
+endobj
+26 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [10 11] >>
+endobj
+27 0 obj
+<< /Type /StructElem /S /H3 /P 15 0 R /Pg 4 0 R /K [12] >>
+endobj
+28 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [13] >>
+endobj
+29 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [14] >>
+endobj
+30 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [15] >>
+endobj
+31 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [16] >>
+endobj
+32 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [17] >>
+endobj
+33 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [18] >>
+endobj
+34 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [19] >>
+endobj
+35 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [20] >>
+endobj
+36 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [21] >>
+endobj
+37 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [22] >>
+endobj
+38 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [23] >>
+endobj
+39 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [24] >>
+endobj
+40 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [25] >>
+endobj
+41 0 obj
+<< /Type /StructElem /S /H2 /P 15 0 R /Pg 4 0 R /K [26] >>
+endobj
+42 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [27 28] >>
+endobj
+43 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [29] >>
+endobj
+44 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [30 31] >>
+endobj
+45 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [32] >>
+endobj
+46 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [33] >>
+endobj
+47 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [34 35] >>
+endobj
+48 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [36 37 38] >>
+endobj
+49 0 obj
+<< /Type /StructElem /S /H2 /P 15 0 R /Pg 4 0 R /K [39] >>
+endobj
+50 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 4 0 R /K [40 41 42] >>
+endobj
+51 0 obj
+<< /Type /StructElem /S /H3 /P 15 0 R /Pg 4 0 R /K [43] >>
+endobj
+52 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [0 1 2] >>
+endobj
+53 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [3 4 5] >>
+endobj
+54 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [6 7 8] >>
+endobj
+55 0 obj
+<< /Type /StructElem /S /H3 /P 15 0 R /Pg 5 0 R /K [9 10] >>
+endobj
+56 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [11] >>
+endobj
+57 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [12 13] >>
+endobj
+58 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [14 15] >>
+endobj
+59 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [16 17] >>
+endobj
+60 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [18] >>
+endobj
+61 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [19 20 21] >>
+endobj
+62 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [22 23] >>
+endobj
+63 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [24] >>
+endobj
+64 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [25 26] >>
+endobj
+65 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [27] >>
+endobj
+66 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [28] >>
+endobj
+67 0 obj
+<< /Type /StructElem /S /H3 /P 15 0 R /Pg 5 0 R /K [29] >>
+endobj
+68 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [30] >>
+endobj
+69 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [31] >>
+endobj
+70 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [32] >>
+endobj
+71 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [33] >>
+endobj
+72 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [34 35] >>
+endobj
+73 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [36] >>
+endobj
+74 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [37] >>
+endobj
+75 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [38 39] >>
+endobj
+76 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [40] >>
+endobj
+77 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [41 42] >>
+endobj
+78 0 obj
+<< /Type /StructElem /S /H3 /P 15 0 R /Pg 5 0 R /K [43] >>
+endobj
+79 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [44] >>
+endobj
+80 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [45] >>
+endobj
+81 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [46] >>
+endobj
+82 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [47 48] >>
+endobj
+83 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [49 50] >>
+endobj
+84 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 5 0 R /K [51] >>
+endobj
+85 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [0] >>
+endobj
+86 0 obj
+<< /Type /StructElem /S /H3 /P 15 0 R /Pg 6 0 R /K [1 2] >>
+endobj
+87 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [3 4] >>
+endobj
+88 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [5 6] >>
+endobj
+89 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [7 8] >>
+endobj
+90 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [9 10] >>
+endobj
+91 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [11 12] >>
+endobj
+92 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [13] >>
+endobj
+93 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [14 15] >>
+endobj
+94 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [16] >>
+endobj
+95 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [17 18] >>
+endobj
+96 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [19] >>
+endobj
+97 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [20 21] >>
+endobj
+98 0 obj
+<< /Type /StructElem /S /H2 /P 15 0 R /Pg 6 0 R /K [22] >>
+endobj
+99 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [23 24] >>
+endobj
+100 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [25 26 27 28] >>
+endobj
+101 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [29 30 31] >>
+endobj
+102 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [32 33 34] >>
+endobj
+103 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [35 36] >>
+endobj
+104 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [37 38] >>
+endobj
+105 0 obj
+<< /Type /StructElem /S /H2 /P 15 0 R /Pg 6 0 R /K [39] >>
+endobj
+106 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [40] >>
+endobj
+107 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [41] >>
+endobj
+108 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [42] >>
+endobj
+109 0 obj
+<< /Type /StructElem /S /P /P 15 0 R /Pg 6 0 R /K [43] >>
+endobj
+110 0 obj
+<< /Type /Catalog /Pages 8 0 R /Lang (pt-BR) /MarkInfo << /Marked true >> /StructTreeRoot 13 0 R /Metadata 12 0 R /ViewerPreferences << /DisplayDocTitle true >> >>
 endobj
 xref
-0 10
+0 111
 0000000000 65535 f 
 0000000015 00000 n 
-0000005346 00000 n 
-0000011546 00000 n 
-0000016333 00000 n 
-0000016459 00000 n 
-0000016585 00000 n 
-0000016711 00000 n 
-0000016808 00000 n 
-0000016877 00000 n 
+0000006665 00000 n 
+0000014354 00000 n 
+0000020804 00000 n 
+0000020947 00000 n 
+0000021090 00000 n 
+0000021233 00000 n 
+0000022308 00000 n 
+0000022377 00000 n 
+0000022578 00000 n 
+0000054019 00000 n 
+0000054356 00000 n 
+0000055421 00000 n 
+0000055515 00000 n 
+0000056556 00000 n 
+0000057292 00000 n 
+0000057366 00000 n 
+0000057439 00000 n 
+0000057512 00000 n 
+0000057585 00000 n 
+0000057658 00000 n 
+0000057731 00000 n 
+0000057804 00000 n 
+0000057877 00000 n 
+0000057951 00000 n 
+0000058024 00000 n 
+0000058101 00000 n 
+0000058176 00000 n 
+0000058250 00000 n 
+0000058324 00000 n 
+0000058398 00000 n 
+0000058472 00000 n 
+0000058546 00000 n 
+0000058620 00000 n 
+0000058694 00000 n 
+0000058768 00000 n 
+0000058842 00000 n 
+0000058916 00000 n 
+0000058990 00000 n 
+0000059064 00000 n 
+0000059138 00000 n 
+0000059213 00000 n 
+0000059290 00000 n 
+0000059364 00000 n 
+0000059441 00000 n 
+0000059515 00000 n 
+0000059589 00000 n 
+0000059666 00000 n 
+0000059746 00000 n 
+0000059821 00000 n 
+0000059901 00000 n 
+0000059976 00000 n 
+0000060053 00000 n 
+0000060130 00000 n 
+0000060207 00000 n 
+0000060284 00000 n 
+0000060358 00000 n 
+0000060435 00000 n 
+0000060512 00000 n 
+0000060589 00000 n 
+0000060663 00000 n 
+0000060743 00000 n 
+0000060820 00000 n 
+0000060894 00000 n 
+0000060971 00000 n 
+0000061045 00000 n 
+0000061119 00000 n 
+0000061194 00000 n 
+0000061268 00000 n 
+0000061342 00000 n 
+0000061416 00000 n 
+0000061490 00000 n 
+0000061567 00000 n 
+0000061641 00000 n 
+0000061715 00000 n 
+0000061792 00000 n 
+0000061866 00000 n 
+0000061943 00000 n 
+0000062018 00000 n 
+0000062092 00000 n 
+0000062166 00000 n 
+0000062240 00000 n 
+0000062317 00000 n 
+0000062394 00000 n 
+0000062468 00000 n 
+0000062541 00000 n 
+0000062617 00000 n 
+0000062692 00000 n 
+0000062767 00000 n 
+0000062842 00000 n 
+0000062918 00000 n 
+0000062995 00000 n 
+0000063069 00000 n 
+0000063146 00000 n 
+0000063220 00000 n 
+0000063297 00000 n 
+0000063371 00000 n 
+0000063448 00000 n 
+0000063523 00000 n 
+0000063600 00000 n 
+0000063684 00000 n 
+0000063765 00000 n 
+0000063846 00000 n 
+0000063924 00000 n 
+0000064002 00000 n 
+0000064078 00000 n 
+0000064153 00000 n 
+0000064228 00000 n 
+0000064303 00000 n 
+0000064378 00000 n 
 trailer
-<< /Size 10 /Root 9 0 R >>
+<< /Size 111 /Root 110 0 R /Info 11 0 R >>
 startxref
-16926
+64559
 %%EOF
