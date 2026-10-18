@@ -11,7 +11,8 @@
     "check:fix": "biome check --write .",
     "test": "vitest run",
     "typecheck": "tsc -b --pretty false",
-    "gen:openapi": "bun scripts/gen-openapi.ts"
+    "gen:openapi": "bun scripts/gen-openapi.ts",
+    "sync:guide": "cp ../docs/guia-do-usuario.md public/guia-do-usuario.md"
   },
   "dependencies": {
     "@vitejs/plugin-react": "6.1.1",
