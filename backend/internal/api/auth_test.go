@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/repository"
+	"github.com/osmendes/db-auditor/internal/repository"
 )
 
 type fakeAuthStore struct {
@@ -169,5 +169,129 @@ func TestLoginProgressiveBackoffReturnsGenericResponse(t *testing.T) {
 	}
 	if strings.Contains(response.Body.String(), "admin") {
 		t.Fatal("rate limit response exposed account name")
+	}
+}
+
+// cookieLogin signs in with a session cookie and returns it with its CSRF token.
+func cookieLogin(t *testing.T, handler http.Handler) (*http.Cookie, string) {
+	t.Helper()
+	login := httptest.NewRequest(http.MethodPost, "/api/v1/auth/login?mode=cookie", strings.NewReader(`{"username":"admin","password":"a-strong-test-password"}`))
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, login)
+	if response.Code != http.StatusOK {
+		t.Fatalf("login status=%d body=%s", response.Code, response.Body.String())
+	}
+	cookies := response.Result().Cookies()
+	if len(cookies) != 1 {
+		t.Fatalf("cookies: %+v", cookies)
+	}
+	var body struct {
+		CSRF string `json:"csrf_token"`
+	}
+	if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil || body.CSRF == "" {
+		t.Fatalf("missing csrf token: %s (%v)", response.Body.String(), err)
+	}
+	return cookies[0], body.CSRF
+}
+
+func cookieAuthHandler(t *testing.T, store AuthStore) http.Handler {
+	t.Helper()
+	mux := http.NewServeMux()
+	registerAuthRoutes(mux, store)
+	return authMiddleware(mux, store)
+}
+
+func operatorStore(t *testing.T) fakeAuthStore {
+	t.Helper()
+	hash, err := repository.HashAuditorPassword("a-strong-test-password")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return fakeAuthStore{user: &repository.AuditorUser{ID: "00000000-0000-0000-0000-000000000001", Username: "admin", Role: "operator", Active: true, PasswordHash: hash}}
+}
+
+func TestCookieSessionRejectsInvalidCSRFToken(t *testing.T) {
+	handler := cookieAuthHandler(t, operatorStore(t))
+	cookie, csrf := cookieLogin(t, handler)
+	for _, token := range []string{"not-the-token", csrf + "x", strings.ToUpper(csrf), "Bearer " + csrf} {
+		logout := httptest.NewRequest(http.MethodPost, "/api/v1/auth/logout", nil)
+		logout.AddCookie(cookie)
+		logout.Header.Set("X-CSRF-Token", token)
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, logout)
+		if response.Code != http.StatusForbidden {
+			t.Fatalf("token %q: status %d want 403", token, response.Code)
+		}
+	}
+	// A CSRF token minted for another session is not accepted either.
+	other := httptest.NewRequest(http.MethodPost, "/api/v1/auth/logout", nil)
+	other.AddCookie(cookie)
+	other.Header.Set("X-CSRF-Token", csrfToken("some-other-session-token"))
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, other)
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("foreign csrf: status %d want 403", response.Code)
+	}
+}
+
+// expiredSessionStore behaves like the repository after the idle or absolute
+// deadline passed: the session row no longer resolves to a user.
+type expiredSessionStore struct{ fakeAuthStore }
+
+func (expiredSessionStore) GetAuditorSession(context.Context, []byte) (*repository.AuditorUser, error) {
+	return nil, nil
+}
+
+func TestCookieSessionExpiredIsRejectedEvenWithCSRF(t *testing.T) {
+	live := operatorStore(t)
+	cookie, csrf := cookieLogin(t, cookieAuthHandler(t, live))
+	handler := cookieAuthHandler(t, expiredSessionStore{live})
+	for _, tc := range []struct{ method, path string }{
+		{http.MethodGet, "/api/v1/auth/me"},
+		{http.MethodPost, "/api/v1/auth/logout"},
+		{http.MethodPost, "/api/v1/auth/password"},
+	} {
+		r := httptest.NewRequest(tc.method, tc.path, strings.NewReader(`{}`))
+		r.AddCookie(cookie)
+		r.Header.Set("X-CSRF-Token", csrf)
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, r)
+		if response.Code != http.StatusUnauthorized {
+			t.Fatalf("%s %s with expired session: status %d want 401", tc.method, tc.path, response.Code)
+		}
+		if strings.Contains(response.Body.String(), csrf) {
+			t.Fatalf("%s %s leaked csrf token after expiry", tc.method, tc.path)
+		}
+	}
+}
+
+// SameSite=Lax still sends the cookie on a top-level cross-site GET. That
+// navigation must stay read-only: mutation routes do not answer GET, and the
+// same request upgraded to a mutation without the CSRF header is refused.
+func TestCookieSessionCrossSiteTopLevelGETCannotMutate(t *testing.T) {
+	handler := cookieAuthHandler(t, operatorStore(t))
+	cookie, _ := cookieLogin(t, handler)
+	crossSite := func(method, path string) *httptest.ResponseRecorder {
+		r := httptest.NewRequest(method, path, nil)
+		r.AddCookie(cookie)
+		r.Header.Set("Origin", "https://evil.example")
+		r.Header.Set("Referer", "https://evil.example/page")
+		r.Header.Set("Sec-Fetch-Site", "cross-site")
+		r.Header.Set("Sec-Fetch-Mode", "navigate")
+		r.Header.Set("Sec-Fetch-Dest", "document")
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, r)
+		return response
+	}
+	for _, path := range []string{"/api/v1/auth/logout", "/api/v1/auth/password", "/api/v1/auth/totp/disable", "/api/v1/auth/users/00000000-0000-0000-0000-000000000001/sessions/revoke"} {
+		if code := crossSite(http.MethodGet, path).Code; code == http.StatusOK || code == http.StatusCreated {
+			t.Fatalf("cross-site GET %s: status %d, mutation route answered GET", path, code)
+		}
+	}
+	if code := crossSite(http.MethodPost, "/api/v1/auth/logout").Code; code != http.StatusForbidden {
+		t.Fatalf("cross-site POST without csrf: status %d want 403", code)
+	}
+	if code := crossSite(http.MethodGet, "/api/v1/auth/me").Code; code != http.StatusOK {
+		t.Fatalf("cross-site read-only GET should behave like same-site under Lax: status %d", code)
 	}
 }

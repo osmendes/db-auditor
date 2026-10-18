@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/osmendes/db-auditor/internal/config"
 )
 
 // SetupLogging configures structured JSON logs by default.

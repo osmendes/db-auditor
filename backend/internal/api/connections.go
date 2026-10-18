@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/collectors/postgres"
-	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/osmendes/db-auditor/internal/collectors/postgres"
+	"github.com/osmendes/db-auditor/internal/config"
 )
 
 // ConnectionStatus is the probe result for one audited environment.

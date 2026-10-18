@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/osmendes/db-auditor/internal/config"
 )
 
 // GrantFacts describes effective table privileges for one login role. Role

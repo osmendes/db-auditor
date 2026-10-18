@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/osmendes/db-auditor/internal/config"
 )
 
 func TestConnectReadOnlyIntegration(t *testing.T) {

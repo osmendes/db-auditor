@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/report"
+	"github.com/osmendes/db-auditor/internal/report"
 )
 
 // LoadArchitectureDocument reads only the control database and one immutable run.

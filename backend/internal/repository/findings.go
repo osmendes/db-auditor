@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/mayconmendes-qc/db-auditor/internal/guidance"
+	"github.com/osmendes/db-auditor/internal/guidance"
 )
 
 // Finding is a persisted diagnostic.

@@ -5,7 +5,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/database/sqlc"
+	"github.com/osmendes/db-auditor/internal/database/sqlc"
 )
 
 type InventoryFilter struct {

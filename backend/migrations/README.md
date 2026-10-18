@@ -22,6 +22,7 @@ O diretório contém o baseline, o seed local e migrações incrementais. O Post
 - `18_totp_discard_retention.sql`: TOTP opcional, assinatura de descarte e a linha de política de retenção. Não apaga dados existentes.
 - `19_architecture_report.sql`: permite artefato Markdown e registra decisões de domínio versionadas, congeladas no pedido do relatório. Atua somente no banco interno.
 - `20_architecture_insertion.sql`: guarda a evidência de inserção colhida em auditoria manual, inclusive consultas puladas por orçamento ou permissão. Atua somente no banco interno.
+- `21_identity_login_block.sql`: acrescenta `blocked_until` ao contador de tentativas de login em volumes antigos. Substitui a criação ad hoc das tabelas de login que a API fazia no boot (`EnsureIdentitySchema`); agora todo o schema de identidade vem de `16_identity.sql`, `18_totp_discard_retention.sql` e desta migração, registradas em `schema_migration`.
 
 Não reintroduza arquivos `.down.sql`: o entrypoint executaria todos os `.sql`.
 
@@ -32,7 +33,7 @@ make reset-volume   # destrutivo: apaga o volume snapshot-store
 make up
 ```
 
-Um volume que já existe **não** reaplica o baseline. A API cria as tabelas de login (`auditor_user`, sessão e log) se elas ainda não existirem, adiciona `blocked_until` ao contador de tentativas de login quando necessário e executa migrações incrementais pendentes. Faça backup antes de atualizar um volume persistente; confira o registro `schema_migration` e não altere arquivos já aplicados. Veja [docs/third-stage-operations.md](../../docs/third-stage-operations.md) para o procedimento de implantação e restauração.
+Um volume que já existe **não** reaplica o baseline. A API executa as migrações incrementais pendentes, inclusive as de identidade (`16_identity.sql`, `18_totp_discard_retention.sql`, `21_identity_login_block.sql`); ela não cria tabelas fora de `schema_migration`. Faça backup antes de atualizar um volume persistente; confira o registro `schema_migration` e não altere arquivos já aplicados. Veja o [guia de operação](../../docs/ops.md) para backup e restauração.
 
 Se o checksum de um arquivo **já aplicado** mudar (por correção de idempotência), a API recusa subir. Em desenvolvimento, atualize o registro após validar o schema:
 

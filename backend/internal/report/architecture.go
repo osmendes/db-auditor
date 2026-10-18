@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/actions"
+	"github.com/osmendes/db-auditor/internal/actions"
 )
 
 const ArchitectureVersion = "architecture-report-v1"

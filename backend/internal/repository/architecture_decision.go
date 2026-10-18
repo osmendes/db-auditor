@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/report"
+	"github.com/osmendes/db-auditor/internal/report"
 )
 
 func (s *Store) LatestArchitectureDecisions(ctx context.Context, environmentID, database string) ([]report.ArchitectureDecision, error) {

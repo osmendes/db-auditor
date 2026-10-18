@@ -18,6 +18,7 @@ func TestSprint20LargeInventoryPagingIntegration(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+	testStart := time.Now()
 	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		t.Fatal(err)
@@ -30,19 +31,22 @@ func TestSprint20LargeInventoryPagingIntegration(t *testing.T) {
 	if err := pool.QueryRow(ctx, `INSERT INTO audit_run(environment_id,profile,status,service_version,collector_version) VALUES($1::uuid,'manual','success','test','test') RETURNING id::text`, env).Scan(&run); err != nil {
 		t.Fatal(err)
 	}
+	seedStart := time.Now()
 	_, err = pool.Exec(ctx, `INSERT INTO table_snapshot(audit_run_id,environment_id,database_name,schema_name,table_name)
 		SELECT $1::uuid,$2::uuid,'db'||d,'schema'||s,'table'||l FROM generate_series(1,5)d CROSS JOIN generate_series(1,20)s CROSS JOIN generate_series(1,100)l`, run, env)
 	if err != nil {
 		t.Fatal(err)
 	}
+	seedElapsed := time.Since(seedStart)
 	store := NewStore(pool)
 	start := time.Now()
 	items, total, err := store.ListTableSnapshots(ctx, InventoryFilter{EnvironmentID: env, Limit: 50, Offset: 9950})
 	if err != nil || total != 10000 || len(items) != 50 {
 		t.Fatalf("page %d/%d %v", len(items), total, err)
 	}
-	if elapsed := time.Since(start); elapsed > 10*time.Second {
-		t.Errorf("large page took %v", elapsed)
+	lastPage := time.Since(start)
+	if lastPage > 10*time.Second {
+		t.Errorf("large page took %v", lastPage)
 	}
 	if _, err := pool.Exec(ctx, `UPDATE table_snapshot SET total_size_bytes=substring(table_name from 6)::bigint WHERE audit_run_id=$1::uuid`, run); err != nil {
 		t.Fatal(err)
@@ -73,6 +77,11 @@ func TestSprint20LargeInventoryPagingIntegration(t *testing.T) {
 	sort.Slice(latencies, func(i, j int) bool { return latencies[i] < latencies[j] })
 	p95 := latencies[18]
 	t.Logf("10k synthetic inventory, sorted 50-row pages: p95=%s", p95)
+	// One greppable line so CI can publish duration and volume (PF-04).
+	defer func() {
+		t.Logf("SCALE_RESULT test=inventory_paging rows=%d databases=5 schemas_per_db=20 tables_per_schema=100 page_size=50 pages_sampled=%d seed=%s last_page=%s p95=%s total=%s failed=%t",
+			total, len(latencies), seedElapsed.Round(time.Millisecond), lastPage.Round(time.Millisecond), p95.Round(time.Millisecond), time.Since(testStart).Round(time.Millisecond), t.Failed())
+	}()
 	// CI budget for this fixed 10k-row mass. It is not a production SLO.
 	if p95 > 750*time.Millisecond {
 		t.Errorf("inventory page p95 %s exceeds the 750ms CI budget", p95)

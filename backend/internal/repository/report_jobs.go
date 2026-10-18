@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/mayconmendes-qc/db-auditor/internal/report"
+	"github.com/osmendes/db-auditor/internal/report"
 )
 
 var ErrReportIneligible = errors.New("report run is not completed in the requested environment")

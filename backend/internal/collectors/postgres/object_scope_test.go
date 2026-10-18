@@ -3,7 +3,7 @@ package postgres
 import (
 	"testing"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/config"
+	"github.com/osmendes/db-auditor/internal/config"
 )
 
 func TestTableFactsNormalizeNonNegativeSizes(t *testing.T) {

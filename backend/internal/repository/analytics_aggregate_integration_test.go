@@ -24,9 +24,6 @@ func TestFirstStageAggregatesAndPagesIntegration(t *testing.T) {
 	}
 	defer pool.Close()
 	store := NewStore(pool)
-	if err := store.EnsureIdentitySchema(ctx); err != nil {
-		t.Fatal(err)
-	}
 	var env, older, newer string
 	if err := pool.QueryRow(ctx, `INSERT INTO audit_environment(name,type,discovery_mode)
 VALUES(gen_random_uuid()::text,'self_hosted','multi_database') RETURNING id::text`).Scan(&env); err != nil {

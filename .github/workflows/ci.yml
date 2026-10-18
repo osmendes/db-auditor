@@ -89,7 +89,7 @@ jobs:
 
       - name: Prepare disposable snapshot store
         run: |
-          for migration in migrations/01_baseline.sql migrations/03_audit_schedule.sql migrations/04_p1.sql migrations/05_p2.sql migrations/06_second_stage.sql migrations/07_third_stage.sql migrations/08_action_workload.sql migrations/09_query_action_metrics.sql migrations/10_account_activity.sql migrations/11_quality_validation.sql migrations/12_view_detail.sql migrations/13_index_detail.sql migrations/14_function_detail.sql migrations/15_cagg_source.sql migrations/16_identity.sql migrations/17_report_retention.sql migrations/18_totp_discard_retention.sql migrations/19_architecture_report.sql migrations/20_architecture_insertion.sql; do
+          for migration in migrations/01_baseline.sql migrations/03_audit_schedule.sql migrations/04_p1.sql migrations/05_p2.sql migrations/06_second_stage.sql migrations/07_third_stage.sql migrations/08_action_workload.sql migrations/09_query_action_metrics.sql migrations/10_account_activity.sql migrations/11_quality_validation.sql migrations/12_view_detail.sql migrations/13_index_detail.sql migrations/14_function_detail.sql migrations/15_cagg_source.sql migrations/16_identity.sql migrations/17_report_retention.sql migrations/18_totp_discard_retention.sql migrations/19_architecture_report.sql migrations/20_architecture_insertion.sql migrations/21_identity_login_block.sql; do
             docker exec -i ${{ job.services.postgres.id }} psql -v ON_ERROR_STOP=1 -U postgres -d db_auditor_test < "$migration" >/dev/null
           done
 
@@ -100,6 +100,31 @@ jobs:
           AUDITOR_TEST_DISPOSABLE: "1"
           AUDITOR_TEST_SCALE: "1"
         run: go test -p 1 ./... -coverprofile=coverage.out
+
+      - name: Scale test report (duration and volume)
+        timeout-minutes: 5
+        env:
+          AUDITOR_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:55437/db_auditor_test?sslmode=disable
+          AUDITOR_TEST_DISPOSABLE: "1"
+          AUDITOR_TEST_SCALE: "1"
+        run: |
+          set -o pipefail
+          start=$(date +%s)
+          go test -p 1 -count=1 -v -timeout 3m -run '^TestSprint20LargeInventoryPagingIntegration$' ./internal/repository/ | tee scale-test.log
+          elapsed=$(( $(date +%s) - start ))
+          result=$(grep -o 'SCALE_RESULT.*' scale-test.log || true)
+          if [ -z "$result" ]; then
+            echo "::error::scale test did not report SCALE_RESULT (skipped or crashed)"
+            exit 1
+          fi
+          echo "::notice title=Scale test::${result} wall=${elapsed}s"
+          {
+            echo "### Scale test (synthetic snapshot store)"
+            echo
+            echo '```'
+            echo "${result} wall=${elapsed}s"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Trivy filesystem (backend)
         uses: aquasecurity/trivy-action@v0.36.0

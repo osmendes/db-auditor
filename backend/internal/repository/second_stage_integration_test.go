@@ -23,9 +23,6 @@ func TestSecondStageWorkflowsIntegration(t *testing.T) {
 	}
 	defer pool.Close()
 	s := NewStore(pool)
-	if err = s.EnsureIdentitySchema(ctx); err != nil {
-		t.Fatal(err)
-	}
 	hash, err := HashAuditorPassword("long-password-for-stage-two")
 	if err != nil {
 		t.Fatal(err)

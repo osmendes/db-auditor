@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/mayconmendes-qc/db-auditor/internal/auth/seal"
-	"github.com/mayconmendes-qc/db-auditor/internal/auth/totp"
+	"github.com/osmendes/db-auditor/internal/auth/seal"
+	"github.com/osmendes/db-auditor/internal/auth/totp"
 )
 
 // TOTPState is the enrollment of one account. The secret never leaves this package unsealed.

@@ -10,17 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
-	"github.com/mayconmendes-qc/db-auditor/internal/api"
-	"github.com/mayconmendes-qc/db-auditor/internal/audit"
-	"github.com/mayconmendes-qc/db-auditor/internal/buildinfo"
-	"github.com/mayconmendes-qc/db-auditor/internal/config"
-	"github.com/mayconmendes-qc/db-auditor/internal/database"
-	"github.com/mayconmendes-qc/db-auditor/internal/migrate"
-	"github.com/mayconmendes-qc/db-auditor/internal/observability"
-	"github.com/mayconmendes-qc/db-auditor/internal/reportworker"
-	"github.com/mayconmendes-qc/db-auditor/internal/repository"
-	"github.com/mayconmendes-qc/db-auditor/internal/scheduler"
+	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/osmendes/db-auditor/internal/api"
+	"github.com/osmendes/db-auditor/internal/audit"
+	"github.com/osmendes/db-auditor/internal/buildinfo"
+	"github.com/osmendes/db-auditor/internal/config"
+	"github.com/osmendes/db-auditor/internal/database"
+	"github.com/osmendes/db-auditor/internal/migrate"
+	"github.com/osmendes/db-auditor/internal/observability"
+	"github.com/osmendes/db-auditor/internal/reportworker"
+	"github.com/osmendes/db-auditor/internal/repository"
+	"github.com/osmendes/db-auditor/internal/scheduler"
 )
 
 func main() {
@@ -88,10 +88,6 @@ func main() {
 	}
 	if err := store.UpsertSeedEnvironments(ctx, seeds); err != nil {
 		slog.Error("não foi possível gravar os ambientes iniciais", "error", err)
-		os.Exit(1)
-	}
-	if err := store.EnsureIdentitySchema(ctx); err != nil {
-		slog.Error("could not ensure identity schema", "error", err)
 		os.Exit(1)
 	}
 	hasUsers, err := store.HasAuditorUsers(ctx)

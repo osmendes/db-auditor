@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/mayconmendes-qc/db-auditor/internal/collectors/postgres"
-	"github.com/mayconmendes-qc/db-auditor/internal/report"
+	"github.com/osmendes/db-auditor/internal/collectors/postgres"
+	"github.com/osmendes/db-auditor/internal/report"
 )
 
 // InsertionMappings freezes the latest confirmed insertion contracts when a

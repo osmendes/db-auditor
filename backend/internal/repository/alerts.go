@@ -9,8 +9,8 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
-	"github.com/mayconmendes-qc/db-auditor/internal/notify"
+	"github.com/osmendes/db-auditor/internal/analyzer"
+	"github.com/osmendes/db-auditor/internal/notify"
 )
 
 // ClaimAlert returns true the first time a dedup key is alerted for an environment.

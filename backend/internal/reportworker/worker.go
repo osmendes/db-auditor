@@ -10,10 +10,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/config"
-	"github.com/mayconmendes-qc/db-auditor/internal/notify"
-	"github.com/mayconmendes-qc/db-auditor/internal/report"
-	"github.com/mayconmendes-qc/db-auditor/internal/repository"
+	"github.com/osmendes/db-auditor/internal/config"
+	"github.com/osmendes/db-auditor/internal/notify"
+	"github.com/osmendes/db-auditor/internal/report"
+	"github.com/osmendes/db-auditor/internal/repository"
 )
 
 type Worker struct{ Store *repository.Store }

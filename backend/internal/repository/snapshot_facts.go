@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/mayconmendes-qc/db-auditor/internal/analyzer"
+	"github.com/osmendes/db-auditor/internal/analyzer"
 )
 
 // LoadSnapshotFacts loads every analyzer input from one explicitly selected run.

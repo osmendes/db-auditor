@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 
-	"github.com/mayconmendes-qc/db-auditor/internal/repository"
+	"github.com/osmendes/db-auditor/internal/repository"
 )
 
 func registerFindingDiffRoutes(mux *http.ServeMux, store FindingStore) {
@@ -24,6 +25,10 @@ func registerFindingDiffRoutes(mux *http.ServeMux, store FindingStore) {
 			return
 		}
 		items, err := backend.DiffRunFindings(r.Context(), env, from, to)
+		if errors.Is(err, repository.ErrDiffRunNotFound) {
+			writeError(w, http.StatusNotFound, CodeNotFound, "Execução não encontrada neste ambiente.")
+			return
+		}
 		if err != nil {
 			writeError(w, http.StatusInternalServerError, CodeInternal, "Não foi possível comparar as execuções.")
 			return

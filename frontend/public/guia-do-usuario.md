@@ -94,4 +94,4 @@ O artefato expira após 30 dias. A expiração remove o PDF, mas preserva o regi
 3. Leia o aviso exibido; ele pode indicar falta de permissão, limite, versão incompatível ou erro temporário.
 4. Repita a ação apenas se ela for segura. Para falhas persistentes, envie ao operador o horário, ambiente, identificador da execução e `X-Request-ID` da resposta. Não envie credenciais nem dados de linha.
 
-Para instalar, atualizar e fazer backup, use o [guia de operação](ops.md). Para conhecer limites e decisões técnicas da terceira etapa, use [operações da terceira etapa](third-stage-operations.md).
+Para instalar, atualizar e fazer backup, use o [guia de operação](ops.md). Limites e decisões técnicas de cada etapa ficam nas [notas por etapa](notas-por-etapa.md), referenciadas pelo guia de operação.

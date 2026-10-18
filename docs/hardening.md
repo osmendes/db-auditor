@@ -17,7 +17,7 @@
 | Repositório GitHub | `osmendes/db-auditor` |
 | Banco interno (default) | `POSTGRES_DB=db_auditor` |
 | `application_name` | `db-auditor` |
-| Module path Go | `github.com/mayconmendes-qc/db-auditor` |
+| Module path Go | `github.com/osmendes/db-auditor` |
 
 ## Frontend
 
