@@ -104,7 +104,12 @@ export function StoragePieChart({ items }: { items: StoragePieSlice[] }) {
         </li>
       </ul>
 
-      <div className="flex w-full items-center justify-center sm:w-[58%]">
+      {/* The SVG is decorative for assistive tech: the sr-only table below is
+          the text equivalent (UI-05). */}
+      <div
+        className="flex w-full items-center justify-center sm:w-[58%]"
+        aria-hidden="true"
+      >
         <ChartContainer
           config={chartConfig}
           className="aspect-square h-[280px] w-full max-w-[300px]"

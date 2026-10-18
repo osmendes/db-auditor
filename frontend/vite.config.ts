@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
@@ -9,6 +10,10 @@ const apiProxyTarget =
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  test: {
+    // The contrast test reads the design tokens from styles.css?raw.
+    css: { include: [/styles\.css/] },
+  },
   server: {
     host: true,
     port: 5173,

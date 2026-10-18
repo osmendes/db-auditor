@@ -152,6 +152,23 @@ html.light {
   --color-rose-950: #fff1f2;
   --color-amber-950: #fff8e6;
 
+  /*
+   * Text tones used for alerts and status. The dark-first values (#ff535f,
+   * #f29c33…) fall to ~2.8:1 on the light surfaces, below WCAG AA. Darker
+   * tones keep every alert at >= 4.5:1 on slate-900/950 in the light theme
+   * (asserted in src/styles.contrast.test.ts).
+   */
+  --color-rose-50: #4c0519;
+  --color-rose-100: #881337;
+  --color-rose-200: #9f1239;
+  --color-rose-300: #b91c1c;
+  --color-amber-100: #451a03;
+  --color-amber-200: #78350f;
+  --color-amber-300: #92400e;
+  --color-emerald-200: #064e3b;
+  --color-emerald-300: #065f46;
+  --color-cyan-300: #155e75;
+
   /* shadcn charts — light */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);

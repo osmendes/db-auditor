@@ -7,11 +7,10 @@ import {
   useEffect,
   useState,
 } from "react";
+import { LoginScreen, SessionRestoreScreen } from "./components/LoginScreen";
 import { navigationSections, Shell } from "./components/layout/Shell";
-import { Button, Input } from "./components/ui";
 import { AppProvider, useApp } from "./context/AppContext";
-import { ThemeProvider, useTheme } from "./context/ThemeContext";
-import { companyName } from "./lib/company";
+import { ThemeProvider } from "./context/ThemeContext";
 import { formatError } from "./lib/errors";
 import { api } from "./services/api";
 import type { NavigationSection } from "./types";
@@ -166,28 +165,10 @@ function SessionApp() {
   };
   if (restoring || restoreError) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-slate-100">
-        <div className="w-full max-w-sm space-y-4 rounded-xl border border-slate-700 bg-slate-900 p-7">
-          <h1 className="text-xl font-semibold">DB Auditor</h1>
-          <p className="text-sm text-slate-400">{companyName()}</p>
-          {restoreError ? (
-            <>
-              <p role="alert" className="text-sm text-rose-300">
-                {restoreError}
-              </p>
-              <button
-                type="button"
-                onClick={() => void restore()}
-                className="rounded bg-cyan-600 px-4 py-2 font-medium"
-              >
-                Tentar novamente
-              </button>
-            </>
-          ) : (
-            <p className="text-sm text-slate-400">Verificando sessão…</p>
-          )}
-        </div>
-      </main>
+      <SessionRestoreScreen
+        error={restoreError}
+        onRetry={() => void restore()}
+      />
     );
   }
   if (!user) {
@@ -216,90 +197,6 @@ function SessionApp() {
         }}
       />
     </AppProvider>
-  );
-}
-
-function LoginScreen({
-  username,
-  password,
-  code,
-  mfa,
-  error,
-  busy,
-  onUsername,
-  onPassword,
-  onCode,
-  onSubmit,
-}: {
-  username: string;
-  password: string;
-  code: string;
-  mfa: boolean;
-  error: string;
-  busy: boolean;
-  onUsername: (value: string) => void;
-  onPassword: (value: string) => void;
-  onCode: (value: string) => void;
-  onSubmit: (event: FormEvent) => void;
-}) {
-  const { theme, toggleTheme } = useTheme();
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-slate-100">
-      <form
-        onSubmit={onSubmit}
-        className="w-full max-w-sm space-y-4 rounded-xl border border-slate-700 bg-slate-900 p-7"
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-semibold">Entrar no DB Auditor</h1>
-            <p className="text-sm text-slate-400">{companyName()}</p>
-          </div>
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="text-xs text-slate-300 underline"
-          >
-            {theme === "dark" ? "Tema claro" : "Tema escuro"}
-          </button>
-        </div>
-        <p className="text-sm text-slate-400">
-          Sua sessão pode ser usada em outras abas deste site por até 8 horas.
-          Use Sair ao terminar.
-        </p>
-        <Input
-          label="Usuário"
-          required
-          autoComplete="username"
-          value={username}
-          onChange={(event) => onUsername(event.target.value)}
-        />
-        <Input
-          label="Senha"
-          required
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(event) => onPassword(event.target.value)}
-        />
-        {mfa ? (
-          <Input
-            label="Código TOTP ou recuperação"
-            required
-            autoComplete="one-time-code"
-            value={code}
-            onChange={(event) => onCode(event.target.value)}
-          />
-        ) : null}
-        {error ? (
-          <p role="alert" className="text-sm text-rose-300">
-            {error}
-          </p>
-        ) : null}
-        <Button disabled={busy} className="w-full" type="submit">
-          {busy ? "Entrando…" : mfa ? "Confirmar código" : "Entrar"}
-        </Button>
-      </form>
-    </main>
   );
 }
 
