@@ -57,11 +57,12 @@ export function useHypertableAssessment({
   const args = [environment, run, database, schema, name] as const;
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setDetail(null);
     setDetailError(null);
     setDetailLoading(true);
     void api
-      .hypertableDetail(...args)
+      .hypertableDetail(...args, controller.signal)
       .then((item) => {
         if (!cancelled) setDetail(item);
       })
@@ -73,52 +74,53 @@ export function useHypertableAssessment({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [scope]);
   const dimensions = useInventoryDetailPage<HypertableDimensionDetail>(
     tab === "structure",
     scope,
-    (offset) => api.hypertableDimensions(...args, 50, offset),
+    (offset, signal) => api.hypertableDimensions(...args, 50, offset, signal),
   );
   const chunks = useInventoryDetailPage<HypertableChunkDetail>(
     tab === "structure",
     scope,
-    (offset) => api.hypertableChunks(...args, 50, offset),
+    (offset, signal) => api.hypertableChunks(...args, 50, offset, signal),
   );
   const policies = useInventoryDetailPage<HypertablePolicyDetail>(
     tab === "relationships",
     scope,
-    (offset) => api.hypertablePolicies(...args, 50, offset),
+    (offset, signal) => api.hypertablePolicies(...args, 50, offset, signal),
   );
   const jobs = useInventoryDetailPage<HypertableJobDetail>(
     tab === "performance",
     scope,
-    (offset) => api.hypertableJobs(...args, 50, offset),
+    (offset, signal) => api.hypertableJobs(...args, 50, offset, signal),
   );
   const history = useInventoryDetailPage<HypertableHistoryPoint>(
     tab === "performance",
     scope,
-    (offset) => api.hypertableHistory(...args, 50, offset),
+    (offset, signal) => api.hypertableHistory(...args, 50, offset, signal),
   );
   const indexes = useInventoryDetailPage<IndexSnapshot>(
     tab === "relationships",
     scope,
-    (offset) => api.hypertableIndexes(...args, 50, offset),
+    (offset, signal) => api.hypertableIndexes(...args, 50, offset, signal),
   );
   const grants = useInventoryDetailPage<GrantSnapshot>(
     tab === "security" && !!detail?.base_table_observed,
     scope,
-    (offset) => api.hypertableGrants(...args, 50, offset),
+    (offset, signal) => api.hypertableGrants(...args, 50, offset, signal),
   );
   const rls = useInventoryDetailPage<RLSPolicySnapshot>(
     tab === "security" && !!detail?.base_table_observed,
     scope,
-    (offset) => api.hypertableRLSPolicies(...args, 50, offset),
+    (offset, signal) => api.hypertableRLSPolicies(...args, 50, offset, signal),
   );
   const findings = useInventoryDetailPage<Finding>(
     tab === "recommendations",
     scope,
-    (offset) => api.hypertableFindings(...args, 50, offset),
+    (offset, signal) => api.hypertableFindings(...args, 50, offset, signal),
   );
   const detailState = inventoryDetailState(
     detailError,

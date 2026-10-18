@@ -89,12 +89,25 @@ export async function toApiError(
   );
 }
 
+/** Code of the ApiError thrown when the caller aborted the request (PF-02). */
+export const ABORTED_CODE = "aborted";
+
+/**
+ * True for a request the UI cancelled on purpose (env/page change, unmount):
+ * the native AbortError and the ApiError `networkApiError` wraps it in. These
+ * are never shown to the user nor logged (PF-02).
+ */
+export function isAbortError(err: unknown): boolean {
+  if (err instanceof ApiError) return err.code === ABORTED_CODE;
+  return (
+    (err instanceof DOMException || err instanceof Error) &&
+    err.name === "AbortError"
+  );
+}
+
 export function networkApiError(path: string, cause?: unknown): ApiError {
-  if (cause instanceof DOMException && cause.name === "AbortError") {
-    return new ApiError(0, path, "");
-  }
-  if (cause instanceof Error && cause.name === "AbortError") {
-    return new ApiError(0, path, "");
+  if (isAbortError(cause)) {
+    return new ApiError(0, path, "", ABORTED_CODE);
   }
   const detail =
     cause instanceof Error && cause.message ? ` (${cause.message})` : "";
@@ -105,8 +118,7 @@ export function formatError(
   err: unknown,
   fallback = "Ocorreu um erro inesperado.",
 ): string {
-  if (err instanceof DOMException && err.name === "AbortError") return "";
-  if (err instanceof Error && err.name === "AbortError") return "";
+  if (isAbortError(err)) return "";
   if (err instanceof ApiError) {
     return err.message;
   }

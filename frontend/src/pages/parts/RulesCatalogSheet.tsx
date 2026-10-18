@@ -32,10 +32,11 @@ export function RulesCatalogSheet({
       return;
     }
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
     api
-      .rules(environmentId, schema)
+      .rules(environmentId, schema, controller.signal)
       .then((res) => {
         if (!cancelled) setItems(res.items);
       })
@@ -49,6 +50,7 @@ export function RulesCatalogSheet({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [open, environmentId, schema]);
 

@@ -26,11 +26,12 @@ export function StatusPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     (async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.status();
+        const res = await api.status(controller.signal);
         if (!cancelled) {
           setData(res);
         }
@@ -47,6 +48,7 @@ export function StatusPage() {
     })();
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [reloadKey]);
 

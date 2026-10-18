@@ -11,7 +11,11 @@ import type { PagedResponse, PageMeta } from "../../types";
 export function useCollection<T>(
   enabled: boolean,
   key: string,
-  load: (offset: number, limit: number) => Promise<PagedResponse<T>>,
+  load: (
+    offset: number,
+    limit: number,
+    signal?: AbortSignal,
+  ) => Promise<PagedResponse<T>>,
 ) {
   const loader = useRef(load);
   loader.current = load;
@@ -30,10 +34,15 @@ export function useCollection<T>(
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     const request =
       size === "all"
-        ? fetchAllPages(loader.current).then((allItems) => ({
+        ? fetchAllPages(
+            (nextOffset, limit) =>
+              loader.current(nextOffset, limit, controller.signal),
+            controller.signal,
+          ).then((allItems) => ({
             items: allItems,
             page: {
               total: allItems.length,
@@ -42,7 +51,7 @@ export function useCollection<T>(
               has_more: false,
             },
           }))
-        : loader.current(offset, size);
+        : loader.current(offset, size, controller.signal);
     request
       .then((result) => {
         if (!cancelled) {
@@ -63,6 +72,7 @@ export function useCollection<T>(
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [enabled, key, offset, size]);
   return { items, page, error, loading, offset, size, setOffset, setSize };

@@ -53,11 +53,12 @@ export function useCAGGAssessment({
   const args = [environment, run, database, schema, name] as const;
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setDetail(null);
     setDetailError(null);
     setDetailLoading(true);
     void api
-      .caggDetail(...args)
+      .caggDetail(...args, controller.signal)
       .then((item) => {
         if (!cancelled) setDetail(item);
       })
@@ -69,32 +70,33 @@ export function useCAGGAssessment({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [scope]);
   const policies = useInventoryDetailPage<CAGGRefreshPolicy>(
     tab === "performance",
     scope,
-    (offset) => api.caggRefreshPolicies(...args, 50, offset),
+    (offset, signal) => api.caggRefreshPolicies(...args, 50, offset, signal),
   );
   const history = useInventoryDetailPage<CAGGHistoryPoint>(
     tab === "performance",
     scope,
-    (offset) => api.caggHistory(...args, 50, offset),
+    (offset, signal) => api.caggHistory(...args, 50, offset, signal),
   );
   const dependencies = useInventoryDetailPage<DependencySnapshot>(
     tab === "relationships",
     scope,
-    (offset) => api.caggDependencies(...args, 50, offset),
+    (offset, signal) => api.caggDependencies(...args, 50, offset, signal),
   );
   const grants = useInventoryDetailPage<GrantSnapshot>(
     tab === "security",
     scope,
-    (offset) => api.caggGrants(...args, 50, offset),
+    (offset, signal) => api.caggGrants(...args, 50, offset, signal),
   );
   const findings = useInventoryDetailPage<Finding>(
     tab === "recommendations",
     scope,
-    (offset) => api.caggFindings(...args, 50, offset),
+    (offset, signal) => api.caggFindings(...args, 50, offset, signal),
   );
   const detailState = inventoryDetailState(
     detailError,

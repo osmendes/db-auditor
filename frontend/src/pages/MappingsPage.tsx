@@ -11,6 +11,7 @@ import {
   Table,
 } from "../components/ui";
 import { useApp } from "../context/AppContext";
+import { useLatestSignal } from "../hooks/useLatestSignal";
 import { formatError } from "../lib/errors";
 import { labels } from "../lib/labels";
 import { api } from "../services/api";
@@ -52,20 +53,29 @@ export function MappingsPage() {
     }
   }, [environments]);
 
+  const nextSignal = useLatestSignal();
+  // Latest filter/environment wins; the previous list request is aborted (PF-02).
   const load = useCallback(() => {
+    const signal = nextSignal();
     setItems(null);
     setError(null);
     api
-      .mappings({
-        status: statusFilter || undefined,
-        source_environment_id: environmentId || undefined,
+      .mappings(
+        {
+          status: statusFilter || undefined,
+          source_environment_id: environmentId || undefined,
+        },
+        signal,
+      )
+      .then((res) => {
+        if (!signal.aborted) setItems(res.items);
       })
-      .then((res) => setItems(res.items))
       .catch((err: unknown) => {
+        if (signal.aborted) return;
         setError(formatError(err, "Falha ao listar mapeamentos"));
         setItems([]);
       });
-  }, [statusFilter, environmentId]);
+  }, [statusFilter, environmentId, nextSignal]);
 
   useEffect(() => {
     load();

@@ -75,10 +75,14 @@ export function useEnvironmentsPage({ onNavigate }: EnvironmentsPageProps) {
       return;
     }
     let cancelled = false;
+    const controller = new AbortController();
     setDatabases(null);
     setSchemas(null);
     setDetailError(null);
-    Promise.all([api.databases(selectedId), api.schemas(selectedId)])
+    Promise.all([
+      api.databases(selectedId, undefined, controller.signal),
+      api.schemas(selectedId, controller.signal),
+    ])
       .then(([dbRes, schemaRes]) => {
         if (!cancelled) {
           setDatabases(dbRes.items);
@@ -94,6 +98,7 @@ export function useEnvironmentsPage({ onNavigate }: EnvironmentsPageProps) {
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [selectedId]);
 
