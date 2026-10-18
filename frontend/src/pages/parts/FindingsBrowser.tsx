@@ -11,6 +11,7 @@ import {
   Skeleton,
 } from "../../components/ui";
 import type { PageSize } from "../../components/ui/PaginationControls";
+import type { CoverageSignal } from "../../lib/coverage";
 import { labels } from "../../lib/labels";
 import type { SortState } from "../../lib/sort";
 import { api } from "../../services/api";
@@ -38,7 +39,7 @@ export function FindingsBrowser({
   selectionCount,
   bulkTriage,
   error,
-  coverageKind,
+  coverageSignals,
   emptyKind,
   setSection,
   sortedItems,
@@ -78,7 +79,7 @@ export function FindingsBrowser({
   selectionCount: number;
   bulkTriage: (status: string) => void;
   error: string | null;
-  coverageKind: "partial" | "gap" | "permission" | null;
+  coverageSignals: CoverageSignal[];
   emptyKind: "never" | "zero" | "filter" | "dsn" | null;
   setSection: (section: NavigationSection) => void;
   sortedItems: Finding[];
@@ -300,7 +301,7 @@ export function FindingsBrowser({
         {error ? (
           <ErrorBanner message={error} onRetry={() => void load()} />
         ) : null}
-        <CoverageBanner kind={coverageKind} />
+        <CoverageBanner signals={coverageSignals} />
         {busy ? <Skeleton className="h-40 w-full" /> : null}
 
         {!busy && !error && items.length === 0 && emptyKind ? (

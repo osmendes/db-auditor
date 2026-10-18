@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Sheet } from "../components/ui";
 import type { PageSize } from "../components/ui/PaginationControls";
 import { useApp } from "../context/AppContext";
+import { useRunCoverage } from "../hooks/useRunCoverage";
 import { formatError } from "../lib/errors";
 import { labels } from "../lib/labels";
 import { type SortState, sortBy } from "../lib/sort";
@@ -37,9 +38,7 @@ export function FindingsPage() {
   const [emptyKind, setEmptyKind] = useState<
     "never" | "zero" | "filter" | "dsn" | null
   >(null);
-  const [coverageKind, setCoverageKind] = useState<
-    "partial" | "gap" | "permission" | null
-  >(null);
+  const coverage = useRunCoverage(environmentId);
   const [busy, setBusy] = useState(false);
   const [bulkBusy, setBulkBusy] = useState(false);
   const [selected, setSelected] = useState<Finding | null>(null);
@@ -142,9 +141,6 @@ export function FindingsPage() {
       setItems(result.items);
       setTotal(result.total);
       setEmptyKind(result.emptyKind);
-      if (result.coverageKind !== undefined) {
-        setCoverageKind(result.coverageKind);
-      }
       setSelectedIds(new Set());
     } catch (err: unknown) {
       if (controller.signal.aborted) return;
@@ -360,7 +356,7 @@ export function FindingsPage() {
         selectionCount={selectionCount}
         bulkTriage={bulkTriage}
         error={error}
-        coverageKind={coverageKind}
+        coverageSignals={coverage.signals}
         emptyKind={emptyKind}
         setSection={setSection}
         sortedItems={sortedItems}

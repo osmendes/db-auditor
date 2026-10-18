@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { CoverageBanner } from "../components/CoverageBanner";
 import { PageHeader } from "../components/PageHeader";
 import { Button, ErrorBanner, Skeleton } from "../components/ui";
 import { useApp } from "../context/AppContext";
+import { useRunCoverage } from "../hooks/useRunCoverage";
+import { scoreIsPartial } from "../lib/coverage";
 import { formatError } from "../lib/errors";
 import { api } from "../services/api";
 import type {
@@ -42,6 +45,11 @@ export function DashboardPage() {
   const [historyGranularity, setHistoryGranularity] = useState<
     "day" | "week" | "month"
   >("day");
+  const coverage = useRunCoverage(environmentId, null, reloadKey);
+  const scoreRunId =
+    environmentId && coverage.runs[0]?.environment_id === environmentId
+      ? coverage.runs[0].id
+      : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -83,24 +91,6 @@ export function DashboardPage() {
           );
           if (!cancelled) setPriorities(queue.items.slice(0, 5));
         }
-        if (environmentId) {
-          const runs = await api.auditRuns(
-            {
-              environment_id: environmentId,
-              status: "success",
-            },
-            signal,
-          );
-          const run = runs.items[0];
-          if (run && !cancelled) {
-            const agg = await api.scopeScores(environmentId, run.id, signal);
-            if (!cancelled) setScores(agg.items);
-          } else if (!cancelled) {
-            setScores([]);
-          }
-        } else if (!cancelled) {
-          setScores([]);
-        }
       } catch (e) {
         if (!cancelled) {
           setError(
@@ -121,6 +111,30 @@ export function DashboardPage() {
       controller.abort();
     };
   }, [environmentId, reloadKey, historyDays, historyGranularity]);
+
+  // Scores come from the same run the coverage banner describes (the latest
+  // completed one, partial included), never from an older complete run that
+  // would hide a newer partial collection (UI-08).
+  useEffect(() => {
+    if (!environmentId || !scoreRunId) {
+      setScores([]);
+      return;
+    }
+    const controller = new AbortController();
+    let active = true;
+    void api
+      .scopeScores(environmentId, scoreRunId, controller.signal)
+      .then((agg) => {
+        if (active) setScores(agg.items);
+      })
+      .catch(() => {
+        if (active) setScores([]);
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [environmentId, scoreRunId]);
 
   const consumersMax = storage?.top_consumers?.length
     ? Math.max(1, ...storage.top_consumers.map((p) => p.size_bytes))
@@ -162,6 +176,12 @@ export function DashboardPage() {
         </div>
       ) : null}
 
+      {coverage.signals.length > 0 ? (
+        <div className="mt-4">
+          <CoverageBanner signals={coverage.signals} />
+        </div>
+      ) : null}
+
       {error ? (
         <div className="mt-8">
           <ErrorBanner
@@ -197,7 +217,12 @@ export function DashboardPage() {
       ) : null}
 
       {!loading && kpis ? (
-        <DashboardKpis kpis={kpis} scores={scores} setSection={setSection} />
+        <DashboardKpis
+          kpis={kpis}
+          scores={scores}
+          scorePartial={scoreIsPartial(coverage.signals)}
+          setSection={setSection}
+        />
       ) : null}
 
       <DashboardAnalytics

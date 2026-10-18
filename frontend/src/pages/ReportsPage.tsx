@@ -8,6 +8,7 @@ import { CoverageBanner } from "../components/CoverageBanner";
 import { PageHeader } from "../components/PageHeader";
 import { Button, Card, ErrorBanner, Select } from "../components/ui";
 import { useApp } from "../context/AppContext";
+import { useRunCoverage } from "../hooks/useRunCoverage";
 import { formatError } from "../lib/errors";
 import { downloadBlob } from "../lib/export";
 import { api } from "../services/api";
@@ -79,6 +80,7 @@ export function ReportsPage() {
   const [token, setToken] = useState("");
   const [runs, setRuns] = useState<AuditRun[]>([]);
   const [runId, setRunId] = useState("");
+  const coverage = useRunCoverage(env || null, runId || null);
   const [kind, setKind] = useState<ReportJob["report_type"]>("executive");
   const [database, setDatabase] = useState("");
   const [databaseOptions, setDatabaseOptions] = useState<string[]>([]);
@@ -103,9 +105,6 @@ export function ReportsPage() {
       created_at: string;
     }>
   >([]);
-  const [coverageKind, setCoverageKind] = useState<
-    "partial" | "gap" | "permission" | null
-  >(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -125,11 +124,6 @@ export function ReportsPage() {
           (run) => run.status === "success" || run.status === "partial_success",
         );
         setRuns(completed);
-        setCoverageKind(
-          completed.some((run) => run.status === "partial_success")
-            ? "partial"
-            : null,
-        );
         setRunId((current) =>
           completed.some((run) => run.id === current)
             ? current
@@ -286,6 +280,8 @@ export function ReportsPage() {
         description="Gere relatórios versionados a partir de uma execução específica. Acesso controlado pela conta local."
       />
       <div className="mt-8 space-y-5">
+        {/* Coverage of the selected run: the PDF inherits these limits. */}
+        {env && runId ? <CoverageBanner signals={coverage.signals} /> : null}
         <Card
           title="Solicitar relatório"
           contentClassName="flex flex-col gap-3"
@@ -526,7 +522,6 @@ export function ReportsPage() {
         {error ? (
           <ErrorBanner message={error} onRetry={() => void refresh()} />
         ) : null}
-        <CoverageBanner kind={coverageKind} />
         <ReportJobList
           jobs={jobs}
           act={act}

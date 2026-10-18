@@ -4,7 +4,6 @@ import { api } from "../../services/api";
 import type { Finding } from "../../types";
 
 export type FindingsEmptyKind = "never" | "zero" | "filter" | "dsn" | null;
-export type FindingsCoverageKind = "partial" | "gap" | "permission" | null;
 
 export async function fetchFindingsList(input: {
   presetCategory?: "performance" | "security";
@@ -21,7 +20,6 @@ export async function fetchFindingsList(input: {
   items: Finding[];
   total: number;
   emptyKind: FindingsEmptyKind;
-  coverageKind?: FindingsCoverageKind;
 }> {
   const {
     presetCategory,
@@ -99,7 +97,6 @@ export async function fetchFindingsList(input: {
     count = res.page.total;
   }
   let emptyKind: FindingsEmptyKind = null;
-  let coverageKind: FindingsCoverageKind | undefined;
   if (count === 0) {
     const unfiltered = await api.findingsPage(
       {
@@ -127,12 +124,9 @@ export async function fetchFindingsList(input: {
         (run) => run.status === "success" || run.status === "partial_success",
       );
       emptyKind = missingDsn ? "dsn" : collected ? "zero" : "never";
-      coverageKind = runs.items.some((run) => run.status === "partial_success")
-        ? "partial"
-        : null;
     }
   } else {
     emptyKind = null;
   }
-  return { items, total, emptyKind, coverageKind };
+  return { items, total, emptyKind };
 }
