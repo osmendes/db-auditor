@@ -23,6 +23,8 @@ O diretório contém o baseline, o seed local e migrações incrementais. O Post
 - `19_architecture_report.sql`: permite artefato Markdown e registra decisões de domínio versionadas, congeladas no pedido do relatório. Atua somente no banco interno.
 - `20_architecture_insertion.sql`: guarda a evidência de inserção colhida em auditoria manual, inclusive consultas puladas por orçamento ou permissão. Atua somente no banco interno.
 - `21_identity_login_block.sql`: acrescenta `blocked_until` ao contador de tentativas de login em volumes antigos. Substitui a criação ad hoc das tabelas de login que a API fazia no boot (`EnsureIdentitySchema`); agora todo o schema de identidade vem de `16_identity.sql`, `18_totp_discard_retention.sql` e desta migração, registradas em `schema_migration`.
+- `22_finding_queue_order_idx.sql`: índice `finding_queue_order_idx` na ordem da fila de achados (ambiente, severidade, confiança, `last_seen_at`, id). A primeira página da fila deixa de ordenar o ambiente inteiro. Criado com `CREATE INDEX CONCURRENTLY`, fora de transação; o arquivo tem um único comando.
+- `23_finding_env_last_seen_idx.sql`: índice `finding_env_last_seen_idx` (ambiente, `last_seen_at`, id) para as listas filtradas por categoria ou tipo. Também `CONCURRENTLY`. Se um índice ficar inválido após falha, `DROP INDEX CONCURRENTLY` e reinicie a API; o `IF NOT EXISTS` não recria índice inválido.
 
 Não reintroduza arquivos `.down.sql`: o entrypoint executaria todos os `.sql`.
 
