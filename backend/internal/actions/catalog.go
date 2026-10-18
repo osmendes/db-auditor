@@ -113,12 +113,17 @@ func storagePlan() Plan {
 // rulePlans is the only match table. Unknown ids use the investigation fallback.
 var rulePlans = map[string]Plan{}
 
+// narratedRules are rules whose plan states its own meaning and next step.
+// Every other rule takes them from ruleText.
+var narratedRules = map[string]bool{}
+
 func init() {
 	put := func(id string, p Plan) { rulePlans[id] = p }
 	structure := func(id, query string) { put(id, withQuery(base("structure"), query)) }
 	index := func(id string) { put(id, withQuery(base("query_and_index"), indexQuery)) }
 	maint := func(id string) { put(id, base("maintenance")) }
 	sec := func(id string) { put(id, base("security")) }
+	putNarrated := func(id string, p Plan) { put(id, p); narratedRules[id] = true }
 
 	structure("integrity.missing_primary_key", "SELECT conname, contype, convalidated FROM pg_catalog.pg_constraint WHERE conrelid = $1::regclass AND contype = 'p';")
 	structure("integrity.constraint_unvalidated", "SELECT conname, contype, convalidated FROM pg_catalog.pg_constraint WHERE conrelid = $1::regclass AND NOT convalidated;")
@@ -142,7 +147,7 @@ func init() {
 		put(id, base("query_and_index"))
 	}
 
-	put("storage.large_table", storagePlan())
+	putNarrated("storage.large_table", storagePlan())
 	put("storage.top_consumer", withQuery(base("maintenance"), sizeQuery))
 	put("vacuum.high_dead_tuples", withQuery(base("maintenance"), deadQuery))
 	put("maintenance.dead_tuple_pressure", withQuery(base("maintenance"), deadQuery))
@@ -154,23 +159,23 @@ func init() {
 		sec(id)
 	}
 
-	put("integrity.missing_primary_key", narrate(rulePlans["integrity.missing_primary_key"],
+	putNarrated("integrity.missing_primary_key", narrate(rulePlans["integrity.missing_primary_key"],
 		"Esta relação não tem chave primária observada na coleta.",
 		"A consulta lista constraints primárias. Zero linhas confirma a ausência nesta relação.",
 		"não estimado: ausência de chave não tem tamanho nem latência nesta coleta.",
 		"Valide duplicatas e o identificador da aplicação antes de propor uma chave."))
-	put("model.no_primary_key", rulePlans["integrity.missing_primary_key"])
-	put("index.unused", narrate(rulePlans["index.unused"],
+	putNarrated("model.no_primary_key", rulePlans["integrity.missing_primary_key"])
+	putNarrated("index.unused", narrate(rulePlans["index.unused"],
 		"O índice não teve uso observado na janela das estatísticas.",
 		"A consulta mostra definição e validade. O uso vem de idx_scan da coleta.",
 		"não estimado sem bytes do índice e sem a janela de idx_scan.",
 		"Confirme reset de estatísticas e consultas raras antes de considerar remoção."))
-	put("vacuum.high_dead_tuples", narrate(rulePlans["vacuum.high_dead_tuples"],
+	putNarrated("vacuum.high_dead_tuples", narrate(rulePlans["vacuum.high_dead_tuples"],
 		"A relação acumulou tuplas mortas acima do limiar da regra.",
 		"n_dead_tup e n_live_tup da coleta. Estimativa não é bloat medido.",
 		"não estimado sem n_dead_tup, n_live_tup e a janela entre coletas.",
 		"Confira autovacuum e a carga de escrita. Não agende VACUUM a partir daqui."))
-	put("security.excessive_privilege", narrate(rulePlans["security.excessive_privilege"],
+	putNarrated("security.excessive_privilege", narrate(rulePlans["security.excessive_privilege"],
 		"Um papel tem privilégio mais amplo do que o uso conhecido da aplicação.",
 		"Grants efetivos gravados na coleta. A API não executa SQL no alvo.",
 		"não estimado: exposição não vira nota sem o privilégio e o papel.",
@@ -183,7 +188,14 @@ func init() {
 	growth.Confirmation = "SELECT c.oid::regclass, pg_total_relation_size(c.oid), s.n_live_tup, s.n_dead_tup FROM pg_class c LEFT JOIN pg_stat_user_tables s ON s.relid=c.oid WHERE c.oid=$1::regclass;"
 	growth.ReadOnlyQuery = growth.Confirmation
 	growth.FalsePositive = "Carga atípica, reset de estatísticas ou coleta parcial."
-	put("maintenance.growth_trend", growth)
+	putNarrated("maintenance.growth_trend", growth)
+
+	for id, text := range ruleText {
+		if p, ok := rulePlans[id]; ok && !narratedRules[id] {
+			p.Meaning, p.Next = text.Meaning, text.Next
+			rulePlans[id] = p
+		}
+	}
 }
 
 // For returns the plan registered for rule. Anything else is the single investigation fallback.
@@ -192,6 +204,16 @@ func For(rule string) Plan {
 		return p
 	}
 	return base("investigation")
+}
+
+// Has reports whether rule has its own Portuguese meaning and next step,
+// either narrated in its plan or declared in ruleText.
+func Has(rule string) bool {
+	if _, ok := rulePlans[rule]; !ok {
+		return false
+	}
+	_, declared := ruleText[rule]
+	return declared || narratedRules[rule]
 }
 
 // QueryIsReadOnly rejects any statement that is not a single parameterized SELECT.

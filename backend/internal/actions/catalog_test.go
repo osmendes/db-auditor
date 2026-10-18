@@ -78,3 +78,34 @@ func TestUnknownRuleDoesNotInheritAPrefix(t *testing.T) {
 		t.Fatal("index.unused fell through to the generic plan")
 	}
 }
+
+// AR-06: one source for the Portuguese text of every rule.
+func TestRuleTextIsTheOnlyRuleSpecificSource(t *testing.T) {
+	for id := range ruleText {
+		if _, ok := rulePlans[id]; !ok {
+			t.Errorf("ruleText %s has no plan; the text would never be served", id)
+		}
+		if narratedRules[id] {
+			t.Errorf("ruleText %s is shadowed by its narrated plan; keep a single text", id)
+		}
+	}
+	categories := map[string]bool{"structure": true, "query_and_index": true, "maintenance": true, "security": true}
+	for _, def := range analyzer.Catalog() {
+		plan := For(def.ID)
+		if !Has(def.ID) {
+			t.Errorf("active rule %s has no rule-specific Portuguese text", def.ID)
+		}
+		if !categories[plan.Category] {
+			t.Errorf("active rule %s has no declared category: %q", def.ID, plan.Category)
+		}
+		if plan.Meaning == base(plan.Category).Meaning || plan.Next == base(plan.Category).Next {
+			t.Errorf("active rule %s still shows the generic %s text", def.ID, plan.Category)
+		}
+		if !strings.HasSuffix(plan.Meaning, ".") || !strings.HasSuffix(plan.Next, ".") {
+			t.Errorf("incomplete text for %s: %q / %q", def.ID, plan.Meaning, plan.Next)
+		}
+	}
+	if Has("unknown.rule") || Has("index.not_a_rule") {
+		t.Fatal("unknown rules must not report specific text")
+	}
+}
