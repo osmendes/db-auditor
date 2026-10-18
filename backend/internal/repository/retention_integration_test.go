@@ -59,8 +59,11 @@ func TestRetentionGovernanceIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer pool.Close()
+	t.Cleanup(pool.Close)
 	store := NewStore(pool)
+	if _, err = pool.Exec(ctx, `DELETE FROM retention_evidence WHERE recorded_by='retention-test'`); err != nil {
+		t.Fatal(err)
+	}
 	original, err := store.GetRetentionPolicy(ctx)
 	if err != nil {
 		t.Fatal(err)
