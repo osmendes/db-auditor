@@ -20,6 +20,13 @@ type qualityStore interface {
 }
 
 func registerQualityRoutes(mux *http.ServeMux, store InventoryStore, targets map[string]string) {
+	registerQualityRoutesWith(mux, store, targets, quality.Run)
+}
+
+// qualityRunner runs the probe; tests replace it to inject probe errors.
+type qualityRunner func(context.Context, string, quality.Request) (quality.Result, error)
+
+func registerQualityRoutesWith(mux *http.ServeMux, store InventoryStore, targets map[string]string, runProbe qualityRunner) {
 	backend, ok := store.(qualityStore)
 	if !ok {
 		return
@@ -62,7 +69,7 @@ func registerQualityRoutes(mux *http.ServeMux, store InventoryStore, targets map
 			writeError(w, 503, CodeUnavailable, "Conexão de leitura do ambiente não configurada.")
 			return
 		}
-		result, err := quality.Run(r.Context(), dsn, request)
+		result, err := runProbe(r.Context(), dsn, request)
 		if err != nil {
 			writeError(w, 422, CodeValidation, "Diagnóstico não concluído: "+config.RedactSecrets(err.Error(), dsn))
 			return

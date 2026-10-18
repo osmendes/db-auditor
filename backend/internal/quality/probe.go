@@ -63,6 +63,14 @@ func (r Request) Validate() error {
 }
 
 func Run(ctx context.Context, dsn string, request Request) (Result, error) {
+	return run(ctx, dsn, request, pgx.ConnectConfig)
+}
+
+// connectFunc opens the target connection; tests replace it to inject driver
+// errors.
+type connectFunc func(context.Context, *pgx.ConnConfig) (*pgx.Conn, error)
+
+func run(ctx context.Context, dsn string, request Request, connect connectFunc) (Result, error) {
 	result := Result{Issues: []Issue{}}
 	if err := request.Validate(); err != nil {
 		return result, err
@@ -81,7 +89,7 @@ func Run(ctx context.Context, dsn string, request Request) (Result, error) {
 		cfg.RuntimeParams = map[string]string{}
 	}
 	cfg.RuntimeParams["default_transaction_read_only"] = "on"
-	conn, err := pgx.ConnectConfig(ctx, cfg)
+	conn, err := connect(ctx, cfg)
 	if err != nil {
 		return result, fmt.Errorf("falha na conexão: %s", config.RedactSecrets(err.Error(), dsn))
 	}

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/osmendes/db-auditor/internal/collectors/postgres"
 	"github.com/osmendes/db-auditor/internal/config"
 )
@@ -24,7 +25,17 @@ func registerConnectionRoutes(mux *http.ServeMux, store InventoryStore, targets 
 	mux.HandleFunc("GET /api/v1/environments/connection-status", listConnectionStatus(store, targets))
 }
 
+// targetConnector opens the read-only target connection; tests replace it to
+// inject driver errors.
+type targetConnector func(context.Context, string) (*pgx.Conn, error)
+
 func listConnectionStatus(store InventoryStore, targets map[string]string) http.HandlerFunc {
+	return listConnectionStatusWith(store, targets, listConnectionStatusDefaultConnector)
+}
+
+var listConnectionStatusDefaultConnector targetConnector = postgres.ConnectReadOnly
+
+func listConnectionStatusWith(store InventoryStore, targets map[string]string, connect targetConnector) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		envs, err := store.ListEnvironmentsAPI(r.Context())
 		if err != nil {
@@ -50,7 +61,7 @@ func listConnectionStatus(store InventoryStore, targets map[string]string) http.
 			item.DSNConfigured = true
 			start := time.Now()
 			ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-			conn, err := postgres.ConnectReadOnly(ctx, dsn)
+			conn, err := connect(ctx, dsn)
 			if err != nil {
 				cancel()
 				item.Reachable = false

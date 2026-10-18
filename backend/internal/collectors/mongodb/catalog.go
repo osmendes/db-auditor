@@ -47,12 +47,15 @@ type Catalog struct {
 // Every returned error is redacted against uri, so the password never reaches
 // the run record, the API or the logs.
 func Inspect(ctx context.Context, uri, database string) (Catalog, error) {
-	catalog, err := inspect(ctx, uri, database)
+	catalog, err := inspectCatalog(ctx, uri, database)
 	if err != nil {
 		return Catalog{}, config.RedactError(err, uri)
 	}
 	return catalog, nil
 }
+
+// inspectCatalog talks to the driver; tests replace it to inject driver errors.
+var inspectCatalog = inspect
 
 func inspect(ctx context.Context, uri, database string) (Catalog, error) {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Minute)
