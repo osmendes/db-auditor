@@ -41,7 +41,16 @@ LIMIT 20
 `
 
 // CollectChunkVacuumSamples returns at most 20 chunks ordered by dead tuples.
+// Without the timescaledb extension in this database there are no chunks:
+// it returns an empty sample, like the other Timescale collectors.
 func CollectChunkVacuumSamples(ctx context.Context, conn *pgx.Conn) ([]ChunkVacuumSample, error) {
+	ok, err := ensureExtension(ctx, conn, "chunk dead tuples")
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return []ChunkVacuumSample{}, nil
+	}
 	rows, err := conn.Query(ctx, chunkVacuumSQL)
 	if err != nil {
 		return nil, fmt.Errorf("chunk dead tuples: %w", err)
