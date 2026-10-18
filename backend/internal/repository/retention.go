@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // Retention governance (BA-03/10/16). The store keeps every snapshot and job
@@ -91,31 +93,65 @@ func ValidateRetentionInput(in RetentionPolicyInput) error {
 	return nil
 }
 
+// retentionDB is what the retention queries need; both the pool and a
+// transaction satisfy it.
+type retentionDB interface {
+	QueryRow(context.Context, string, ...any) pgx.Row
+	Query(context.Context, string, ...any) (pgx.Rows, error)
+}
+
 func (s *Store) GetRetentionPolicy(ctx context.Context) (RetentionPolicy, error) {
+	return getRetentionPolicy(ctx, s.pool, false)
+}
+
+// getRetentionPolicy reads the single policy row; lock holds it FOR UPDATE so
+// no edit or approval can land until the transaction ends.
+func getRetentionPolicy(ctx context.Context, db retentionDB, lock bool) (RetentionPolicy, error) {
+	query := `SELECT snapshot_retention_days,report_job_retention_days,owner_name,encryption_at_rest,archive_note,approved_by,approved_at,updated_at FROM retention_policy WHERE id`
+	if lock {
+		query += ` FOR UPDATE`
+	}
 	var p RetentionPolicy
-	err := s.pool.QueryRow(ctx, `SELECT snapshot_retention_days,report_job_retention_days,owner_name,encryption_at_rest,archive_note,approved_by,approved_at,updated_at FROM retention_policy WHERE id`).
+	err := db.QueryRow(ctx, query).
 		Scan(&p.SnapshotRetentionDays, &p.ReportJobRetentionDays, &p.OwnerName, &p.EncryptionAtRest, &p.ArchiveNote, &p.ApprovedBy, &p.ApprovedAt, &p.UpdatedAt)
 	return p, err
 }
 
-// UpdateRetentionPolicy changes the policy. Any change clears the previous
-// approval unless the same request approves it, so an edited policy is never
-// treated as approved.
+// eligibleReportJobsSQL is the single definition of a removable job trail,
+// shared by the dry-run count and the DELETE so they can never diverge: a
+// finished job (never running or queued), older than the approved period
+// (bound to $1), whose own expiry passed and that has no stored artifact.
+const eligibleReportJobsSQL = `SELECT j.id FROM report_job j
+ WHERE j.status IN ('success','failed','cancelled')
+   AND j.created_at<now()-make_interval(days=>$1)
+   AND j.expires_at<=now()
+   AND NOT EXISTS (SELECT 1 FROM report_artifact a WHERE a.report_job_id=j.id)`
+
+// UpdateRetentionPolicy stores an approved policy. A request without
+// Approve writes nothing: the policy is only ever changed together with the
+// responsible's approval, so the stored values are always the approved ones.
 func (s *Store) UpdateRetentionPolicy(ctx context.Context, in RetentionPolicyInput, actor string) (RetentionPolicy, error) {
 	if err := ValidateRetentionInput(in); err != nil {
 		return RetentionPolicy{}, err
 	}
-	_, err := s.pool.Exec(ctx, `INSERT INTO retention_policy(id) VALUES(true) ON CONFLICT DO NOTHING`)
-	if err != nil {
-		return RetentionPolicy{}, err
+	if !in.Approve || strings.TrimSpace(actor) == "" {
+		return RetentionPolicy{}, fmt.Errorf("%w: a política só é gravada com approve:true do responsável", ErrRetentionInvalid)
 	}
-	_, err = s.pool.Exec(ctx, `UPDATE retention_policy SET snapshot_retention_days=$1,report_job_retention_days=$2,owner_name=$3,encryption_at_rest=$4,archive_note=$5,
-approved_by=CASE WHEN $6 THEN $7 ELSE '' END,approved_at=CASE WHEN $6 THEN now() ELSE NULL END,updated_at=now() WHERE id`,
-		in.SnapshotRetentionDays, in.ReportJobRetentionDays, strings.TrimSpace(in.OwnerName), strings.TrimSpace(in.EncryptionAtRest), strings.TrimSpace(in.ArchiveNote), in.Approve, actor)
-	if err != nil {
-		return RetentionPolicy{}, err
-	}
-	return s.GetRetentionPolicy(ctx)
+	var p RetentionPolicy
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		if _, err := tx.Exec(ctx, `INSERT INTO retention_policy(id) VALUES(true) ON CONFLICT DO NOTHING`); err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, `UPDATE retention_policy SET snapshot_retention_days=$1,report_job_retention_days=$2,owner_name=$3,encryption_at_rest=$4,archive_note=$5,
+approved_by=$6,approved_at=now(),updated_at=now() WHERE id`,
+			in.SnapshotRetentionDays, in.ReportJobRetentionDays, strings.TrimSpace(in.OwnerName), strings.TrimSpace(in.EncryptionAtRest), strings.TrimSpace(in.ArchiveNote), actor); err != nil {
+			return err
+		}
+		var err error
+		p, err = getRetentionPolicy(ctx, tx, false)
+		return err
+	})
+	return p, err
 }
 
 func (s *Store) RecordRetentionEvidence(ctx context.Context, e RetentionEvidence) (RetentionEvidence, error) {
@@ -143,8 +179,8 @@ VALUES($1,$2,$3,$4,$5,$6::jsonb,$7,$8,$9) RETURNING id::text,recorded_at`, e.Kin
 	return e, err
 }
 
-func (s *Store) latestEvidence(ctx context.Context, kind string) (*RetentionEvidence, error) {
-	rows, err := s.pool.Query(ctx, `SELECT id::text,kind,environment_label,artifact_sha256,succeeded,rto_seconds,integrity,note,recorded_by,performed_at,recorded_at
+func latestEvidence(ctx context.Context, db retentionDB, kind string) (*RetentionEvidence, error) {
+	rows, err := db.Query(ctx, `SELECT id::text,kind,environment_label,artifact_sha256,succeeded,rto_seconds,integrity,note,recorded_by,performed_at,recorded_at
 FROM retention_evidence WHERE kind=$1 AND succeeded ORDER BY performed_at DESC,recorded_at DESC LIMIT 1`, kind)
 	if err != nil {
 		return nil, err
@@ -184,22 +220,28 @@ func CleanupBlockers(p RetentionPolicy, backup, drill *RetentionEvidence, now ti
 }
 
 func (s *Store) PlanRetention(ctx context.Context) (RetentionPlan, error) {
-	policy, err := s.GetRetentionPolicy(ctx)
+	return planRetention(ctx, s.pool, false)
+}
+
+// planRetention computes the dry run on db. With lock, the policy row is held
+// FOR UPDATE for the rest of the transaction.
+func planRetention(ctx context.Context, db retentionDB, lock bool) (RetentionPlan, error) {
+	policy, err := getRetentionPolicy(ctx, db, lock)
 	if err != nil {
 		return RetentionPlan{}, err
 	}
 	plan := RetentionPlan{Policy: policy, SnapshotDeletionNotes: "Snapshots não são removidos pela API: arquive com backup verificado e siga o runbook de docs/ops.md antes de qualquer exclusão manual aprovada."}
-	if err = s.pool.QueryRow(ctx, `SELECT
- CASE WHEN $1>0 THEN (SELECT count(*) FROM audit_run WHERE started_at<now()-make_interval(days=>$1)) ELSE 0 END,
- (SELECT count(*) FROM report_job j WHERE j.created_at<now()-make_interval(days=>$2) AND j.expires_at<=now() AND j.status IN ('success','failed','cancelled') AND NOT EXISTS (SELECT 1 FROM report_artifact a WHERE a.report_job_id=j.id)),
- (SELECT count(*) FROM report_artifact a JOIN report_job j ON j.id=a.report_job_id WHERE j.expires_at<=now())`, policy.SnapshotRetentionDays, policy.ReportJobRetentionDays).
+	if err = db.QueryRow(ctx, `SELECT
+ CASE WHEN $2>0 THEN (SELECT count(*) FROM audit_run WHERE started_at<now()-make_interval(days=>$2)) ELSE 0 END,
+ (SELECT count(*) FROM (`+eligibleReportJobsSQL+`) eligible),
+ (SELECT count(*) FROM report_artifact a JOIN report_job j ON j.id=a.report_job_id WHERE j.expires_at<=now())`, policy.ReportJobRetentionDays, policy.SnapshotRetentionDays).
 		Scan(&plan.SnapshotRunsEligible, &plan.ReportJobsEligible, &plan.ExpiredArtifacts); err != nil {
 		return plan, err
 	}
-	if plan.LastBackupVerified, err = s.latestEvidence(ctx, EvidenceBackupVerified); err != nil {
+	if plan.LastBackupVerified, err = latestEvidence(ctx, db, EvidenceBackupVerified); err != nil {
 		return plan, err
 	}
-	if plan.LastRestoreDrill, err = s.latestEvidence(ctx, EvidenceRestoreDrill); err != nil {
+	if plan.LastRestoreDrill, err = latestEvidence(ctx, db, EvidenceRestoreDrill); err != nil {
 		return plan, err
 	}
 	plan.Blockers = CleanupBlockers(policy, plan.LastBackupVerified, plan.LastRestoreDrill, time.Now())
@@ -207,24 +249,51 @@ func (s *Store) PlanRetention(ctx context.Context) (RetentionPlan, error) {
 	return plan, nil
 }
 
+// RetentionApplyResult is what a cleanup removed and the approved policy it
+// ran under, for the audit log.
+type RetentionApplyResult struct {
+	ReportJobsRemoved int64           `json:"report_jobs_removed"`
+	Policy            RetentionPolicy `json:"policy"`
+}
+
 // ApplyReportJobRetention removes job trails older than the approved period
-// whose artifact already expired. It refuses unless approval, a recent
-// verified backup and a restore drill are on record, and only when the caller
-// confirms the exact count from the dry run.
-func (s *Store) ApplyReportJobRetention(ctx context.Context, expected int64) (int64, error) {
-	plan, err := s.PlanRetention(ctx)
+// whose artifact already expired. Plan, checks and DELETE run in one
+// transaction with the policy row locked: an edit or revocation cannot slip in
+// between, and the rows deleted must be exactly the count the caller confirmed
+// from the dry run, otherwise everything rolls back.
+func (s *Store) ApplyReportJobRetention(ctx context.Context, expected int64) (RetentionApplyResult, error) {
+	var result RetentionApplyResult
+	err := pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
+		plan, err := planRetention(ctx, tx, true)
+		if err != nil {
+			return err
+		}
+		if !plan.CleanupAllowed {
+			return fmt.Errorf("%w: %s", ErrRetentionBlocked, strings.Join(plan.Blockers, "; "))
+		}
+		if expected != plan.ReportJobsEligible {
+			return fmt.Errorf("%w: a contagem confirmada (%d) difere do plano atual (%d); gere o plano de novo", ErrRetentionBlocked, expected, plan.ReportJobsEligible)
+		}
+		rows, err := tx.Query(ctx, `DELETE FROM report_job WHERE id IN (`+eligibleReportJobsSQL+`) RETURNING id`, plan.Policy.ReportJobRetentionDays)
+		if err != nil {
+			return err
+		}
+		var removed int64
+		for rows.Next() {
+			removed++
+		}
+		rows.Close()
+		if err = rows.Err(); err != nil {
+			return err
+		}
+		if removed != expected {
+			return fmt.Errorf("%w: a limpeza removeria %d trilhas, não as %d confirmadas; nada foi removido", ErrRetentionBlocked, removed, expected)
+		}
+		result = RetentionApplyResult{ReportJobsRemoved: removed, Policy: plan.Policy}
+		return nil
+	})
 	if err != nil {
-		return 0, err
+		return RetentionApplyResult{}, err
 	}
-	if !plan.CleanupAllowed {
-		return 0, fmt.Errorf("%w: %s", ErrRetentionBlocked, strings.Join(plan.Blockers, "; "))
-	}
-	if expected != plan.ReportJobsEligible {
-		return 0, fmt.Errorf("%w: a contagem confirmada (%d) difere do plano atual (%d); gere o plano de novo", ErrRetentionBlocked, expected, plan.ReportJobsEligible)
-	}
-	cmd, err := s.pool.Exec(ctx, `DELETE FROM report_job j WHERE j.created_at<now()-make_interval(days=>$1) AND j.expires_at<=now() AND j.status IN ('success','failed','cancelled') AND NOT EXISTS (SELECT 1 FROM report_artifact a WHERE a.report_job_id=j.id)`, plan.Policy.ReportJobRetentionDays)
-	if err != nil {
-		return 0, err
-	}
-	return cmd.RowsAffected(), nil
+	return result, nil
 }
