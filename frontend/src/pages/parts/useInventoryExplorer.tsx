@@ -1,7 +1,6 @@
 import {
   createContext,
   type ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -23,27 +22,23 @@ import {
 import type { SortState } from "../../lib/sort";
 import { api } from "../../services/api";
 import type {
-  CAGGSnapshot,
   ColumnStatSnapshot,
   DatabaseSnapshot,
   EnvironmentCapabilities,
-  FunctionSnapshot,
-  HypertableSnapshot,
-  IndexSnapshot,
   InventoryObjectKind,
-  PageMeta,
   SchemaSnapshot,
   SnapshotCompleteness,
   TableHistoryPoint,
   TableSnapshot,
-  ViewSnapshot,
   WorkloadSnapshot,
 } from "../../types";
+import { resolveInventorySelection } from "./inventoryResolve";
 import {
   KIND_LABELS,
   type SelectedInventoryItem,
   targetFor,
 } from "./inventoryUi";
+import { useInventoryObjectLists } from "./useInventoryObjectLists";
 
 export function useInventoryExplorer() {
   const {
@@ -79,15 +74,6 @@ export function useInventoryExplorer() {
   const [q, setQ] = useState("");
   const [offset, setOffset] = useState(0);
   const [pageSize, setPageSize] = useState<PageSize>(20);
-  const [page, setPage] = useState<PageMeta | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [listError, setListError] = useState<string | null>(null);
-  const [tables, setTables] = useState<TableSnapshot[]>([]);
-  const [indexes, setIndexes] = useState<IndexSnapshot[]>([]);
-  const [views, setViews] = useState<ViewSnapshot[]>([]);
-  const [caggs, setCaggs] = useState<CAGGSnapshot[]>([]);
-  const [functions, setFunctions] = useState<FunctionSnapshot[]>([]);
-  const [hypertables, setHypertables] = useState<HypertableSnapshot[]>([]);
   const [selectedItem, setSelectedItem] =
     useState<SelectedInventoryItem | null>(null);
   const [selectedRun, setSelectedRun] = useState<string | null>(null);
@@ -158,149 +144,29 @@ export function useInventoryExplorer() {
     return schemas.filter((s) => s.database_name === selectedDb);
   }, [schemas, selectedDb]);
 
-  const loadObjects = useCallback(() => {
-    if (!envId) {
-      setTables([]);
-      setIndexes([]);
-      setViews([]);
-      setCaggs([]);
-      setFunctions([]);
-      setHypertables([]);
-      setPage(null);
-      setLoading(false);
-      return () => {};
-    }
-    let cancelled = false;
-    setLoading(true);
-    setListError(null);
-    const params = {
-      audit_run_id: search.run || undefined,
-      limit: pageSize === "all" ? 100 : pageSize,
-      offset,
-      q: q || undefined,
-      database: selectedDb || undefined,
-      schema: selectedSchema || undefined,
-      order_by: sort ? `${sort.key}:${sort.dir}` : undefined,
-    };
-    const fail = (msg: string) => {
-      if (!cancelled) {
-        setListError(msg);
-        setLoading(false);
-      }
-    };
-    const ok = () => {
-      if (!cancelled) setLoading(false);
-    };
-
-    if (kind === "tables") {
-      api
-        .tables(envId, params)
-        .then((res) => {
-          if (!cancelled) {
-            setTables(res.items);
-            setPage(res.page);
-          }
-        })
-        .catch((e: unknown) =>
-          fail(formatError(e, "Não foi possível listar as tabelas")),
-        )
-        .finally(ok);
-    } else if (kind === "indexes") {
-      api
-        .indexes(envId, params)
-        .then((res) => {
-          if (!cancelled) {
-            setIndexes(res.items);
-            setPage(res.page);
-          }
-        })
-        .catch((e: unknown) =>
-          fail(formatError(e, "Não foi possível listar os índices")),
-        )
-        .finally(ok);
-    } else if (kind === "views") {
-      api
-        .views(envId, params)
-        .then((res) => {
-          if (!cancelled) {
-            setViews(res.items);
-            setPage(res.page);
-          }
-        })
-        .catch((e: unknown) =>
-          fail(formatError(e, "Não foi possível listar as visualizações")),
-        )
-        .finally(ok);
-    } else if (kind === "functions") {
-      api
-        .functions(envId, params)
-        .then((res) => {
-          if (!cancelled) {
-            setFunctions(res.items);
-            setPage(res.page);
-          }
-        })
-        .catch((e: unknown) =>
-          fail(formatError(e, "Não foi possível listar as funções")),
-        )
-        .finally(ok);
-    } else if (kind === "hypertables") {
-      api
-        .hypertablesPage(envId, params)
-        .then((res) => {
-          if (!cancelled) {
-            setHypertables(res.items);
-            setPage(res.page);
-          }
-        })
-        .catch((e: unknown) =>
-          fail(formatError(e, "Não foi possível listar as hypertables")),
-        )
-        .finally(ok);
-    } else {
-      api
-        .continuousAggregatesPage(envId, params)
-        .then((res) => {
-          if (!cancelled) {
-            setPage(res.page);
-            setCaggs(res.items);
-            setViews(
-              res.items.map((c) => ({
-                id: c.id,
-                database_name: c.database_name,
-                schema_name: c.schema_name,
-                view_name: c.view_name,
-                owner_name: c.owner_name,
-                relkind: "cagg",
-                size_bytes: 0,
-                collected_at: c.collected_at,
-              })),
-            );
-          }
-        })
-        .catch((e: unknown) =>
-          fail(
-            formatError(e, "Não foi possível listar os agregados contínuos"),
-          ),
-        )
-        .finally(ok);
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [
+  const {
+    page,
+    loading,
+    listError,
+    setListError,
+    tables,
+    indexes,
+    views,
+    caggs,
+    functions,
+    hypertables,
+    loadObjects,
+  } = useInventoryObjectLists({
     envId,
     kind,
     offset,
     pageSize,
     q,
-    search.run,
+    run: search.run,
     selectedDb,
     selectedSchema,
     sort,
-  ]);
-
-  useEffect(() => loadObjects(), [loadObjects]);
+  });
   useEffect(() => setSort(null), [kind]);
 
   // The server sorts the filtered result before applying LIMIT/OFFSET.
@@ -399,99 +265,7 @@ export function useInventoryExplorer() {
     setSelectedRun(run);
     setDetailError(null);
     setSheetOpen(true);
-    const params = {
-      audit_run_id: run,
-      database: inventory.database,
-      schema: inventory.schema,
-      q: inventory.name,
-    };
-    const findPage = async <T,>(
-      load: (offset: number) => Promise<{ items: T[]; page: PageMeta }>,
-      matches: (item: T) => boolean,
-    ): Promise<T | null> => {
-      let offset = 0;
-      for (let attempt = 0; attempt < 20; attempt++) {
-        const result = await load(offset);
-        const found = result.items.find(matches);
-        if (found) return found;
-        if (!result.page.has_more) return null;
-        offset += result.items.length;
-      }
-      throw new Error("Busca limitada a 2.000 objetos. Refine o link.");
-    };
-    const resolve = async (): Promise<SelectedInventoryItem | null> => {
-      switch (inventory.kind) {
-        case "tables": {
-          const result = await api.tableAssessment(
-            envId,
-            run,
-            inventory.database,
-            inventory.schema,
-            inventory.name,
-          );
-          return { kind: "tables", item: result.table };
-        }
-        case "indexes": {
-          const item = await findPage(
-            (offset) => api.indexes(envId, { ...params, limit: 100, offset }),
-            (value) =>
-              value.database_name === inventory.database &&
-              value.schema_name === inventory.schema &&
-              value.index_name === inventory.name,
-          );
-          return item ? { kind: "indexes", item } : null;
-        }
-        case "views": {
-          const item = await findPage(
-            (offset) => api.views(envId, { ...params, limit: 100, offset }),
-            (value) =>
-              value.database_name === inventory.database &&
-              value.schema_name === inventory.schema &&
-              value.view_name === inventory.name,
-          );
-          return item ? { kind: "views", item } : null;
-        }
-        case "caggs": {
-          const item = await findPage(
-            (offset) =>
-              api.continuousAggregatesPage(envId, {
-                ...params,
-                limit: 100,
-                offset,
-              }),
-            (value) =>
-              value.database_name === inventory.database &&
-              value.schema_name === inventory.schema &&
-              value.view_name === inventory.name,
-          );
-          if (!item) return null;
-          return { kind: "caggs", item };
-        }
-        case "functions": {
-          const item = await findPage(
-            (offset) => api.functions(envId, { ...params, limit: 100, offset }),
-            (value) =>
-              value.database_name === inventory.database &&
-              value.schema_name === inventory.schema &&
-              value.function_name === inventory.name &&
-              value.identity_arguments === (inventory.signature ?? ""),
-          );
-          return item ? { kind: "functions", item } : null;
-        }
-        case "hypertables": {
-          const item = await findPage(
-            (offset) =>
-              api.hypertablesPage(envId, { ...params, limit: 100, offset }),
-            (value) =>
-              value.database_name === inventory.database &&
-              value.schema_name === inventory.schema &&
-              value.hypertable_name === inventory.name,
-          );
-          return item ? { kind: "hypertables", item } : null;
-        }
-      }
-    };
-    void resolve()
+    void resolveInventorySelection(envId, run, inventory)
       .then((selection) => {
         if (cancelled || selectedKeyRef.current !== key) return;
         if (!selection) {
@@ -677,7 +451,7 @@ export function useInventoryExplorer() {
   };
 }
 
-type InventoryModel = ReturnType<typeof useInventoryExplorer>;
+export type InventoryModel = ReturnType<typeof useInventoryExplorer>;
 
 const InventoryModelContext = createContext<InventoryModel | null>(null);
 
