@@ -2,7 +2,7 @@
 
 ## Schema do snapshot store
 
-O schema canônico está em `backend/migrations/01_baseline.sql`. Os ambientes iniciais vêm de `AUDITOR_TARGET_N_*` no `.env`: a API grava nome e id depois das migrations. A API aplica o baseline só quando o banco está vazio e registra `schema_migration`. Um volume que já tem o schema atual recebe só o que falta (`03_audit_schedule.sql` até `24_report_limits_retention_governance.sql`) e não reaplica o baseline. O segundo boot não executa SQL de novo. Se o checksum de um arquivo já aplicado mudar, a API recusa subir. As notas de cada etapa (migrações, limites e decisões) estão em [notas-por-etapa.md](notas-por-etapa.md).
+O schema canônico está em `backend/migrations/01_baseline.sql`. Os ambientes iniciais vêm de `AUDITOR_TARGET_N_*` no `.env`: a API grava nome e id depois das migrations. A API aplica o baseline só quando o banco está vazio e registra `schema_migration`. Um volume que já tem o schema atual recebe só o que falta (`03_audit_schedule.sql` até `25_role_attributes_regression_workload.sql`) e não reaplica o baseline. O segundo boot não executa SQL de novo. Se o checksum de um arquivo já aplicado mudar, a API recusa subir. As notas de cada etapa (migrações, limites e decisões) estão em [notas-por-etapa.md](notas-por-etapa.md).
 
 Antes de atualizar uma instalação persistente, faça backup do snapshot store e confira a restauração. A migração `12_view_detail.sql` acrescenta campos sem apagar visões existentes. Depois do deploy, execute uma nova coleta de PostgreSQL para preencher colunas e opções de segurança: execuções antigas mostram esses campos como não coletados. Para voltar à versão anterior, pare a API nova e restaure o backup ou use a versão anterior do aplicativo; não remova as novas colunas manualmente.
 
@@ -204,7 +204,7 @@ O auditor não cifra disco nem guarda chave. Para a infraestrutura usada, regist
 - **Volumes** `snapshot-store` e `snapshot-backup`: `lsblk -o NAME,TYPE,FSTYPE,MOUNTPOINT` e `cryptsetup status <mapeamento>` (LUKS) ou a tela/CLI do provedor mostrando o volume cifrado (`aws ec2 describe-volumes --query 'Volumes[].Encrypted'`, equivalente no provedor).
 - **Backups fora da VPS**: cifre o dump antes de enviar (`age -r <chave-publica> -o dump.age dump`) ou use bucket com SSE-KMS; anexe a configuração do bucket (`aws s3api get-bucket-encryption`) ou o comando `age` usado.
 - **Chaves**: quem guarda a chave LUKS/age/KMS, onde (cofre), rotação e quem pode ler. A chave nunca fica no Compose, no `.env.prod` nem no repositório.
-- **Acesso**: diretório `/backup` com dono do serviço e modo `0700`; `ls -ld /backup` e a lista de usuários do host com acesso.
+- **Acesso**: diretório `/backup` com dono do serviço e modo `0700`; dumps e `.sha256` com modo `0600`. O `deploy/snapshot-backup.sh` aplica `umask 077`, corrige o modo do diretório e de dumps antigos a cada execução. Anexe `ls -ld /backup`, `ls -l /backup` e a lista de usuários do host com acesso.
 - **Descarte**: dumps locais saem após `BACKUP_RETENTION_DAYS` (padrão 14) pelo `find -delete` do script; PDFs vencidos saem pela limpeza horária; para mídia/volume descartado, `cryptsetup luksErase` ou destruição de chave KMS. Registre o prazo aprovado em `archive_note`.
 
 ### Limites de consultas históricas (BA-03)

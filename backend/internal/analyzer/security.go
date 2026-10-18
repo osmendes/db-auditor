@@ -94,7 +94,10 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 		}
 	}
 
-	// Superuser / powerful roles
+	// Superuser / powerful roles. Every login role carries its attributes
+	// (#126); the auditor's own role also comes from the privilege check, so
+	// one finding per database and role merges both sources.
+	powerful := map[string]int{}
 	for _, role := range facts.Roles {
 		if !role.Current && role.Login {
 			expired := role.ValidUntil != nil && !role.CollectedAt.IsZero() && role.ValidUntil.Before(role.CollectedAt)
@@ -118,6 +121,16 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 			continue
 		}
 		key := fmt.Sprintf("%s.role:%s", role.Database, role.RoleName)
+		if at, ok := powerful[key]; ok {
+			evidence := out[at].Evidence
+			for name, set := range map[string]bool{"superuser": role.Superuser, "bypass_rls": role.BypassRLS, "replication": role.Replication, "login": role.Login} {
+				if set {
+					evidence[name] = true
+				}
+			}
+			continue
+		}
+		powerful[key] = len(out)
 		title := fmt.Sprintf("Powerful role: %s", role.RoleName)
 		f := Finding{
 			EnvironmentID: facts.EnvironmentID,

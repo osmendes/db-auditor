@@ -17,6 +17,9 @@ type AccountRoleSnapshot struct {
 	ValidUntil    pgtype.Timestamptz
 	SampledActive bool
 	CollectedAt   pgtype.Timestamptz
+	IsSuperuser   bool
+	BypassRls     bool
+	Replication   bool
 }
 
 type AlertDelivery struct {

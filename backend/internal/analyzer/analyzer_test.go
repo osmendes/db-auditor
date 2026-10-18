@@ -284,3 +284,46 @@ func TestDedupKeyStable(t *testing.T) {
 		t.Fatalf("unstable dedup key: %q vs %q", a, b)
 	}
 }
+
+// #126: every login role with elevated attributes yields one finding, and the
+// auditor's own role (seen by the privilege check and by the role sample)
+// yields exactly one, merging both sources.
+func TestPowerfulRoleCoversEveryLoginRole(t *testing.T) {
+	facts := SnapshotFacts{EnvironmentID: "env-1", Roles: []RoleFact{
+		{Database: "db", RoleName: "auditor", Current: true, Superuser: true},
+		{Database: "db", RoleName: "auditor", Login: true, Superuser: true, Replication: true},
+		{Database: "db", RoleName: "ops_power", Login: true, Superuser: true},
+		{Database: "db", RoleName: "rls_bypass", Login: true, BypassRLS: true},
+		{Database: "db", RoleName: "replicator", Login: true, Replication: true},
+		{Database: "db", RoleName: "app", Login: true},
+	}}
+	out, err := SecurityAnalyzer{}.Analyze(context.Background(), facts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]Finding{}
+	for _, f := range out {
+		if f.FindingType != "security.powerful_role" {
+			continue
+		}
+		if _, dup := got[f.ObjectName]; dup {
+			t.Fatalf("powerful_role duplicado para %s", f.ObjectName)
+		}
+		got[f.ObjectName] = f
+	}
+	for _, name := range []string{"auditor", "ops_power", "rls_bypass", "replicator"} {
+		if _, ok := got[name]; !ok {
+			t.Fatalf("sem powerful_role para %s: %v", name, got)
+		}
+	}
+	if _, ok := got["app"]; ok || len(got) != 4 {
+		t.Fatalf("powerful_role inesperado: %v", got)
+	}
+	ev := got["auditor"].Evidence
+	if ev["superuser"] != true || ev["replication"] != true || ev["login"] != true {
+		t.Fatalf("evidência do auditor não juntou as duas fontes: %v", ev)
+	}
+	if got["rls_bypass"].Evidence["bypass_rls"] != true {
+		t.Fatalf("bypass_rls ausente: %v", got["rls_bypass"].Evidence)
+	}
+}
