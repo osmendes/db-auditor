@@ -1,0 +1,1441 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Length 5605 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.08 0.45 0.35 rg BT /F1 18 Tf 42 790 Td (DB Auditor - Relatório técnico) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 764 Td (Nível de redação: sem redação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 750 Td (Ambiente: staging-erp) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 736 Td (Execução: 00000000-0000-0000-0000-000000000003) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 722 Td (Início: 02/10/2026 12:00 UTC | Estado: concluída) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 708 Td (Versão do serviço: 1.4.0 | Regras: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 694 Td (Solicitante: operator) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 680 Td (Escopo: ambiente inteiro) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 666 Td () Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 642 Td (Resumo executivo) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 621 Td (1 bancos | 30 tabelas | 40 achados \(8 críticos, 8 altos\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 607 Td (Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 593 Td (observados, não substitui a investigação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 575 Td (Achados por severidade \(itens incluídos no PDF\)) Tj ET
+0.94 0.96 0.97 rg 42 556 68 11 re f 0.90 0.93 0.94 rg 115 556 300 11 re f 0.09 0.55 0.42 rg 115 556 60 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 558 Td (Críticos) Tj ET BT /F1 9 Tf 425 558 Td (8) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (Alternativa textual: Críticos = 8 de 40 itens.) Tj ET
+0.94 0.96 0.97 rg 42 522 68 11 re f 0.90 0.93 0.94 rg 115 522 300 11 re f 0.09 0.55 0.42 rg 115 522 60 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 524 Td (Altos) Tj ET BT /F1 9 Tf 425 524 Td (8) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 504 Td (Alternativa textual: Altos = 8 de 40 itens.) Tj ET
+0.94 0.96 0.97 rg 42 488 68 11 re f 0.90 0.93 0.94 rg 115 488 300 11 re f 0.09 0.55 0.42 rg 115 488 60 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 490 Td (Médios) Tj ET BT /F1 9 Tf 425 490 Td (8) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 470 Td (Alternativa textual: Médios = 8 de 40 itens.) Tj ET
+0.94 0.96 0.97 rg 42 454 68 11 re f 0.90 0.93 0.94 rg 115 454 300 11 re f 0.09 0.55 0.42 rg 115 454 60 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 456 Td (Baixos) Tj ET BT /F1 9 Tf 425 456 Td (8) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 436 Td (Alternativa textual: Baixos = 8 de 40 itens.) Tj ET
+0.94 0.96 0.97 rg 42 420 68 11 re f 0.90 0.93 0.94 rg 115 420 300 11 re f 0.09 0.55 0.42 rg 115 420 60 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 422 Td (Informativos) Tj ET BT /F1 9 Tf 425 422 Td (8) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 402 Td (Alternativa textual: Informativos = 8 de 40 itens.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 388 Td (Cobertura: completa) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 374 Td (Índice indisponível | confiança 0%) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 350 Td (Riscos e prioridades) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 329 Td (Matriz de decisão \(priority-v1\): pontuação = peso da severidade × fator de impacto medido) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 315 Td (× confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 301 Td (equipe e janela antes de executar uma mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 283 Td (Matriz impacto × esforço × confiança × risco) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 266 Td (#1 | achado f-005 | pontuação 1.33/7.5 | severidade crítica | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 252 Td (esforço médio | confiança média \(50%\) | risco: Criar ou remover índice pode aumentar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 238 Td (escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 224 Td (#2 | achado f-025 | pontuação 1.33/7.5 | severidade crítica | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 210 Td (esforço médio | confiança média \(50%\) | risco: Criar ou remover índice pode aumentar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 196 Td (escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 182 Td (#3 | achado f-035 | pontuação 1.33/7.5 | severidade crítica | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 168 Td (esforço médio | confiança média \(50%\) | risco: Criar ou remover índice pode aumentar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 154 Td (escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 140 Td (#4 | achado f-026 | pontuação 1.28/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 126 Td (médio | confiança média \(60%\) | risco: Parâmetros errados elevam I/O ou deixam bloat) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 112 Td (crescer; VACUUM FULL bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 98 Td (#5 | achado f-007 | pontuação 1.12/7.5 | severidade média | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 84 Td (médio | confiança média \(70%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 70 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 56 Td (#6 | achado f-017 | pontuação 1.12/7.5 | severidade média | impacto não estimado | esforço) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 1 de 22) Tj ET
+endstream
+endobj
+2 0 obj
+<< /Length 6761 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (médio | confiança média \(70%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (#7 | achado f-037 | pontuação 1.12/7.5 | severidade média | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (médio | confiança média \(70%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (#8 | achado f-015 | pontuação 1.00/7.5 | severidade crítica | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (esforço alto | confiança média \(50%\) | risco: Bloqueios longos, quebra de FKs/aplicação e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (#9 | achado f-006 | pontuação 0.96/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (alto | confiança média \(60%\) | risco: Uma revogação pode interromper um serviço legítimo;) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (mudanças devem ter rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (#10 | achado f-016 | pontuação 0.96/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (alto | confiança média \(60%\) | risco: Uma mudança sem conhecer dependências e carga pode) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (#11 | achado f-036 | pontuação 0.96/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (alto | confiança média \(60%\) | risco: Uma revogação pode interromper um serviço legítimo;) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (mudanças devem ter rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (#12 | achado f-008 | pontuação 0.85/7.5 | severidade baixa | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (esforço médio | confiança alta \(80%\) | risco: Parâmetros errados elevam I/O ou deixam) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 524 Td (bloat crescer; VACUUM FULL bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 510 Td (#13 | achado f-038 | pontuação 0.85/7.5 | severidade baixa | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 496 Td (esforço médio | confiança alta \(80%\) | risco: Parâmetros errados elevam I/O ou deixam) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 482 Td (bloat crescer; VACUUM FULL bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 468 Td (#14 | achado f-027 | pontuação 0.84/7.5 | severidade média | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 454 Td (esforço alto | confiança média \(70%\) | risco: Bloqueios longos, quebra de FKs/aplicação e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 440 Td (plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 426 Td (#15 | achado f-020 | pontuação 0.80/7.5 | severidade crítica | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (esforço médio | confiança baixa \(0%\) | risco: Parâmetros errados elevam I/O ou deixam) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (bloat crescer; VACUUM FULL bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (#16 | achado f-001 | pontuação 0.64/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (médio | confiança baixa \(10%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (#17 | achado f-011 | pontuação 0.64/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (médio | confiança baixa \(10%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (#18 | achado f-031 | pontuação 0.64/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (médio | confiança baixa \(10%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (#19 | achado f-018 | pontuação 0.64/7.5 | severidade baixa | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (esforço alto | confiança alta \(80%\) | risco: Uma revogação pode interromper um serviço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (legítimo; mudanças devem ter rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (#20 | achado f-028 | pontuação 0.64/7.5 | severidade baixa | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (esforço alto | confiança alta \(80%\) | risco: Uma mudança sem conhecer dependências e carga) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (pode afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (Matriz limitada aos 20 itens de maior pontuação; os demais aparecem no detalhamento) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (abaixo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 142 Td ([CRÍTICA] Uma consulta pode fazer leituras amplas. - erp.public.table_005) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (ID do achado: f-005 | severidade: crítica | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 2 de 22) Tj ET
+endstream
+endobj
+3 0 obj
+<< /Length 6531 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (Confiança: 50% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 632 Td ([CRÍTICA] Este índice não teve uso observado no período disponível. - erp.public.table_025) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (ID do achado: f-025 | severidade: crítica | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (Hipótese: Este índice não teve uso observado no período disponível. Hipótese até) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 377 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 363 Td (Confiança: 50% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 345 Td ([CRÍTICA] Uma consulta pode fazer leituras amplas. - erp.public.table_035) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (ID do achado: f-035 | severidade: crítica | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (Confiança: 50% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 86 Td ([ALTA] Há muitos registros antigos aguardando limpeza. - erp.public.table_026) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (ID do achado: f-026 | severidade: alta | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 3 de 22) Tj ET
+endstream
+endobj
+4 0 obj
+<< /Length 6159 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 702 Td (Custos de autovacuum \(PostgreSQL/TimescaleDB \(pg_stat_user_tables\)\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (slots de replicação verificados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (I/O.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (acumulam tuplas mortas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização \(fora) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (do auditor\) reduz arquivo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (exigem janela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (completas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 377 Td (Confiança: 60% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 359 Td ([MÉDIA] Este índice não teve uso observado no período disponível. - erp.public.table_007) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (ID do achado: f-007 | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (Hipótese: Este índice não teve uso observado no período disponível. Hipótese até) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (Confiança: 70% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 72 Td ([MÉDIA] Uma consulta pode fazer leituras amplas. - erp.public.table_017) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (ID do achado: f-017 | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 4 de 22) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Length 6363 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (Confiança: 70% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 562 Td ([MÉDIA] Este índice não teve uso observado no período disponível. - erp.public.table_037) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (ID do achado: f-037 | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Hipótese: Este índice não teve uso observado no período disponível. Hipótese até) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 377 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 363 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 349 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 335 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 321 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 307 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 293 Td (Confiança: 70% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 275 Td ([CRÍTICA] Esta tabela ocupa muito espaço. - erp.public.table_015) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (ID do achado: f-015 | severidade: crítica | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 128 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (TimescaleDB\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (precisam ser revalidados.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 5 de 22) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Length 6372 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (recriados por partição.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (volume representativo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (principais e latência comparados ao período anterior.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (armazenamento.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 524 Td (Confiança: 50% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 506 Td ([ALTA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_006) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (ID do achado: f-006 | severidade: alta | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 377 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 363 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 349 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 335 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 321 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 307 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 293 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 279 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 265 Td (Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 251 Td (Confiança: 60% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 233 Td ([ALTA] Esta tabela não tem chave primária identificada. - erp.public.table_016) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (ID do achado: f-016 | severidade: alta | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 62 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 6 de 22) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Length 6099 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Próximo passo: Confirme como os registros são identificados e valide os dados antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (criar uma chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Confiança: 60% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 702 Td ([ALTA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_036) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (ID do achado: f-036 | severidade: alta | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Confiança: 60% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 429 Td ([BAIXA] Há muitos registros antigos aguardando limpeza. - erp.public.table_008) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (ID do achado: f-008 | severidade: baixa | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 296 Td (Custos de autovacuum \(PostgreSQL/TimescaleDB \(pg_stat_user_tables\)\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 279 Td (Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 265 Td (slots de replicação verificados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 251 Td (Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 237 Td (I/O.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 223 Td (Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 209 Td (acumulam tuplas mortas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 195 Td (Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização \(fora) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 181 Td (do auditor\) reduz arquivo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 167 Td (Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (exigem janela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (completas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 7 de 22) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Length 6047 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Confiança: 80% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 702 Td ([BAIXA] Há muitos registros antigos aguardando limpeza. - erp.public.table_038) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (ID do achado: f-038 | severidade: baixa | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 569 Td (Custos de autovacuum \(PostgreSQL/TimescaleDB \(pg_stat_user_tables\)\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (slots de replicação verificados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 524 Td (Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 510 Td (I/O.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 496 Td (Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 482 Td (acumulam tuplas mortas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 468 Td (Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização \(fora) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 454 Td (do auditor\) reduz arquivo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 440 Td (Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 426 Td (exigem janela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (completas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Confiança: 80% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 226 Td ([MÉDIA] Esta tabela ocupa muito espaço. - erp.public.table_027) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 209 Td (ID do achado: f-027 | severidade: média | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 195 Td (Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 181 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 167 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 93 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (TimescaleDB\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 62 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 8 de 22) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Length 6125 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (precisam ser revalidados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (recriados por partição.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (volume representativo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (principais e latência comparados ao período anterior.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 524 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 510 Td (Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 496 Td (armazenamento.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 482 Td (Confiança: 70% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 464 Td ([CRÍTICA] Há muitos registros antigos aguardando limpeza. - erp.public.table_020) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (ID do achado: f-020 | severidade: crítica | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 377 Td (Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 363 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 349 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 331 Td (Custos de autovacuum \(PostgreSQL/TimescaleDB \(pg_stat_user_tables\)\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (slots de replicação verificados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (I/O.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (acumulam tuplas mortas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização \(fora) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (do auditor\) reduz arquivo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (exigem janela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (completas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 62 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 9 de 22) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Length 6471 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Confiança: 0% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 730 Td ([ALTA] Este índice não teve uso observado no período disponível. - erp.public.table_001) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 713 Td (ID do achado: f-001 | severidade: alta | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 699 Td (Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (Hipótese: Este índice não teve uso observado no período disponível. Hipótese até) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (Confiança: 10% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 443 Td ([ALTA] Uma consulta pode fazer leituras amplas. - erp.public.table_011) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 426 Td (ID do achado: f-011 | severidade: alta | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Confiança: 10% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 184 Td ([ALTA] Este índice não teve uso observado no período disponível. - erp.public.table_031) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 167 Td (ID do achado: f-031 | severidade: alta | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (Hipótese: Este índice não teve uso observado no período disponível. Hipótese até) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 10 de 22) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Length 6321 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (Confiança: 10% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 646 Td ([BAIXA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_018) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (ID do achado: f-018 | severidade: baixa | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (Confiança: 80% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 373 Td ([BAIXA] Esta tabela não tem chave primária identificada. - erp.public.table_028) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (ID do achado: f-028 | severidade: baixa | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (Próximo passo: Confirme como os registros são identificados e valide os dados antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (criar uma chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (Confiança: 80% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 100 Td ([CRÍTICA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (ID do achado: f-000 | severidade: crítica | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 11 de 22) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Length 6228 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (Confiança: 0% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 562 Td ([CRÍTICA] Esta tabela não tem chave primária identificada. - erp.public.table_010) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (ID do achado: f-010 | severidade: crítica | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 377 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 363 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 349 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 335 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 321 Td (Próximo passo: Confirme como os registros são identificados e valide os dados antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 307 Td (criar uma chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 293 Td (Confiança: 0% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 275 Td ([CRÍTICA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_030) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (ID do achado: f-030 | severidade: crítica | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 62 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 12 de 22) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Length 6177 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Confiança: 0% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 730 Td ([ALTA] Esta tabela ocupa muito espaço. - erp.public.table_021) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 713 Td (ID do achado: f-021 | severidade: alta | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 699 Td (Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 597 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (TimescaleDB\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 524 Td (precisam ser revalidados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 510 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 496 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 482 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 468 Td (recriados por partição.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 454 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 440 Td (volume representativo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 426 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (principais e latência comparados ao período anterior.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (armazenamento.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Confiança: 10% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 226 Td ([MÉDIA] Há muitos registros antigos aguardando limpeza. - erp.public.table_002) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 209 Td (ID do achado: f-002 | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 195 Td (Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 181 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 167 Td (Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 93 Td (Custos de autovacuum \(PostgreSQL/TimescaleDB \(pg_stat_user_tables\)\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 62 Td (slots de replicação verificados.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 13 de 22) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Length 5962 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (I/O.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (acumulam tuplas mortas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização \(fora) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (do auditor\) reduz arquivo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (exigem janela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (completas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 524 Td (Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 510 Td (Confiança: 20% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 492 Td ([MÉDIA] Há muitos registros antigos aguardando limpeza. - erp.public.table_032) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (ID do achado: f-032 | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 377 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 359 Td (Custos de autovacuum \(PostgreSQL/TimescaleDB \(pg_stat_user_tables\)\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (slots de replicação verificados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (I/O.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (acumulam tuplas mortas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização \(fora) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (do auditor\) reduz arquivo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (exigem janela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (completas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 62 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 14 de 22) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Length 6216 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Confiança: 20% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 758 Td ([INFORMATIVA] Este índice não teve uso observado no período disponível. -) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 741 Td (erp.public.table_019) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 727 Td (ID do achado: f-019 | severidade: informativa | esforço preliminar: médio \(teste e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 713 Td (retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 699 Td (Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (Hipótese: Este índice não teve uso observado no período disponível. Hipótese até) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (Confiança: 90% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 443 Td ([INFORMATIVA] Uma consulta pode fazer leituras amplas. - erp.public.table_029) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 426 Td (ID do achado: f-029 | severidade: informativa | esforço preliminar: médio \(teste e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (Confiança: 90% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 170 Td ([MÉDIA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_012) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (ID do achado: f-012 | severidade: média | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 15 de 22) Tj ET
+endstream
+endobj
+16 0 obj
+<< /Length 6307 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (Confiança: 20% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 646 Td ([MÉDIA] Esta tabela não tem chave primária identificada. - erp.public.table_022) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (ID do achado: f-022 | severidade: média | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (Próximo passo: Confirme como os registros são identificados e valide os dados antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (criar uma chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (Confiança: 20% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 373 Td ([INFORMATIVA] Esta tabela ocupa muito espaço. - erp.public.table_009) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (ID do achado: f-009 | severidade: informativa | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 226 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 209 Td (TimescaleDB\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 195 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 181 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 167 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (precisam ser revalidados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (recriados por partição.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (volume representativo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 16 de 22) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Length 6278 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (principais e latência comparados ao período anterior.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (armazenamento.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (Confiança: 90% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 604 Td ([INFORMATIVA] Esta tabela ocupa muito espaço. - erp.public.table_039) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (ID do achado: f-039 | severidade: informativa | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 457 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 440 Td (TimescaleDB\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 426 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (precisam ser revalidados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (recriados por partição.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (volume representativo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (principais e latência comparados ao período anterior.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (armazenamento.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (Confiança: 90% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 86 Td ([BAIXA] Este índice não teve uso observado no período disponível. - erp.public.table_013) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (ID do achado: f-013 | severidade: baixa | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (Impacto: impacto não estimado: faltam os bytes do índice e o total de índices da tabela) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 17 de 22) Tj ET
+endstream
+endobj
+18 0 obj
+<< /Length 6398 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Hipótese: Este índice não teve uso observado no período disponível. Hipótese até) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (Confiança: 30% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 548 Td ([BAIXA] Uma consulta pode fazer leituras amplas. - erp.public.table_023) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (ID do achado: f-023 | severidade: baixa | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Impacto: impacto não estimado: faltam blocos lidos e acessados do fingerprint) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (Hipótese: Uma consulta pode fazer leituras amplas. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 391 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 377 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 363 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 349 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 335 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 321 Td (Próximo passo: Inspecione um plano representativo e os filtros usados pela aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 307 Td (Confiança: 30% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 289 Td ([BAIXA] Esta tabela ocupa muito espaço. - erp.public.table_003) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (ID do achado: f-003 | severidade: baixa | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 156 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (TimescaleDB\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (precisam ser revalidados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 18 de 22) Tj ET
+endstream
+endobj
+19 0 obj
+<< /Length 6282 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (recriados por partição.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (volume representativo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (principais e latência comparados ao período anterior.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (armazenamento.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (Confiança: 30% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 534 Td ([BAIXA] Esta tabela ocupa muito espaço. - erp.public.table_033) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (ID do achado: f-033 | severidade: baixa | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (Impacto: impacto não estimado: falta o tamanho total do banco na mesma coleta) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Hipótese: Esta tabela ocupa muito espaço. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 401 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (TimescaleDB\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (precisam ser revalidados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (recriados por partição.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (volume representativo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (principais e latência comparados ao período anterior.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 174 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 160 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 146 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 132 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 118 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (Próximo passo: Compare o crescimento, o uso e a política de retenção antes de alterar o) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 62 Td (armazenamento.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 19 de 22) Tj ET
+endstream
+endobj
+20 0 obj
+<< /Length 6080 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Confiança: 30% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 772 Td ([INFORMATIVA] Há muitos registros antigos aguardando limpeza. - erp.public.table_014) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 755 Td (ID do achado: f-014 | severidade: informativa | esforço preliminar: médio \(teste e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 741 Td (retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 727 Td (Impacto: impacto não estimado: faltam n_dead_tup e n_live_tup) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 713 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 699 Td (Risco da mudança: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (bloqueia a tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (Hipótese: Há muitos registros antigos aguardando limpeza. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 625 Td (Custos de autovacuum \(PostgreSQL/TimescaleDB \(pg_stat_user_tables\)\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (Pré-condições: Tendência de tuplas mortas em duas coletas completas; transações longas e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (slots de replicação verificados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (Custo de leitura: VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (I/O.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (Custo de escrita: Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (acumulam tuplas mortas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 524 Td (Custo de armazenamento: VACUUM comum não devolve espaço ao sistema; só reorganização \(fora) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 510 Td (do auditor\) reduz arquivo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 496 Td (Janela: Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 482 Td (exigem janela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 468 Td (Risco: Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 454 Td (tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 440 Td (Validação posterior: Compare n_dead_tup, last_autovacuum e tamanho em novas coletas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 426 Td (completas.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Próximo passo: Revise autovacuum, escrita recente e estatísticas da tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (Confiança: 40% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 282 Td ([INFORMATIVA] Esta tabela não tem chave primária identificada. - erp.public.table_004) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 265 Td (ID do achado: f-004 | severidade: informativa | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 251 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 237 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 223 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 209 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 195 Td (Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 181 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 167 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 69 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 55 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 20 de 22) Tj ET
+endstream
+endobj
+21 0 obj
+<< /Length 5994 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (Próximo passo: Confirme como os registros são identificados e valide os dados antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (criar uma chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (Confiança: 40% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 744 Td ([INFORMATIVA] Uma conta pode ter mais permissões do que precisa. - erp.public.table_024) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 727 Td (ID do achado: f-024 | severidade: informativa | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 713 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 699 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 685 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 671 Td (Risco da mudança: Uma revogação pode interromper um serviço legítimo; mudanças devem ter) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 657 Td (rollback externo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (Hipótese: Uma conta pode ter mais permissões do que precisa. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (Próximo passo: Confirme as funções da conta antes de solicitar redução de privilégios.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Confiança: 40% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 457 Td ([INFORMATIVA] Esta tabela não tem chave primária identificada. - erp.public.table_034) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 440 Td (ID do achado: f-034 | severidade: informativa | esforço preliminar: alto \(dependências e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 426 Td (janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 412 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 398 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 384 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Evidência técnica:) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee…) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 216 Td (Próximo passo: Confirme como os registros são identificados e valide os dados antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 202 Td (criar uma chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 188 Td (Confiança: 40% | Regra: rules-v3) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 164 Td (Inventário técnico \(apêndice\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 143 Td (Banco erp: 1 esquemas, 30 tabelas, 1073741824 bytes) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 129 Td (erp.public.table_000 | 0 bytes | 0 linhas estimadas | PK: Não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 115 Td (erp.public.table_001 | 8192 bytes | 10 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 101 Td (erp.public.table_002 | 16384 bytes | 20 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 87 Td (erp.public.table_003 | 24576 bytes | 30 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 73 Td (erp.public.table_004 | 32768 bytes | 40 linhas estimadas | PK: Não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 59 Td (erp.public.table_005 | 40960 bytes | 50 linhas estimadas | PK: Sim) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 21 de 22) Tj ET
+endstream
+endobj
+22 0 obj
+<< /Length 5915 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (erp.public.table_006 | 49152 bytes | 60 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (erp.public.table_007 | 57344 bytes | 70 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (erp.public.table_008 | 65536 bytes | 80 linhas estimadas | PK: Não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (erp.public.table_009 | 73728 bytes | 90 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (erp.public.table_010 | 81920 bytes | 100 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (erp.public.table_011 | 90112 bytes | 110 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (erp.public.table_012 | 98304 bytes | 120 linhas estimadas | PK: Não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (erp.public.table_013 | 106496 bytes | 130 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (erp.public.table_014 | 114688 bytes | 140 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (erp.public.table_015 | 122880 bytes | 150 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (erp.public.table_016 | 131072 bytes | 160 linhas estimadas | PK: Não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (erp.public.table_017 | 139264 bytes | 170 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (erp.public.table_018 | 147456 bytes | 180 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (erp.public.table_019 | 155648 bytes | 190 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (erp.public.table_020 | 163840 bytes | 200 linhas estimadas | PK: Não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (erp.public.table_021 | 172032 bytes | 210 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (erp.public.table_022 | 180224 bytes | 220 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (erp.public.table_023 | 188416 bytes | 230 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (erp.public.table_024 | 196608 bytes | 240 linhas estimadas | PK: Não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 524 Td (erp.public.table_025 | 204800 bytes | 250 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 510 Td (erp.public.table_026 | 212992 bytes | 260 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 496 Td (erp.public.table_027 | 221184 bytes | 270 linhas estimadas | PK: Sim) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 482 Td (erp.public.table_028 | 229376 bytes | 280 linhas estimadas | PK: Não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 468 Td (erp.public.table_029 | 237568 bytes | 290 linhas estimadas | PK: Sim) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 444 Td (Análise final e próximos passos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 423 Td (Foram observados 40 achados neste recorte, incluindo 8 críticos e 8 altos. Priorize a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 409 Td (validação dos itens de maior severidade com a equipe responsável pelo banco.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 395 Td (Prioridade 1 \(achado f-005, crítica, pontuação 1.33\): Uma consulta pode fazer leituras) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 381 Td (amplas. em erp.public.table_005. Próximo passo: Inspecione um plano representativo e os) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 367 Td (filtros usados pela aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 353 Td (Prioridade 2 \(achado f-025, crítica, pontuação 1.33\): Este índice não teve uso observado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 339 Td (no período disponível. em erp.public.table_025. Próximo passo: Confira a janela das) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 325 Td (estatísticas e as consultas antes de considerar sua remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 311 Td (Prioridade 3 \(achado f-035, crítica, pontuação 1.33\): Uma consulta pode fazer leituras) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 297 Td (amplas. em erp.public.table_035. Próximo passo: Inspecione um plano representativo e os) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 283 Td (filtros usados pela aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 269 Td (Prioridade 4 \(achado f-026, alta, pontuação 1.28\): Há muitos registros antigos aguardando) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 255 Td (limpeza. em erp.public.table_026. Próximo passo: Revise autovacuum, escrita recente e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 241 Td (estatísticas da tabela.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 227 Td (Prioridade 5 \(achado f-007, média, pontuação 1.12\): Este índice não teve uso observado no) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 213 Td (período disponível. em erp.public.table_007. Próximo passo: Confira a janela das) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 199 Td (estatísticas e as consultas antes de considerar sua remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 185 Td (Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 171 Td (auditor não aplica mudanças no banco auditado.) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 147 Td (Metodologia e glossário) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 126 Td (Somente dados e observações da execução informada foram usados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 112 Td (Achado: sinal de diagnóstico que exige validação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 98 Td (Baseline: execução aprovada para comparação temporal.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 84 Td (Cobertura parcial impede conclusões sobre ausência de objetos e achados.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 22 de 22) Tj ET
+endstream
+endobj
+23 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 1 0 R >>
+endobj
+24 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 2 0 R >>
+endobj
+25 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 3 0 R >>
+endobj
+26 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 4 0 R >>
+endobj
+27 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 5 0 R >>
+endobj
+28 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 6 0 R >>
+endobj
+29 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 7 0 R >>
+endobj
+30 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 8 0 R >>
+endobj
+31 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 9 0 R >>
+endobj
+32 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 10 0 R >>
+endobj
+33 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 11 0 R >>
+endobj
+34 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 12 0 R >>
+endobj
+35 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 13 0 R >>
+endobj
+36 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 14 0 R >>
+endobj
+37 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 15 0 R >>
+endobj
+38 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 16 0 R >>
+endobj
+39 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 17 0 R >>
+endobj
+40 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 18 0 R >>
+endobj
+41 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 19 0 R >>
+endobj
+42 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 20 0 R >>
+endobj
+43 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 21 0 R >>
+endobj
+44 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 45 0 R >> >> /Contents 22 0 R >>
+endobj
+45 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+46 0 obj
+<< /Type /Pages /Kids [23 0 R 24 0 R 25 0 R 26 0 R 27 0 R 28 0 R 29 0 R 30 0 R 31 0 R 32 0 R 33 0 R 34 0 R 35 0 R 36 0 R 37 0 R 38 0 R 39 0 R 40 0 R 41 0 R 42 0 R 43 0 R 44 0 R] /Count 22 >>
+endobj
+47 0 obj
+<< /Type /Catalog /Pages 46 0 R >>
+endobj
+xref
+0 48
+0000000000 65535 f 
+0000000015 00000 n 
+0000005671 00000 n 
+0000012483 00000 n 
+0000019065 00000 n 
+0000025275 00000 n 
+0000031689 00000 n 
+0000038112 00000 n 
+0000044262 00000 n 
+0000050360 00000 n 
+0000056536 00000 n 
+0000063059 00000 n 
+0000069432 00000 n 
+0000075712 00000 n 
+0000081941 00000 n 
+0000087955 00000 n 
+0000094223 00000 n 
+0000100582 00000 n 
+0000106912 00000 n 
+0000113362 00000 n 
+0000119696 00000 n 
+0000125828 00000 n 
+0000131874 00000 n 
+0000137841 00000 n 
+0000137970 00000 n 
+0000138099 00000 n 
+0000138228 00000 n 
+0000138357 00000 n 
+0000138486 00000 n 
+0000138615 00000 n 
+0000138744 00000 n 
+0000138873 00000 n 
+0000139002 00000 n 
+0000139132 00000 n 
+0000139262 00000 n 
+0000139392 00000 n 
+0000139522 00000 n 
+0000139652 00000 n 
+0000139782 00000 n 
+0000139912 00000 n 
+0000140042 00000 n 
+0000140172 00000 n 
+0000140302 00000 n 
+0000140432 00000 n 
+0000140562 00000 n 
+0000140692 00000 n 
+0000140790 00000 n 
+0000140997 00000 n 
+trailer
+<< /Size 48 /Root 47 0 R >>
+startxref
+141048
+%%EOF

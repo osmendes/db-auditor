@@ -1,0 +1,75 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Length 4495 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.08 0.45 0.35 rg BT /F1 18 Tf 42 790 Td (DB Auditor - Relatório executivo) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 764 Td (Nível de redação: sem redação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 750 Td (Ambiente: staging-erp) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 736 Td (Execução: 00000000-0000-0000-0000-000000000003) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 722 Td (Início: 02/10/2026 12:00 UTC | Estado: concluída) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 708 Td (Versão do serviço: 1.4.0 | Regras: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 694 Td (Solicitante: operator) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 680 Td (Escopo: ambiente inteiro) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 666 Td () Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 642 Td (Resumo executivo) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 621 Td (0 bancos | 0 tabelas | 0 achados \(0 críticos, 0 altos\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 607 Td (Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 593 Td (observados, não substitui a investigação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 575 Td (Achados por severidade \(itens incluídos no PDF\)) Tj ET
+0.94 0.96 0.97 rg 42 556 68 11 re f 0.90 0.93 0.94 rg 115 556 300 11 re f 0.09 0.55 0.42 rg 115 556 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 558 Td (Críticos) Tj ET BT /F1 9 Tf 425 558 Td (0) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (Alternativa textual: Críticos = 0 de 0 itens.) Tj ET
+0.94 0.96 0.97 rg 42 522 68 11 re f 0.90 0.93 0.94 rg 115 522 300 11 re f 0.09 0.55 0.42 rg 115 522 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 524 Td (Altos) Tj ET BT /F1 9 Tf 425 524 Td (0) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 504 Td (Alternativa textual: Altos = 0 de 0 itens.) Tj ET
+0.94 0.96 0.97 rg 42 488 68 11 re f 0.90 0.93 0.94 rg 115 488 300 11 re f 0.09 0.55 0.42 rg 115 488 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 490 Td (Médios) Tj ET BT /F1 9 Tf 425 490 Td (0) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 470 Td (Alternativa textual: Médios = 0 de 0 itens.) Tj ET
+0.94 0.96 0.97 rg 42 454 68 11 re f 0.90 0.93 0.94 rg 115 454 300 11 re f 0.09 0.55 0.42 rg 115 454 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 456 Td (Baixos) Tj ET BT /F1 9 Tf 425 456 Td (0) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 436 Td (Alternativa textual: Baixos = 0 de 0 itens.) Tj ET
+0.94 0.96 0.97 rg 42 420 68 11 re f 0.90 0.93 0.94 rg 115 420 300 11 re f 0.09 0.55 0.42 rg 115 420 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 422 Td (Informativos) Tj ET BT /F1 9 Tf 425 422 Td (0) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 402 Td (Alternativa textual: Informativos = 0 de 0 itens.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 388 Td (Cobertura: completa) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 374 Td (Índice indisponível | confiança 0%) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 350 Td (Riscos e prioridades) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 329 Td (Matriz de decisão \(priority-v1\): pontuação = peso da severidade × fator de impacto medido) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 315 Td (× confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 301 Td (equipe e janela antes de executar uma mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 287 Td (Nenhum achado observado neste escopo da execução.) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 263 Td (Análise final e próximos passos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 242 Td (Não há achados neste recorte. Confira a cobertura antes de concluir que o ambiente não) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 228 Td (possui riscos.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 214 Td (Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 200 Td (auditor não aplica mudanças no banco auditado.) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 176 Td (Metodologia e glossário) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 155 Td (Somente dados e observações da execução informada foram usados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 141 Td (Achado: sinal de diagnóstico que exige validação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 127 Td (Baseline: execução aprovada para comparação temporal.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 113 Td (Cobertura parcial impede conclusões sobre ausência de objetos e achados.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 1 de 1) Tj ET
+endstream
+endobj
+2 0 obj
+<< /Type /Page /Parent 4 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 1 0 R >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Pages /Kids [2 0 R] /Count 1 >>
+endobj
+5 0 obj
+<< /Type /Catalog /Pages 4 0 R >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000004561 00000 n 
+0000004687 00000 n 
+0000004784 00000 n 
+0000004841 00000 n 
+trailer
+<< /Size 6 /Root 5 0 R >>
+startxref
+4890
+%%EOF

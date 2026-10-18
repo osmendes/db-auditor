@@ -1,0 +1,195 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Length 5280 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.08 0.45 0.35 rg BT /F1 18 Tf 42 790 Td (DB Auditor - Relatório técnico) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 764 Td (Nível de redação: sem redação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 750 Td (Ambiente: staging-erp) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 736 Td (Execução: 00000000-0000-0000-0000-000000000003) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 722 Td (Início: 02/10/2026 12:00 UTC | Estado: concluída parcialmente) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 708 Td (Versão do serviço: 1.4.0 | Regras: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 694 Td (Solicitante: operator) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 680 Td (Escopo: ambiente inteiro) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 666 Td () Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 642 Td (Resumo executivo) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 621 Td (0 bancos | 0 tabelas | 3 achados \(0 críticos, 1 alto\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 607 Td (Como ler: confirme primeiro a cobertura e os itens críticos; a nota resume sinais) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 593 Td (observados, não substitui a investigação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 575 Td (Achados por severidade \(itens incluídos no PDF\)) Tj ET
+0.94 0.96 0.97 rg 42 556 68 11 re f 0.90 0.93 0.94 rg 115 556 300 11 re f 0.09 0.55 0.42 rg 115 556 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 558 Td (Críticos) Tj ET BT /F1 9 Tf 425 558 Td (0) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 538 Td (Alternativa textual: Críticos = 0 de 3 itens.) Tj ET
+0.94 0.96 0.97 rg 42 522 68 11 re f 0.90 0.93 0.94 rg 115 522 300 11 re f 0.09 0.55 0.42 rg 115 522 100 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 524 Td (Altos) Tj ET BT /F1 9 Tf 425 524 Td (1) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 504 Td (Alternativa textual: Altos = 1 de 3 itens.) Tj ET
+0.94 0.96 0.97 rg 42 488 68 11 re f 0.90 0.93 0.94 rg 115 488 300 11 re f 0.09 0.55 0.42 rg 115 488 200 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 490 Td (Médios) Tj ET BT /F1 9 Tf 425 490 Td (2) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 470 Td (Alternativa textual: Médios = 2 de 3 itens.) Tj ET
+0.94 0.96 0.97 rg 42 454 68 11 re f 0.90 0.93 0.94 rg 115 454 300 11 re f 0.09 0.55 0.42 rg 115 454 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 456 Td (Baixos) Tj ET BT /F1 9 Tf 425 456 Td (0) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 436 Td (Alternativa textual: Baixos = 0 de 3 itens.) Tj ET
+0.94 0.96 0.97 rg 42 420 68 11 re f 0.90 0.93 0.94 rg 115 420 300 11 re f 0.09 0.55 0.42 rg 115 420 0 11 re f 0.12 0.18 0.24 rg BT /F1 9 Tf 43 422 Td (Informativos) Tj ET BT /F1 9 Tf 425 422 Td (0) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 402 Td (Alternativa textual: Informativos = 0 de 3 itens.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 388 Td (Cobertura: parcial) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 374 Td (Índice indisponível | confiança 0%) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 360 Td (Limite: Execucao parcial; ausencia de objetos/findings nao e prova de resolucao.) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 336 Td (Evolução de armazenamento) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 315 Td (Barras: tamanho total das tabelas \(unidade: bytes\) por coleta completa. Coletas parciais) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 301 Td (aparecem como lacuna e não entram na variação.) Tj ET
+0.94 0.96 0.97 rg 42 285 68 11 re f 0.90 0.93 0.94 rg 165 285 250 11 re f 0.09 0.55 0.42 rg 165 285 166 11 re f 0.12 0.18 0.24 rg BT /F1 8 Tf 43 287 Td (30/09/2026 00000000) Tj ET BT /F1 9 Tf 425 287 Td (1000 B) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 267 Td (Alternativa textual: execução 00000000-0000-0000-0000-000000000001 em 30/09/2026 = 1000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 253 Td (bytes em 3 tabelas \(coleta completa\).) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 239 Td (01/10/2026 00000000: lacuna \(coleta parcial\) — valor não plotado e fora da comparação.) Tj ET
+0.94 0.96 0.97 rg 42 223 68 11 re f 0.90 0.93 0.94 rg 165 223 250 11 re f 0.09 0.55 0.42 rg 165 223 250 11 re f 0.12 0.18 0.24 rg BT /F1 8 Tf 43 225 Td (02/10/2026 00000000) Tj ET BT /F1 9 Tf 425 225 Td (1500 B) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 205 Td (Alternativa textual: execução 00000000-0000-0000-0000-000000000003 em 02/10/2026 = 1500) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 191 Td (bytes em 3 tabelas \(coleta completa\).) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 177 Td (Variação entre coletas completas: +500 bytes \(+50.0%\) no período 30/09/2026 12:00 UTC a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 163 Td (02/10/2026 12:00 UTC. Confirme que perfil e cobertura são comparáveis antes de atribuir a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 149 Td (mudança a uma ação.) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 125 Td (Riscos e prioridades) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 104 Td (Matriz de decisão \(priority-v1\): pontuação = peso da severidade × fator de impacto medido) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 90 Td (× confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 76 Td (equipe e janela antes de executar uma mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 58 Td (Matriz impacto × esforço × confiança × risco) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 1 de 3) Tj ET
+endstream
+endobj
+2 0 obj
+<< /Length 6124 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (#1 | achado f-unused | pontuação 2.10/7.5 | severidade média | impacto alto | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (médio | confiança média \(70%\) | risco: Criar ou remover índice pode aumentar escrita,) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (#2 | achado f-pk | pontuação 1.44/7.5 | severidade alta | impacto não estimado | esforço) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (alto | confiança alta \(90%\) | risco: Uma mudança sem conhecer dependências e carga pode) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (#3 | achado f-growth | pontuação 0.88/7.5 | severidade média | impacto não estimado |) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (esforço médio | confiança média \(55%\) | risco: Bloqueios longos, quebra de FKs/aplicação e) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 660 Td ([MÉDIA] Este índice não teve uso observado no período disponível. -) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 643 Td (erp.public.orders_old_idx) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 629 Td (ID do achado: f-unused | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 615 Td (Impacto: 41943040 bytes de 104857600 bytes de todos os índices da tabela \(40.0%\) · período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 601 Td (25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 587 Td (Unidade: bytes / bytes de todos os índices da tabela | Período de referência: 25/09/2026) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 573 Td (12:00 UTC a 02/10/2026 12:00 UTC) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 559 Td (Risco da mudança: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 545 Td (bloqueios; planeje execução concorrente quando aplicável.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 531 Td (Hipótese: Índice sem uso. Hipótese até confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 517 Td (Ganho previsto: no máximo a condição observada \(41943040 bytes de 104857600 bytes de todos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 503 Td (os índices da tabela \(40.0%\) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC ·) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 489 Td (impacto alto\); o ganho real depende da ação e só é conhecido após nova coleta.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 475 Td (Ganho medido: table_size_bytes: antes 1000, depois 600 bytes \(variação -400\) na execução) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 461 Td (run-after) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 447 Td (Evidência técnica: {"idx_scan":0}) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 433 Td (Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 419 Td (remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 405 Td (Confiança: 70% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 387 Td ([ALTA] Esta tabela não tem chave primária identificada. - erp.public.audit_log) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 370 Td (ID do achado: f-pk | severidade: alta | esforço preliminar: alto \(dependências e janela\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 356 Td (Impacto: impacto não estimado: a regra não coleta métrica com denominador e período) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 342 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 328 Td (Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 314 Td (Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 300 Td (humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 286 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 272 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 258 Td (Próximo passo: Confirme como os registros são identificados e valide os dados antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 244 Td (criar uma chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 230 Td (Confiança: 90% | Regra: rules-v3) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 212 Td ([MÉDIA] O tamanho ou a atividade mudou entre duas coletas completas. - erp.public.events) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 195 Td (ID do achado: f-growth | severidade: média | esforço preliminar: médio \(teste e retorno\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 181 Td (Impacto: impacto não estimado: sem duas coletas completas e comparáveis) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 167 Td (Unidade: não informada | Período de referência: não informado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 153 Td (Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 139 Td (sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 125 Td (Hipótese: O tamanho ou a atividade mudou entre duas coletas completas. Hipótese até) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 111 Td (confirmação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 97 Td (Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 83 Td (Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 65 Td (Custos de particionamento \(PostgreSQL 10+ \(particionamento declarativo\) ou hypertable) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 2 de 3) Tj ET
+endstream
+endobj
+3 0 obj
+<< /Length 4690 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 815 Td (DB Auditor · técnico · execução 00000000) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 790 Td (TimescaleDB\)) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 776 Td (Pré-condições: Duas coletas completas mostrando crescimento; chave temporal ou de negócio) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 762 Td (estável; consultas filtram por essa chave; backup restaurável; dono e janela aprovados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 748 Td (Custo de leitura: Consultas sem filtro pela chave passam a ler todas as partições; planos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 734 Td (precisam ser revalidados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 720 Td (Custo de escrita: Migração reescreve a tabela \(cópia ou anexação\); gatilhos e FKs podem) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 706 Td (exigir ajustes; carga de escrita durante a migração.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 692 Td (Custo de armazenamento: Espaço temporário de até 2x a tabela durante a cópia; índices) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 678 Td (recriados por partição.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 664 Td (Janela: Janela de manutenção dedicada, com estimativa de duração medida em homologação com) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 650 Td (volume representativo.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 636 Td (Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 622 Td (Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 608 Td (principais e latência comparados ao período anterior.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 594 Td (Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 580 Td (Próximo passo: Trate o número como hipótese. Confirme período, backup e aprovação antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 566 Td (qualquer manutenção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 552 Td (Confiança: 55% | Regra: rules-v3) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 528 Td (Análise final e próximos passos) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 507 Td (Foram observados 3 achados neste recorte, incluindo 0 críticos e 1 alto. Priorize a) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 493 Td (validação dos itens de maior severidade com a equipe responsável pelo banco.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 479 Td (Prioridade 1 \(achado f-unused, média, pontuação 2.10\): Este índice não teve uso observado) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 465 Td (no período disponível. em erp.public.orders_old_idx. Próximo passo: Confira a janela das) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 451 Td (estatísticas e as consultas antes de considerar sua remoção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 437 Td (Prioridade 2 \(achado f-pk, alta, pontuação 1.44\): Esta tabela não tem chave primária) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 423 Td (identificada. em erp.public.audit_log. Próximo passo: Confirme como os registros são) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 409 Td (identificados e valide os dados antes de criar uma chave.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 395 Td (Prioridade 3 \(achado f-growth, média, pontuação 0.88\): O tamanho ou a atividade mudou) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 381 Td (entre duas coletas completas. em erp.public.events. Próximo passo: Trate o número como) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 367 Td (hipótese. Confirme período, backup e aprovação antes de qualquer manutenção.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 353 Td (A cobertura é parcial ou o conteúdo foi limitado. Execute uma coleta completa antes de) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 339 Td (decidir alterações com base na ausência de achados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 325 Td (Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 311 Td (auditor não aplica mudanças no banco auditado.) Tj ET
+0.08 0.45 0.35 rg BT /F1 13 Tf 42 287 Td (Metodologia e glossário) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 266 Td (Somente dados e observações da execução informada foram usados.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 252 Td (Achado: sinal de diagnóstico que exige validação humana.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 238 Td (Baseline: execução aprovada para comparação temporal.) Tj ET
+0.15 0.20 0.26 rg BT /F1 10 Tf 42 224 Td (Cobertura parcial impede conclusões sobre ausência de objetos e achados.) Tj ET
+0.45 0.50 0.55 rg BT /F1 9 Tf 42 30 Td (Página 3 de 3) Tj ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 1 0 R >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 2 0 R >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 3 0 R >>
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+8 0 obj
+<< /Type /Pages /Kids [4 0 R 5 0 R 6 0 R] /Count 3 >>
+endobj
+9 0 obj
+<< /Type /Catalog /Pages 8 0 R >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000005346 00000 n 
+0000011521 00000 n 
+0000016262 00000 n 
+0000016388 00000 n 
+0000016514 00000 n 
+0000016640 00000 n 
+0000016737 00000 n 
+0000016806 00000 n 
+trailer
+<< /Size 10 /Root 9 0 R >>
+startxref
+16855
+%%EOF
