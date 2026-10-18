@@ -10,8 +10,9 @@ import {
 } from "../components/ui";
 import { useApp } from "../context/AppContext";
 import { useEmptyContext } from "../hooks/useEmptyContext";
+import { useLatestSignal } from "../hooks/useLatestSignal";
 import { resolveEmptyCause } from "../lib/emptyCause";
-import { formatError } from "../lib/errors";
+import { formatError, isAbortError } from "../lib/errors";
 import { api } from "../services/api";
 import type { AuditAnnotation, AuditRun, RegressionAlert } from "../types";
 
@@ -42,14 +43,19 @@ export function MonitoringPage() {
   });
   const [error, setError] = useState<string | null>(null);
 
+  const nextSignal = useLatestSignal();
+  // Latest call wins: switching environment aborts the previous load, so the
+  // old environment's runs/alerts never land on the new one (PF-02).
   const refresh = async (env: string) => {
+    const signal = nextSignal();
     setLoading(true);
     try {
       const [runResult, annotationResult, alertResult] = await Promise.all([
-        api.auditRuns({ environment_id: env }),
-        api.annotations(env),
-        api.regressions(env),
+        api.auditRuns({ environment_id: env }, signal),
+        api.annotations(env, signal),
+        api.regressions(env, signal),
       ]);
+      if (signal.aborted) return;
       const completed = runResult.items.filter(
         (run) => run.status === "success" || run.status === "partial_success",
       );
@@ -62,22 +68,26 @@ export function MonitoringPage() {
       setAnnotations(annotationResult.items);
       setAlerts(alertResult.items);
       try {
-        setBaseline((await api.auditBaseline(env)).audit_run_id);
+        const current = await api.auditBaseline(env, "", "", "", signal);
+        if (!signal.aborted) setBaseline(current.audit_run_id);
       } catch {
-        setBaseline("");
+        if (!signal.aborted) setBaseline("");
       }
-      setError(null);
+      if (!signal.aborted) setError(null);
     } catch (cause) {
+      if (signal.aborted || isAbortError(cause)) return;
       setError(
         formatError(cause, "Não foi possível carregar o acompanhamento"),
       );
     } finally {
-      setLoading(false);
+      if (!signal.aborted) setLoading(false);
     }
   };
   useEffect(() => {
     if (environmentId) void refresh(environmentId);
     else {
+      nextSignal();
+      setLoading(false);
       setRuns([]);
       setAnnotations([]);
       setAlerts([]);
@@ -89,8 +99,16 @@ export function MonitoringPage() {
       return;
     }
     let active = true;
+    const controller = new AbortController();
     void api
-      .compareScopeScore(environmentId, selectedRun)
+      .compareScopeScore(
+        environmentId,
+        selectedRun,
+        undefined,
+        undefined,
+        undefined,
+        controller.signal,
+      )
       .then((value) => {
         if (active) setComparison(value);
       })
@@ -99,6 +117,7 @@ export function MonitoringPage() {
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [environmentId, selectedRun, baseline]);
 

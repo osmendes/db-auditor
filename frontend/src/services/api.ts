@@ -142,22 +142,29 @@ async function reportRequest<T>(
   path: string,
   method = "GET",
   body?: unknown,
+  signal?: AbortSignal,
 ): Promise<T> {
   if (!reportToken && !sessionActive)
     throw new Error("Informe o token de relatórios para esta sessão.");
-  const response = await fetch(`${API_BASE}${path}`, {
-    method,
-    headers: {
-      ...(!sessionActive && reportToken
-        ? { Authorization: `Bearer ${reportToken}` }
-        : {}),
-      ...authHeaders(method),
-      ...(body ? { "Content-Type": "application/json" } : {}),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-    cache: "no-store",
-    credentials: "include",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers: {
+        ...(!sessionActive && reportToken
+          ? { Authorization: `Bearer ${reportToken}` }
+          : {}),
+        ...authHeaders(method),
+        ...(body ? { "Content-Type": "application/json" } : {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+      cache: "no-store",
+      credentials: "include",
+      signal,
+    });
+  } catch (cause) {
+    throw networkApiError(path, cause);
+  }
   if (!response.ok) {
     handleSessionExpiry(response, path);
     throw await toApiError(response, path);
@@ -430,6 +437,7 @@ export const api = {
     from: string,
     to: string,
     change = "",
+    signal?: AbortSignal,
   ) =>
     getJSON<{
       items: {
@@ -441,6 +449,7 @@ export const api = {
       }[];
     }>(
       `/api/v1/environments/${environmentId}/findings-diff?from=${from}&to=${to}${change ? `&change=${change}` : ""}`,
+      signal,
     ),
   logout: async () => {
     try {
@@ -460,7 +469,8 @@ export const api = {
     announceSessionRevocation();
     return result;
   },
-  accounts: () => getJSON<ItemsResponse<AuditorAccount>>("/api/v1/auth/users"),
+  accounts: (signal?: AbortSignal) =>
+    getJSON<ItemsResponse<AuditorAccount>>("/api/v1/auth/users", signal),
   createAccount: (body: {
     username: string;
     password: string;
@@ -484,9 +494,12 @@ export const api = {
   setReportToken: (value: string) => {
     reportToken = value;
   },
-  reportJobs: (environmentId: string) =>
+  reportJobs: (environmentId: string, signal?: AbortSignal) =>
     reportRequest<ItemsResponse<ReportJob>>(
       `/api/v1/environments/${environmentId}/reports`,
+      "GET",
+      undefined,
+      signal,
     ),
   requestPDFReport: (
     environmentId: string,
@@ -537,7 +550,11 @@ export const api = {
       type: response.headers.get("Content-Type") ?? "application/octet-stream",
     });
   },
-  architectureDecisions: (environmentId: string, database: string) =>
+  architectureDecisions: (
+    environmentId: string,
+    database: string,
+    signal?: AbortSignal,
+  ) =>
     reportRequest<{
       items: Array<{
         object_ref: string;
@@ -549,6 +566,9 @@ export const api = {
       }>;
     }>(
       `/api/v1/environments/${environmentId}/reports/architecture-decisions?database=${encodeURIComponent(database)}&history=true`,
+      "GET",
+      undefined,
+      signal,
     ),
   saveArchitectureDecision: (
     environmentId: string,
@@ -572,8 +592,9 @@ export const api = {
       input,
     ),
   health: (signal?: AbortSignal) => getJSON<HealthResponse>("/health", signal),
-  ready: () => getJSON<HealthResponse>("/ready"),
-  status: () => getJSON<StatusResponse>("/api/v1/status"),
+  ready: (signal?: AbortSignal) => getJSON<HealthResponse>("/ready", signal),
+  status: (signal?: AbortSignal) =>
+    getJSON<StatusResponse>("/api/v1/status", signal),
   /** UI-07 global search; reads only the snapshot store. */
   search: (
     params: { q: string; environment_id?: string; limit?: number },
@@ -601,11 +622,18 @@ export const api = {
       `/api/v1/analytics/job-health${qs(params)}`,
       signal,
     ),
-  reportInventory: (params?: AnalyticsParams) =>
-    getJSON<Record<string, unknown>>(`/api/v1/reports/inventory${qs(params)}`),
-  reportFindings: (params?: AnalyticsParams) =>
-    getJSON<Record<string, unknown>>(`/api/v1/reports/findings${qs(params)}`),
-  environments: () => getJSON<EnvironmentsResponse>("/api/v1/environments"),
+  reportInventory: (params?: AnalyticsParams, signal?: AbortSignal) =>
+    getJSON<Record<string, unknown>>(
+      `/api/v1/reports/inventory${qs(params)}`,
+      signal,
+    ),
+  reportFindings: (params?: AnalyticsParams, signal?: AbortSignal) =>
+    getJSON<Record<string, unknown>>(
+      `/api/v1/reports/findings${qs(params)}`,
+      signal,
+    ),
+  environments: (signal?: AbortSignal) =>
+    getJSON<EnvironmentsResponse>("/api/v1/environments", signal),
   createEnvironmentLabel: (name: string) =>
     postJSON<{ id: string; name: string; dsn: null }>("/api/v1/environments", {
       name,
@@ -615,9 +643,10 @@ export const api = {
       `/api/v1/environments/${env}/capabilities`,
       signal,
     ),
-  qualityScans: (env: string) =>
+  qualityScans: (env: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<QualityScan> & { enabled: boolean }>(
       `/api/v1/environments/${env}/quality-scans`,
+      signal,
     ),
   runQualityScan: (env: string, body: QualityRequest) =>
     postJSON<QualityScan>(`/api/v1/environments/${env}/quality-scans`, body),
@@ -635,31 +664,49 @@ export const api = {
       `/api/v1/environments/${env}/quality-issues/${issue}`,
       body,
     ),
-  trackedActions: (env: string, offset = 0, limit = 50) =>
+  trackedActions: (env: string, offset = 0, limit = 50, signal?: AbortSignal) =>
     getJSON<PagedResponse<TrackedAction>>(
       `/api/v1/environments/${env}/actions?offset=${offset}&limit=${limit}`,
+      signal,
     ),
-  databases: (environmentId: string, auditRunId?: string) =>
+  databases: (
+    environmentId: string,
+    auditRunId?: string,
+    signal?: AbortSignal,
+  ) =>
     getJSON<ItemsResponse<DatabaseSnapshot>>(
       `/api/v1/environments/${environmentId}/databases${auditRunId ? `?audit_run_id=${encodeURIComponent(auditRunId)}` : ""}`,
+      signal,
     ),
-  schemas: (environmentId: string) =>
+  schemas: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<SchemaSnapshot>>(
       `/api/v1/environments/${environmentId}/schemas`,
+      signal,
     ),
-  snapshotStatus: (environmentId: string, auditRunId?: string) =>
+  snapshotStatus: (
+    environmentId: string,
+    auditRunId?: string,
+    signal?: AbortSignal,
+  ) =>
     getJSON<SnapshotCompleteness>(
       `/api/v1/environments/${environmentId}/snapshot-status${qs({
         audit_run_id: auditRunId,
       })}`,
+      signal,
     ),
-  hypertables: (environmentId: string) =>
+  hypertables: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<HypertableSnapshot>>(
       `/api/v1/environments/${environmentId}/hypertables`,
+      signal,
     ),
-  hypertablesPage: (environmentId: string, params?: InventoryListParams) =>
+  hypertablesPage: (
+    environmentId: string,
+    params?: InventoryListParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<PagedResponse<HypertableSnapshot>>(
       `/api/v1/environments/${environmentId}/hypertables/page${qs(params)}`,
+      signal,
     ),
   hypertableDetail: (
     env: string,
@@ -667,9 +714,11 @@ export const api = {
     database: string,
     schema: string,
     name: string,
+    signal?: AbortSignal,
   ) =>
     getJSON<HypertableDetailSnapshot>(
       `${hypertableScopePath(env, run, database, schema, name)}/detail`,
+      signal,
     ),
   hypertableDimensions: (
     env: string,
@@ -679,9 +728,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<HypertableDimensionDetail>>(
       `${hypertableScopePath(env, run, database, schema, name)}/dimensions${qs({ limit, offset })}`,
+      signal,
     ),
   hypertableChunks: (
     env: string,
@@ -691,9 +742,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<HypertableChunkDetail>>(
       `${hypertableScopePath(env, run, database, schema, name)}/chunks${qs({ limit, offset })}`,
+      signal,
     ),
   hypertablePolicies: (
     env: string,
@@ -703,9 +756,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<HypertablePolicyDetail>>(
       `${hypertableScopePath(env, run, database, schema, name)}/policies${qs({ limit, offset })}`,
+      signal,
     ),
   hypertableJobs: (
     env: string,
@@ -715,9 +770,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<HypertableJobDetail>>(
       `${hypertableScopePath(env, run, database, schema, name)}/jobs${qs({ limit, offset })}`,
+      signal,
     ),
   hypertableHistory: (
     env: string,
@@ -727,9 +784,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<HypertableHistoryPoint>>(
       `${hypertableScopePath(env, run, database, schema, name)}/history${qs({ limit, offset })}`,
+      signal,
     ),
   hypertableIndexes: (
     env: string,
@@ -739,9 +798,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<IndexSnapshot>>(
       `${hypertableScopePath(env, run, database, schema, name)}/indexes${qs({ limit, offset })}`,
+      signal,
     ),
   hypertableGrants: (
     env: string,
@@ -751,9 +812,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<GrantSnapshot>>(
       `${hypertableScopePath(env, run, database, schema, name)}/grants${qs({ limit, offset })}`,
+      signal,
     ),
   hypertableRLSPolicies: (
     env: string,
@@ -763,9 +826,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<RLSPolicySnapshot>>(
       `${hypertableScopePath(env, run, database, schema, name)}/rls-policies${qs({ limit, offset })}`,
+      signal,
     ),
   hypertableFindings: (
     env: string,
@@ -775,28 +840,35 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<Finding>>(
       `${hypertableScopePath(env, run, database, schema, name)}/findings${qs({ limit, offset })}`,
+      signal,
     ),
-  dimensions: (environmentId: string) =>
+  dimensions: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<DimensionSnapshot>>(
       `/api/v1/environments/${environmentId}/dimensions`,
+      signal,
     ),
-  chunks: (environmentId: string) =>
+  chunks: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<ChunkSnapshot>>(
       `/api/v1/environments/${environmentId}/chunks`,
+      signal,
     ),
-  continuousAggregates: (environmentId: string) =>
+  continuousAggregates: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<CAGGSnapshot>>(
       `/api/v1/environments/${environmentId}/continuous-aggregates`,
+      signal,
     ),
   continuousAggregatesPage: (
     environmentId: string,
     params?: InventoryListParams,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<CAGGSnapshot>>(
       `/api/v1/environments/${environmentId}/continuous-aggregates/page${qs(params)}`,
+      signal,
     ),
   caggDetail: (
     env: string,
@@ -804,9 +876,11 @@ export const api = {
     database: string,
     schema: string,
     name: string,
+    signal?: AbortSignal,
   ) =>
     getJSON<CAGGDetailSnapshot>(
       `${caggScopePath(env, run, database, schema, name)}/detail`,
+      signal,
     ),
   caggRefreshPolicies: (
     env: string,
@@ -816,9 +890,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<CAGGRefreshPolicy>>(
       `${caggScopePath(env, run, database, schema, name)}/refresh-policies${qs({ limit, offset })}`,
+      signal,
     ),
   caggHistory: (
     env: string,
@@ -828,9 +904,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<CAGGHistoryPoint>>(
       `${caggScopePath(env, run, database, schema, name)}/history${qs({ limit, offset })}`,
+      signal,
     ),
   caggDependencies: (
     env: string,
@@ -840,9 +918,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<DependencySnapshot>>(
       `${caggScopePath(env, run, database, schema, name)}/dependencies${qs({ limit, offset })}`,
+      signal,
     ),
   caggGrants: (
     env: string,
@@ -852,9 +932,11 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<GrantSnapshot>>(
       `${caggScopePath(env, run, database, schema, name)}/grants${qs({ limit, offset })}`,
+      signal,
     ),
   caggFindings: (
     env: string,
@@ -864,21 +946,30 @@ export const api = {
     name: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<Finding>>(
       `${caggScopePath(env, run, database, schema, name)}/findings${qs({ limit, offset })}`,
+      signal,
     ),
-  jobs: (environmentId: string) =>
+  jobs: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<JobSnapshot>>(
       `/api/v1/environments/${environmentId}/jobs`,
+      signal,
     ),
-  policies: (environmentId: string) =>
+  policies: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<PolicySnapshot>>(
       `/api/v1/environments/${environmentId}/policies`,
+      signal,
     ),
-  tables: (environmentId: string, params?: InventoryListParams) =>
+  tables: (
+    environmentId: string,
+    params?: InventoryListParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<PagedResponse<TableSnapshot>>(
       `/api/v1/environments/${environmentId}/tables${qs(params)}`,
+      signal,
     ),
   tableAssessment: (
     env: string,
@@ -886,9 +977,11 @@ export const api = {
     database: string,
     schema: string,
     table: string,
+    signal?: AbortSignal,
   ) =>
     getJSON<TableAssessment>(
       `${tableScopePath(env, run, database, schema, table)}/assessment`,
+      signal,
     ),
   tableGraph: (
     env: string,
@@ -897,9 +990,11 @@ export const api = {
     schema: string,
     table: string,
     limit = 50,
+    signal?: AbortSignal,
   ) =>
     getJSON<RelationshipGraph>(
       `${tableScopePath(env, run, database, schema, table)}/graph${qs({ limit })}`,
+      signal,
     ),
   tableFindings: (
     env: string,
@@ -909,9 +1004,11 @@ export const api = {
     table: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<Finding>>(
       `${tableScopePath(env, run, database, schema, table)}/findings${qs({ limit, offset })}`,
+      signal,
     ),
   tableGrants: (
     env: string,
@@ -921,9 +1018,11 @@ export const api = {
     table: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<GrantSnapshot>>(
       `${tableScopePath(env, run, database, schema, table)}/grants${qs({ limit, offset })}`,
+      signal,
     ),
   tableDependencies: (
     env: string,
@@ -933,9 +1032,11 @@ export const api = {
     table: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<DependencySnapshot>>(
       `${tableScopePath(env, run, database, schema, table)}/dependencies${qs({ limit, offset })}`,
+      signal,
     ),
   tableTriggers: (
     env: string,
@@ -945,9 +1046,11 @@ export const api = {
     table: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<TriggerSnapshot>>(
       `${tableScopePath(env, run, database, schema, table)}/triggers${qs({ limit, offset })}`,
+      signal,
     ),
   tableRLSPolicies: (
     env: string,
@@ -957,42 +1060,76 @@ export const api = {
     table: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<RLSPolicySnapshot>>(
       `${tableScopePath(env, run, database, schema, table)}/rls-policies${qs({ limit, offset })}`,
+      signal,
     ),
-  constraints: (environmentId: string, params?: InventoryListParams) =>
+  constraints: (
+    environmentId: string,
+    params?: InventoryListParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<PagedResponse<ConstraintSnapshot>>(
       `/api/v1/environments/${environmentId}/constraints${qs(params)}`,
+      signal,
     ),
-  tableHistory: (environmentId: string, params: TableScopeParams) =>
+  tableHistory: (
+    environmentId: string,
+    params: TableScopeParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<ItemsResponse<TableHistoryPoint>>(
       `/api/v1/environments/${environmentId}/tables/history${qs(params)}`,
+      signal,
     ),
   storageHistory: (
     environmentId: string,
     params: Partial<TableScopeParams> & {
       scope: "environment" | "database" | "schema" | "table";
     },
+    signal?: AbortSignal,
   ) =>
     getJSON<ItemsResponse<ScopeHistoryPoint>>(
       `/api/v1/environments/${environmentId}/history${qs(params)}`,
+      signal,
     ),
-  tableColumnStats: (environmentId: string, params: TableScopeParams) =>
+  tableColumnStats: (
+    environmentId: string,
+    params: TableScopeParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<ItemsResponse<ColumnStatSnapshot>>(
       `/api/v1/environments/${environmentId}/tables/column-stats${qs(params)}`,
+      signal,
     ),
-  tableWorkload: (environmentId: string, params: TableScopeParams) =>
+  tableWorkload: (
+    environmentId: string,
+    params: TableScopeParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<ItemsResponse<WorkloadSnapshot>>(
       `/api/v1/environments/${environmentId}/tables/workload${qs(params)}`,
+      signal,
     ),
-  columns: (environmentId: string, params?: InventoryListParams) =>
+  columns: (
+    environmentId: string,
+    params?: InventoryListParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<PagedResponse<ColumnSnapshot>>(
       `/api/v1/environments/${environmentId}/columns${qs(params)}`,
+      signal,
     ),
-  indexes: (environmentId: string, params?: InventoryListParams) =>
+  indexes: (
+    environmentId: string,
+    params?: InventoryListParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<PagedResponse<IndexSnapshot>>(
       `/api/v1/environments/${environmentId}/indexes${qs(params)}`,
+      signal,
     ),
   indexDetail: (
     env: string,
@@ -1000,9 +1137,11 @@ export const api = {
     database: string,
     schema: string,
     index: string,
+    signal?: AbortSignal,
   ) =>
     getJSON<IndexDetailSnapshot>(
       `${indexScopePath(env, run, database, schema, index)}/detail`,
+      signal,
     ),
   indexHistory: (
     env: string,
@@ -1012,9 +1151,11 @@ export const api = {
     index: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<IndexHistoryPoint>>(
       `${indexScopePath(env, run, database, schema, index)}/history${qs({ limit, offset })}`,
+      signal,
     ),
   indexFindings: (
     env: string,
@@ -1024,13 +1165,20 @@ export const api = {
     index: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<Finding>>(
       `${indexScopePath(env, run, database, schema, index)}/findings${qs({ limit, offset })}`,
+      signal,
     ),
-  views: (environmentId: string, params?: InventoryListParams) =>
+  views: (
+    environmentId: string,
+    params?: InventoryListParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<PagedResponse<ViewSnapshot>>(
       `/api/v1/environments/${environmentId}/views${qs(params)}`,
+      signal,
     ),
   viewDetail: (
     env: string,
@@ -1038,9 +1186,11 @@ export const api = {
     database: string,
     schema: string,
     view: string,
+    signal?: AbortSignal,
   ) =>
     getJSON<ViewDetailSnapshot>(
       `${viewScopePath(env, run, database, schema, view)}/detail`,
+      signal,
     ),
   viewDependencies: (
     env: string,
@@ -1050,9 +1200,11 @@ export const api = {
     view: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<DependencySnapshot>>(
       `${viewScopePath(env, run, database, schema, view)}/dependencies${qs({ limit, offset })}`,
+      signal,
     ),
   viewGrants: (
     env: string,
@@ -1062,9 +1214,11 @@ export const api = {
     view: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<GrantSnapshot>>(
       `${viewScopePath(env, run, database, schema, view)}/grants${qs({ limit, offset })}`,
+      signal,
     ),
   viewFindings: (
     env: string,
@@ -1074,13 +1228,20 @@ export const api = {
     view: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<Finding>>(
       `${viewScopePath(env, run, database, schema, view)}/findings${qs({ limit, offset })}`,
+      signal,
     ),
-  functions: (environmentId: string, params?: InventoryListParams) =>
+  functions: (
+    environmentId: string,
+    params?: InventoryListParams,
+    signal?: AbortSignal,
+  ) =>
     getJSON<PagedResponse<FunctionSnapshot>>(
       `/api/v1/environments/${environmentId}/functions${qs(params)}`,
+      signal,
     ),
   functionDetail: (
     env: string,
@@ -1089,9 +1250,11 @@ export const api = {
     schema: string,
     name: string,
     signature: string,
+    signal?: AbortSignal,
   ) =>
     getJSON<FunctionDetailSnapshot>(
       `${functionScopePath(env, run, database, schema, name)}/detail${qs({ signature })}`,
+      signal,
     ),
   functionDependencies: (
     env: string,
@@ -1102,9 +1265,11 @@ export const api = {
     signature: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<DependencySnapshot>>(
       `${functionScopePath(env, run, database, schema, name)}/dependencies${qs({ signature, limit, offset })}`,
+      signal,
     ),
   functionGrants: (
     env: string,
@@ -1115,9 +1280,11 @@ export const api = {
     signature: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<GrantSnapshot>>(
       `${functionScopePath(env, run, database, schema, name)}/grants${qs({ signature, limit, offset })}`,
+      signal,
     ),
   functionFindings: (
     env: string,
@@ -1128,9 +1295,11 @@ export const api = {
     signature: string,
     limit = 50,
     offset = 0,
+    signal?: AbortSignal,
   ) =>
     getJSON<PagedResponse<Finding>>(
       `${functionScopePath(env, run, database, schema, name)}/findings${qs({ signature, limit, offset })}`,
+      signal,
     ),
   auditRuns: (
     params?: {
@@ -1156,14 +1325,19 @@ export const api = {
       signal,
     );
   },
-  auditRunsPage: (params: {
-    environment_id?: string;
-    profile?: string;
-    status?: string;
-    limit: number;
-    offset: number;
-  }) => getJSON<PagedResponse<AuditRun>>(`/api/v1/audit-runs${qs(params)}`),
-  auditRun: (id: string) => getJSON<AuditRun>(`/api/v1/audit-runs/${id}`),
+  auditRunsPage: (
+    params: {
+      environment_id?: string;
+      profile?: string;
+      status?: string;
+      limit: number;
+      offset: number;
+    },
+    signal?: AbortSignal,
+  ) =>
+    getJSON<PagedResponse<AuditRun>>(`/api/v1/audit-runs${qs(params)}`, signal),
+  auditRun: (id: string, signal?: AbortSignal) =>
+    getJSON<AuditRun>(`/api/v1/audit-runs/${id}`, signal),
   cancelAuditRun: (id: string) =>
     postJSON<{ status: string }>(`/api/v1/audit-runs/${id}/cancel`, {}),
   cancelAuditDatabase: (id: string, database: string) =>
@@ -1171,23 +1345,28 @@ export const api = {
       `/api/v1/audit-runs/${id}/databases/${encodeURIComponent(database)}/cancel`,
       {},
     ),
-  auditRunCollectors: (id: string) =>
-    getJSON<ItemsResponse<CollectorRun>>(`/api/v1/audit-runs/${id}/collectors`),
+  auditRunCollectors: (id: string, signal?: AbortSignal) =>
+    getJSON<ItemsResponse<CollectorRun>>(
+      `/api/v1/audit-runs/${id}/collectors`,
+      signal,
+    ),
   auditRunCoverage: (id: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<AuditRunCoverage>>(
       `/api/v1/audit-runs/${id}/coverage`,
       signal,
     ),
-  auditRunAnalysis: (id: string) =>
-    getJSON<AnalysisRun>(`/api/v1/audit-runs/${id}/analysis`),
+  auditRunAnalysis: (id: string, signal?: AbortSignal) =>
+    getJSON<AnalysisRun>(`/api/v1/audit-runs/${id}/analysis`, signal),
   auditBaseline: (
     environmentId: string,
     database = "",
     schema = "",
     table = "",
+    signal?: AbortSignal,
   ) =>
     getJSON<AuditBaseline>(
       `/api/v1/environments/${environmentId}/baseline${qs({ database, schema, table })}`,
+      signal,
     ),
   selectAuditBaseline: (
     environmentId: string,
@@ -1207,13 +1386,19 @@ export const api = {
         confirm: true,
       },
     ),
-  baselineComparisons: (environmentId: string, auditRunId?: string) =>
+  baselineComparisons: (
+    environmentId: string,
+    auditRunId?: string,
+    signal?: AbortSignal,
+  ) =>
     getJSON<ItemsResponse<BaselineComparison>>(
       `/api/v1/environments/${environmentId}/baseline/comparisons${qs({ audit_run_id: auditRunId })}`,
+      signal,
     ),
-  annotations: (environmentId: string) =>
+  annotations: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<AuditAnnotation>>(
       `/api/v1/environments/${environmentId}/annotations`,
+      signal,
     ),
   createAnnotation: (
     environmentId: string,
@@ -1228,9 +1413,10 @@ export const api = {
       `/api/v1/environments/${environmentId}/annotations`,
       body,
     ),
-  regressions: (environmentId: string) =>
+  regressions: (environmentId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<RegressionAlert>>(
       `/api/v1/environments/${environmentId}/regressions`,
+      signal,
     ),
   acknowledgeRegression: (environmentId: string, id: string, reason: string) =>
     postJSON<{ status: string }>(
@@ -1243,9 +1429,11 @@ export const api = {
     database?: string,
     schema?: string,
     table?: string,
+    signal?: AbortSignal,
   ) =>
     getJSON<ScopeScore>(
       `/api/v1/environments/${environmentId}/runs/${runId}/score${qs({ database, schema, table })}`,
+      signal,
     ),
   compareScopeScore: (
     environmentId: string,
@@ -1253,6 +1441,7 @@ export const api = {
     database?: string,
     schema?: string,
     table?: string,
+    signal?: AbortSignal,
   ) =>
     getJSON<{
       status: string;
@@ -1262,15 +1451,17 @@ export const api = {
       baseline?: ScopeScore;
     }>(
       `/api/v1/environments/${environmentId}/runs/${runId}/score/compare${qs({ database, schema, table })}`,
+      signal,
     ),
   scopeScores: (environmentId: string, runId: string, signal?: AbortSignal) =>
     getJSON<{ items: ScopeAggregate[]; version: string }>(
       `/api/v1/environments/${environmentId}/runs/${runId}/scores`,
       signal,
     ),
-  rules: (environmentId: string, schema?: string) =>
+  rules: (environmentId: string, schema?: string, signal?: AbortSignal) =>
     getJSON<{ items: EffectiveRule[]; schema: string }>(
       `/api/v1/environments/${environmentId}/rules${qs({ schema })}`,
+      signal,
     ),
   putRule: (
     environmentId: string,
@@ -1295,7 +1486,7 @@ export const api = {
       environment_id: environmentId,
       profile,
     }),
-  schedules: (environmentId: string) =>
+  schedules: (environmentId: string, signal?: AbortSignal) =>
     getJSON<{
       items: {
         environment_id: string;
@@ -1305,7 +1496,7 @@ export const api = {
         last_run_at?: string;
         next_run_at?: string;
       }[];
-    }>(`/api/v1/environments/${environmentId}/schedules`),
+    }>(`/api/v1/environments/${environmentId}/schedules`, signal),
   saveSchedule: (environmentId: string, profile: string, enabled: boolean) =>
     putJSON<{
       profile: string;
@@ -1313,11 +1504,14 @@ export const api = {
       next_run_at?: string;
       last_status?: string;
     }>(`/api/v1/environments/${environmentId}/schedules`, { profile, enabled }),
-  mappings: (params?: {
-    source_environment_id?: string;
-    target_environment_id?: string;
-    status?: string;
-  }) => {
+  mappings: (
+    params?: {
+      source_environment_id?: string;
+      target_environment_id?: string;
+      status?: string;
+    },
+    signal?: AbortSignal,
+  ) => {
     const q = new URLSearchParams();
     if (params?.source_environment_id) {
       q.set("source_environment_id", params.source_environment_id);
@@ -1331,6 +1525,7 @@ export const api = {
     const s = q.toString();
     return getJSON<ItemsResponse<ObjectMapping>>(
       `/api/v1/mappings${s ? `?${s}` : ""}`,
+      signal,
     );
   },
   createMapping: (body: Partial<ObjectMapping>) =>
@@ -1351,9 +1546,10 @@ export const api = {
     statuses?: string[];
     object_type?: string;
   }) => postJSON<CompareResult>("/api/v1/compare", body),
-  serverCompare: (left: string, right: string) =>
+  serverCompare: (left: string, right: string, signal?: AbortSignal) =>
     getJSON<ServerCompareReport>(
       `/api/v1/server-compare${qs({ left, right })}`,
+      signal,
     ),
   findings: (
     params?: {
@@ -1387,9 +1583,10 @@ export const api = {
       signal,
     );
   },
-  runFindings: (auditRunId: string) =>
+  runFindings: (auditRunId: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<Finding>>(
       `/api/v1/findings?audit_run_id=${encodeURIComponent(auditRunId)}`,
+      signal,
     ),
   findingsPage: (
     params: {
@@ -1427,9 +1624,15 @@ export const api = {
       `/api/v1/findings/${id}/action/events`,
       signal,
     ),
-  actionMeasurements: (id: string, offset = 0, limit = 50) =>
+  actionMeasurements: (
+    id: string,
+    offset = 0,
+    limit = 50,
+    signal?: AbortSignal,
+  ) =>
     getJSON<PagedResponse<ActionMeasurement>>(
       `/api/v1/findings/${id}/action/measurements?offset=${offset}&limit=${limit}`,
+      signal,
     ),
   recordActionMeasurement: (
     id: string,

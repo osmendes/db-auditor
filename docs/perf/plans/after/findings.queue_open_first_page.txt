@@ -1,0 +1,68 @@
+-- findings.queue_open_first_page query #0
+SELECT count(*) FROM finding WHERE 
+($1 = '' OR environment_id = $1::uuid)
+  AND ($2 = '' OR finding_type = $2)
+  AND ($3 = '' OR severity = $3)
+  AND (
+    $4 = ''
+    OR ($4 = 'open' AND (status = 'open' OR (status = 'suppressed' AND suppressed_until <= now())))
+    OR ($4 = 'suppressed' AND status = 'suppressed' AND (suppressed_until IS NULL OR suppressed_until > now()))
+    OR ($4 NOT IN ('', 'open', 'suppressed') AND status = $4)
+  )
+  AND ($5 = '' OR assignee = $5)
+  AND ($6 = false OR (due_at IS NOT NULL AND due_at < now() AND status IN ('open', 'acknowledged')))
+Aggregate  (cost=3582.47..3582.48 rows=1 width=8) (actual time=2.889..2.890 rows=1 loops=1)
+  Buffers: shared hit=637
+  ->  Bitmap Heap Scan on finding  (cost=169.16..3562.49 rows=7993 width=0) (actual time=0.215..2.560 rows=8000 loops=1)
+        Recheck Cond: (((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (status = 'open'::text)) OR ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (status = 'suppressed'::text)))
+        Filter: ((status = 'open'::text) OR ((status = 'suppressed'::text) AND (suppressed_until <= now())))
+        Rows Removed by Filter: 4000
+        Heap Blocks: exact=624
+        Buffers: shared hit=637
+        ->  BitmapOr  (cost=169.16..169.16 rows=12059 width=0) (actual time=0.166..0.167 rows=0 loops=1)
+              Buffers: shared hit=13
+              ->  Bitmap Index Scan on finding_env_status_idx  (cost=0.00..108.22 rows=7993 width=0) (actual time=0.119..0.119 rows=8000 loops=1)
+                    Index Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (status = 'open'::text))
+                    Buffers: shared hit=8
+              ->  Bitmap Index Scan on finding_env_status_idx  (cost=0.00..56.94 rows=4065 width=0) (actual time=0.046..0.046 rows=4000 loops=1)
+                    Index Cond: ((environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid) AND (status = 'suppressed'::text))
+                    Buffers: shared hit=5
+Planning Time: 0.045 ms
+Execution Time: 2.901 ms
+
+-- findings.queue_open_first_page query #1
+SELECT id::text, environment_id::text, audit_run_id::text,
+  finding_type, severity, status, title, summary,
+  object_type, object_key, database_name, schema_name, object_name,
+  evidence, dedup_key, rule_id, rule_version, category, confidence, impact, risk,
+  recommendation, validation, reference_urls, rule_parameters, first_seen_at, last_seen_at, resolved_at, notes,
+  created_at, updated_at, recurrence_count, suppression_reason, suppressed_until, superseded_by::text, assignee, due_at
+FROM finding
+WHERE 
+($1 = '' OR environment_id = $1::uuid)
+  AND ($2 = '' OR finding_type = $2)
+  AND ($3 = '' OR severity = $3)
+  AND (
+    $4 = ''
+    OR ($4 = 'open' AND (status = 'open' OR (status = 'suppressed' AND suppressed_until <= now())))
+    OR ($4 = 'suppressed' AND status = 'suppressed' AND (suppressed_until IS NULL OR suppressed_until > now()))
+    OR ($4 NOT IN ('', 'open', 'suppressed') AND status = $4)
+  )
+  AND ($5 = '' OR assignee = $5)
+  AND ($6 = false OR (due_at IS NOT NULL AND due_at < now() AND status IN ('open', 'acknowledged')))
+ORDER BY
+  CASE severity WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 ELSE 4 END,
+  confidence DESC,
+  last_seen_at DESC,
+  id DESC
+LIMIT $7 OFFSET $8
+Limit  (cost=0.42..92.33 rows=50 width=369) (actual time=0.035..0.083 rows=50 loops=1)
+  Buffers: shared hit=176
+  ->  Index Scan using finding_queue_order_idx on finding  (cost=0.42..14693.07 rows=7993 width=369) (actual time=0.035..0.080 rows=50 loops=1)
+        Index Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+        Filter: ((status = 'open'::text) OR ((status = 'suppressed'::text) AND (suppressed_until <= now())))
+        Rows Removed by Filter: 120
+        Buffers: shared hit=176
+Planning Time: 0.076 ms
+Execution Time: 0.101 ms
+

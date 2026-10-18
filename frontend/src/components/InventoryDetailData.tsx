@@ -8,7 +8,7 @@ import { PaginationControls } from "./ui/PaginationControls";
 export function useInventoryDetailPage<T>(
   active: boolean,
   scope: string,
-  load: (offset: number) => Promise<PagedResponse<T>>,
+  load: (offset: number, signal?: AbortSignal) => Promise<PagedResponse<T>>,
 ) {
   const loader = useRef(load);
   loader.current = load;
@@ -24,10 +24,11 @@ export function useInventoryDetailPage<T>(
   useEffect(() => {
     if (!active) return;
     let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
     void loader
-      .current(offset)
+      .current(offset, controller.signal)
       .then((value) => {
         if (!cancelled) setData(value);
       })
@@ -42,6 +43,7 @@ export function useInventoryDetailPage<T>(
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [active, scope, offset]);
   return { offset, setOffset, data, error, loading };

@@ -1,0 +1,30 @@
+-- inventory.first_page_sorted query #1
+SELECT id::text,audit_run_id::text,environment_id::text,database_name,schema_name,table_name,
+owner_name,COALESCE(relkind,''),COALESCE(relation_class,''),COALESCE(is_partition,false),
+total_size_bytes,data_size_bytes,index_size_bytes,COALESCE(row_estimate,0),COALESCE(column_count,0),
+COALESCE(has_primary_key,false),collected_at FROM table_snapshot
+WHERE environment_id=$1::uuid AND audit_run_id=COALESCE(NULLIF($2,'')::uuid,
+(SELECT id FROM audit_run WHERE environment_id=$1::uuid AND status IN ('success','partial_success') ORDER BY started_at DESC,id DESC LIMIT 1))
+AND ($3='' OR database_name=$3) AND ($4='' OR schema_name=$4)
+AND ($5='' OR table_name=$5) AND ($6='' OR relation_class=$6)
+AND ($7='' OR table_name ILIKE $7 OR schema_name ILIKE $7 OR database_name ILIKE $7)
+ORDER BY total_size_bytes DESC NULLS LAST, id ASC LIMIT $8 OFFSET $9
+Limit  (cost=1053.06..1053.19 rows=50 width=257) (actual time=5.862..5.869 rows=50 loops=1)
+  Buffers: shared hit=1128
+  InitPlan 1
+    ->  Limit  (cost=0.28..1.76 rows=1 width=24) (actual time=0.006..0.008 rows=1 loops=1)
+          Buffers: shared hit=3
+          ->  Index Only Scan using audit_run_latest_idx on audit_run  (cost=0.28..40.25 rows=27 width=24) (actual time=0.006..0.007 rows=1 loops=1)
+                Index Cond: (environment_id = 'b8e1a300-61e7-4690-9bb4-45819df1a473'::uuid)
+                Heap Fetches: 1
+                Buffers: shared hit=3
+  ->  Sort  (cost=1051.31..1052.92 rows=647 width=257) (actual time=5.861..5.863 rows=50 loops=1)
+        Sort Key: table_snapshot.total_size_bytes DESC NULLS LAST, ((table_snapshot.id)::text)
+        Sort Method: top-N heapsort  Memory: 50kB
+        Buffers: shared hit=1128
+        ->  Index Scan using table_snapshot_run_history_idx on table_snapshot  (cost=0.29..1029.81 rows=647 width=257) (actual time=0.020..3.367 rows=10000 loops=1)
+              Index Cond: ((environment_id = 'b8e1a300-61e7-4690-9bb4-45819df1a473'::uuid) AND (audit_run_id = COALESCE((InitPlan 1).col1)))
+              Buffers: shared hit=1128
+Planning Time: 0.104 ms
+Execution Time: 5.891 ms
+

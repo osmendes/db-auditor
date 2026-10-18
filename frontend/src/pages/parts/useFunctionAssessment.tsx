@@ -65,6 +65,7 @@ export function useFunctionAssessment({
   ]);
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     setDetail(null);
     setDetailError(null);
     setDetailLoading(true);
@@ -76,6 +77,7 @@ export function useFunctionAssessment({
         fn.schema_name,
         fn.function_name,
         fn.identity_arguments,
+        controller.signal,
       )
       .then((value) => {
         if (!cancelled) setDetail(value);
@@ -88,12 +90,13 @@ export function useFunctionAssessment({
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [scope]);
   const dependencies = useInventoryDetailPage<DependencySnapshot>(
     tab === "relationships",
     scope,
-    (offset) =>
+    (offset, signal) =>
       api.functionDependencies(
         environment,
         run,
@@ -103,12 +106,13 @@ export function useFunctionAssessment({
         fn.identity_arguments,
         50,
         offset,
+        signal,
       ),
   );
   const grants = useInventoryDetailPage<GrantSnapshot>(
     tab === "security",
     scope,
-    (offset) =>
+    (offset, signal) =>
       api.functionGrants(
         environment,
         run,
@@ -118,12 +122,13 @@ export function useFunctionAssessment({
         fn.identity_arguments,
         50,
         offset,
+        signal,
       ),
   );
   const findings = useInventoryDetailPage<Finding>(
     tab === "recommendations",
     scope,
-    (offset) =>
+    (offset, signal) =>
       api.functionFindings(
         environment,
         run,
@@ -133,6 +138,7 @@ export function useFunctionAssessment({
         fn.identity_arguments,
         50,
         offset,
+        signal,
       ),
   );
   const detailState = inventoryDetailState(

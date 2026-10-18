@@ -1,0 +1,42 @@
+-- findings.security_category_page query #0
+SELECT count(*) FROM finding WHERE ($1='' OR environment_id=$1::uuid) AND ($2='' OR status=$2)
+		AND (($3='security' AND finding_type LIKE 'security.%') OR
+		($3='performance' AND (finding_type LIKE 'performance.%' OR finding_type LIKE 'vacuum.%')))
+Aggregate  (cost=3377.21..3377.22 rows=1 width=8) (actual time=1.077..1.078 rows=1 loops=1)
+  Buffers: shared hit=632
+  ->  Bitmap Heap Scan on finding  (cost=108.82..3370.60 rows=2645 width=0) (actual time=0.165..0.968 rows=2666 loops=1)
+        Recheck Cond: ((environment_id = 'b8e1a300-61e7-4690-9bb4-45819df1a473'::uuid) AND (status = 'open'::text))
+        Filter: (finding_type ~~ 'security.%'::text)
+        Rows Removed by Filter: 5334
+        Heap Blocks: exact=624
+        Buffers: shared hit=632
+        ->  Bitmap Index Scan on finding_env_status_idx  (cost=0.00..108.16 rows=7987 width=0) (actual time=0.117..0.118 rows=8000 loops=1)
+              Index Cond: ((environment_id = 'b8e1a300-61e7-4690-9bb4-45819df1a473'::uuid) AND (status = 'open'::text))
+              Buffers: shared hit=8
+Planning Time: 0.028 ms
+Execution Time: 1.086 ms
+
+-- findings.security_category_page query #1
+SELECT id::text, environment_id::text, audit_run_id::text,
+  finding_type, severity, status, title, summary,
+  object_type, object_key, database_name, schema_name, object_name,
+  evidence, dedup_key, rule_id, rule_version, category, confidence, impact, risk,
+  recommendation, validation, reference_urls, rule_parameters, first_seen_at, last_seen_at, resolved_at, notes,
+  created_at, updated_at, recurrence_count, suppression_reason, suppressed_until, superseded_by::text, assignee, due_at
+FROM finding WHERE ($1='' OR environment_id=$1::uuid) AND ($2='' OR status=$2)
+		AND (($3='security' AND finding_type LIKE 'security.%') OR
+		($3='performance' AND (finding_type LIKE 'performance.%' OR finding_type LIKE 'vacuum.%'))) ORDER BY last_seen_at DESC,id DESC LIMIT $4 OFFSET $5
+Limit  (cost=12.86..302.50 rows=50 width=366) (actual time=0.289..0.470 rows=50 loops=1)
+  Buffers: shared hit=1936
+  ->  Incremental Sort  (cost=12.86..15335.11 rows=2645 width=366) (actual time=0.289..0.467 rows=50 loops=1)
+        Sort Key: last_seen_at DESC, ((id)::text) DESC
+        Presorted Key: last_seen_at
+        Full-sort Groups: 2  Sort Method: quicksort  Average Memory: 41kB  Peak Memory: 41kB
+        Buffers: shared hit=1936
+        ->  Index Scan using finding_last_seen_idx on finding  (cost=0.29..15262.90 rows=2645 width=366) (actual time=0.057..0.415 rows=58 loops=1)
+              Filter: ((finding_type ~~ 'security.%'::text) AND (environment_id = 'b8e1a300-61e7-4690-9bb4-45819df1a473'::uuid) AND (status = 'open'::text))
+              Rows Removed by Filter: 1874
+              Buffers: shared hit=1936
+Planning Time: 0.049 ms
+Execution Time: 0.485 ms
+

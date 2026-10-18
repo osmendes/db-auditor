@@ -1,22 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { PageSize } from "../components/ui/PaginationControls";
 import { useApp } from "../context/AppContext";
-import { formatError } from "../lib/errors";
+import { useLatestSignal } from "../hooks/useLatestSignal";
+import { formatError, isAbortError } from "../lib/errors";
 import { labels } from "../lib/labels";
 import { fetchAllPages } from "../lib/pagination";
 import { api } from "../services/api";
 import type {
   AnalysisRun,
-  AuditBaseline,
   AuditRun,
   AuditRunCoverage,
-  BaselineComparison,
   CollectorRun,
-  Finding,
-  ScopeScore,
 } from "../types";
 import { AuditRunsView } from "./parts/AuditRunsView";
 import { type AuditScheduleRow, POLL_MS } from "./parts/auditRunUi";
+import { useSelectedRunContext } from "./parts/useSelectedRunContext";
 
 export function AuditRunsPage() {
   const { environments, environmentId, runId, openRun, openFinding } = useApp();
@@ -35,11 +33,7 @@ export function AuditRunsPage() {
   const [collectors, setCollectors] = useState<CollectorRun[] | null>(null);
   const [coverage, setCoverage] = useState<AuditRunCoverage[] | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisRun | null>(null);
-  const [baseline, setBaseline] = useState<AuditBaseline | null>(null);
   const [baselineToken, setBaselineToken] = useState("");
-  const [comparison, setComparison] = useState<BaselineComparison | null>(null);
-  const [scopeScore, setScopeScore] = useState<ScopeScore | null>(null);
-  const [runFindings, setRunFindings] = useState<Finding[] | null>(null);
   const [triggerEnv, setTriggerEnv] = useState("");
   const [triggerMsg, setTriggerMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -62,8 +56,9 @@ export function AuditRunsPage() {
       return;
     }
     let cancelled = false;
+    const controller = new AbortController();
     void api
-      .schedules(triggerEnv)
+      .schedules(triggerEnv, controller.signal)
       .then((result) => {
         if (!cancelled) {
           setSchedules(result.items);
@@ -76,10 +71,18 @@ export function AuditRunsPage() {
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [triggerEnv]);
 
+  const nextRunsSignal = useLatestSignal();
+  const nextCollectorsSignal = useLatestSignal();
+  const nextDiagnosticsSignal = useLatestSignal();
+
+  // Each call aborts the previous one: a slow answer for the old environment
+  // or page can no longer overwrite the current list (PF-02).
   const loadRuns = useCallback(() => {
+    const signal = nextRunsSignal();
     setError(null);
     const filters = {
       status: statusFilter || undefined,
@@ -88,26 +91,33 @@ export function AuditRunsPage() {
     };
     const request =
       runPageSize === "all"
-        ? fetchAllPages((offset, limit) =>
-            api.auditRunsPage({ ...filters, offset, limit }),
+        ? fetchAllPages(
+            (offset, limit) =>
+              api.auditRunsPage({ ...filters, offset, limit }, signal),
+            signal,
           ).then((items) => ({ items, total: items.length }))
         : api
-            .auditRunsPage({
-              ...filters,
-              offset: runOffset,
-              limit: runPageSize,
-            })
+            .auditRunsPage(
+              {
+                ...filters,
+                offset: runOffset,
+                limit: runPageSize,
+              },
+              signal,
+            )
             .then((result) => ({
               items: result.items,
               total: result.page.total,
             }));
     return request
       .then((res) => {
+        if (signal.aborted) return res.items;
         setRuns(res.items);
         setRunTotal(res.total);
         return res.items;
       })
       .catch((err: unknown) => {
+        if (signal.aborted || isAbortError(err)) return [] as AuditRun[];
         setError(
           formatError(
             err,
@@ -117,36 +127,52 @@ export function AuditRunsPage() {
         setRuns([]);
         return [] as AuditRun[];
       });
-  }, [statusFilter, profileFilter, environmentId, runOffset, runPageSize]);
+  }, [
+    statusFilter,
+    profileFilter,
+    environmentId,
+    runOffset,
+    runPageSize,
+    nextRunsSignal,
+  ]);
 
   useEffect(() => {
     setRuns(null);
     void loadRuns();
   }, [loadRuns]);
 
-  const loadCollectors = useCallback(async (runId: string) => {
-    try {
-      const res = await api.auditRunCollectors(runId);
-      setCollectors(res.items);
-      return res.items;
-    } catch {
-      setCollectors([]);
-      return [] as CollectorRun[];
-    }
-  }, []);
+  const loadCollectors = useCallback(
+    async (runId: string) => {
+      const signal = nextCollectorsSignal();
+      try {
+        const res = await api.auditRunCollectors(runId, signal);
+        if (!signal.aborted) setCollectors(res.items);
+        return res.items;
+      } catch {
+        if (!signal.aborted) setCollectors([]);
+        return [] as CollectorRun[];
+      }
+    },
+    [nextCollectorsSignal],
+  );
 
-  const loadRunDiagnostics = useCallback(async (runId: string) => {
-    const [coverageResult, analysisResult] = await Promise.allSettled([
-      api.auditRunCoverage(runId),
-      api.auditRunAnalysis(runId),
-    ]);
-    setCoverage(
-      coverageResult.status === "fulfilled" ? coverageResult.value.items : [],
-    );
-    setAnalysis(
-      analysisResult.status === "fulfilled" ? analysisResult.value : null,
-    );
-  }, []);
+  const loadRunDiagnostics = useCallback(
+    async (runId: string) => {
+      const signal = nextDiagnosticsSignal();
+      const [coverageResult, analysisResult] = await Promise.allSettled([
+        api.auditRunCoverage(runId, signal),
+        api.auditRunAnalysis(runId, signal),
+      ]);
+      if (signal.aborted) return;
+      setCoverage(
+        coverageResult.status === "fulfilled" ? coverageResult.value.items : [],
+      );
+      setAnalysis(
+        analysisResult.status === "fulfilled" ? analysisResult.value : null,
+      );
+    },
+    [nextDiagnosticsSignal],
+  );
 
   useEffect(() => {
     if (!selectedId) {
@@ -166,60 +192,8 @@ export function AuditRunsPage() {
     [runs, selectedId],
   );
 
-  useEffect(() => {
-    if (!selected || selected.status === "running") {
-      setBaseline(null);
-      setComparison(null);
-      setScopeScore(null);
-      return;
-    }
-    let active = true;
-    void Promise.allSettled([
-      api.auditBaseline(selected.environment_id),
-      api.baselineComparisons(selected.environment_id, selected.id),
-      api.scopeScore(selected.environment_id, selected.id),
-    ]).then(([base, comparisons, score]) => {
-      if (!active) return;
-      setBaseline(base.status === "fulfilled" ? base.value : null);
-      setComparison(
-        comparisons.status === "fulfilled"
-          ? (comparisons.value.items[0] ?? null)
-          : null,
-      );
-      setScopeScore(score.status === "fulfilled" ? score.value : null);
-    });
-    return () => {
-      active = false;
-    };
-  }, [selected]);
-
-  useEffect(() => {
-    if (!selectedId) {
-      setRunFindings(null);
-      return;
-    }
-    let active = true;
-    setRunFindings(null);
-    void api
-      .runFindings(selectedId)
-      .then((result) => {
-        if (active) setRunFindings(result.items ?? []);
-      })
-      .catch((cause: unknown) => {
-        if (active) {
-          setRunFindings([]);
-          setError(
-            formatError(
-              cause,
-              "Não foi possível ler os findings desta execução",
-            ),
-          );
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [selectedId]);
+  const { baseline, setBaseline, comparison, scopeScore, runFindings } =
+    useSelectedRunContext(selected, selectedId, setError);
 
   const chooseBaseline = async () => {
     if (

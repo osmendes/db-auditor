@@ -6,8 +6,10 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/osmendes/db-auditor/internal/config"
@@ -16,7 +18,34 @@ import (
 	"github.com/osmendes/db-auditor/internal/repository"
 )
 
-type Worker struct{ Store *repository.Store }
+type Worker struct {
+	Store *repository.Store
+	// MaxHeapBytes caps the heap growth one PDF job may cause before it is
+	// stopped with a readable reason. Zero uses AUDITOR_REPORT_MAX_HEAP_MB
+	// (default 256 MiB).
+	MaxHeapBytes uint64
+}
+
+const defaultReportHeapBudget = 256 << 20
+
+func (w Worker) heapBudget() uint64 {
+	if w.MaxHeapBytes > 0 {
+		return w.MaxHeapBytes
+	}
+	if value, err := strconv.ParseUint(os.Getenv("AUDITOR_REPORT_MAX_HEAP_MB"), 10, 32); err == nil && value > 0 {
+		return value << 20
+	}
+	return defaultReportHeapBudget
+}
+
+// renderCause prefers the readable cancel cause (memory budget) over the bare
+// context error it produced.
+func renderCause(ctx context.Context, err error) error {
+	if cause := context.Cause(ctx); cause != nil && !errors.Is(cause, context.Canceled) && !errors.Is(cause, context.DeadlineExceeded) {
+		return cause
+	}
+	return err
+}
 
 func (w Worker) Run(ctx context.Context) {
 	if err := w.Store.RequeueInterruptedReports(ctx); err != nil {
@@ -67,37 +96,53 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 	if job.Type == "architecture" {
 		return w.processArchitecture(workCtx, job)
 	}
-	document, err := w.Store.LoadReportDocument(workCtx, *job)
+	budget := w.heapBudget()
+	renderCtx, stopRender := context.WithCancelCause(workCtx)
+	defer stopRender(nil)
+	sampler := report.StartHeapSampler(5*time.Millisecond, func(peak uint64) {
+		if peak > budget {
+			stopRender(fmt.Errorf("relatório excedeu o orçamento de memória do worker (%d MiB); reduza o escopo ou use filtros", budget>>20))
+		}
+	})
+	started := time.Now()
+	document, err := w.Store.LoadReportDocument(renderCtx, *job)
 	if err != nil {
-		return w.fail(workCtx, job.ID, err)
+		sampler.Stop()
+		return w.fail(workCtx, job.ID, renderCause(renderCtx, err))
 	}
 	document.RedactMetadata(os.Getenv("AUDITOR_REPORT_REDACT_METADATA"))
 	document.RedactSensitive(job.Filters.Redaction)
-	pdf, err := report.RenderPDF(document)
-	document = report.Document{}
-	if err != nil {
-		return w.fail(workCtx, job.ID, err)
-	}
-	slog.Info("report pdf rendered", "job_id", job.ID, "bytes", len(pdf))
-	if err = report.ValidatePDF(pdf); err != nil {
-		return w.fail(workCtx, job.ID, err)
-	}
 	current, err := w.Store.GetReportJob(workCtx, job.EnvironmentID, job.ID)
 	if err != nil {
+		sampler.Stop()
 		return err
 	}
 	if current == nil || current.Status == "cancelled" {
+		sampler.Stop()
 		return nil
 	}
-	digest := sha256.Sum256(pdf)
-	artifact := repository.ReportArtifact{Content: pdf, SHA256: hex.EncodeToString(digest[:]), Filename: fmt.Sprintf("db-auditor-%s-%s.pdf", job.Type, job.ID), ContentType: "application/pdf"}
-	err = w.Store.FinishReportJob(workCtx, job.ID, artifact)
+	// PF-07: render straight into the report_artifact COPY stream; the PDF is
+	// never held in memory as a whole.
+	var rendered report.PDFResult
+	err = w.Store.FinishReportJobStream(renderCtx, job.ID, fmt.Sprintf("db-auditor-%s-%s.pdf", job.Type, job.ID), "application/pdf", func(out io.Writer) (repository.StreamedArtifact, error) {
+		result, err := report.WritePDF(renderCtx, out, document)
+		rendered = result
+		return repository.StreamedArtifact{Bytes: result.Bytes, SHA256: result.SHA256}, err
+	})
+	document = report.Document{}
+	peak := sampler.Stop()
 	if errors.Is(err, repository.ErrReportConflict) {
 		return nil
 	}
 	if err != nil {
+		var writeErr *repository.ArtifactWriteError
+		if errors.As(err, &writeErr) || context.Cause(renderCtx) != nil && workCtx.Err() == nil {
+			slog.Warn("report pdf failed", "job_id", job.ID, "peak_heap_bytes", peak, "heap_budget_bytes", budget, "error", config.SanitizeError(renderCause(renderCtx, err)))
+			return w.fail(workCtx, job.ID, renderCause(renderCtx, err))
+		}
 		return err
 	}
+	slog.Info("report pdf rendered", "job_id", job.ID, "bytes", rendered.Bytes, "pages", rendered.Pages, "peak_heap_bytes", peak, "heap_budget_bytes", budget, "duration_ms", time.Since(started).Milliseconds())
 	_ = notify.FromEnv().Send(workCtx, notify.Event{
 		Kind:          "report_ready",
 		EnvironmentID: job.EnvironmentID,

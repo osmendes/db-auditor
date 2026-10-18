@@ -1,0 +1,86 @@
+-- kpi.latest_snapshot query #0
+WITH latest AS (
+ SELECT id,status FROM audit_run WHERE environment_id=$1::uuid
+ AND status IN ('success','partial_success') ORDER BY started_at DESC,id DESC LIMIT 1
+)
+SELECT latest.id::text, CASE WHEN latest.status='success' AND NOT EXISTS (
+ SELECT 1 FROM audit_run_coverage c WHERE c.audit_run_id=latest.id AND c.status='failed'
+) THEN 'complete' ELSE 'partial' END,
+ (SELECT count(*) FROM database_snapshot d WHERE d.audit_run_id=latest.id AND NOT d.is_template),
+ (SELECT count(*) FROM schema_snapshot sc WHERE sc.audit_run_id=latest.id),
+ (SELECT count(*) FROM table_snapshot t WHERE t.audit_run_id=latest.id),
+ COALESCE((SELECT sum(size_bytes) FROM database_snapshot d WHERE d.audit_run_id=latest.id AND NOT d.is_template),0),
+ (SELECT count(*) FROM hypertable_snapshot h WHERE h.audit_run_id=latest.id),
+ (SELECT count(*) FROM job_snapshot j WHERE j.audit_run_id=latest.id AND j.scheduled),
+ (SELECT count(*) FROM policy_snapshot p WHERE p.audit_run_id=latest.id)
+FROM latest
+Subquery Scan on latest  (cost=0.28..2202.79 rows=1 width=144) (actual time=1.767..1.776 rows=1 loops=1)
+  Buffers: shared hit=891
+  ->  Limit  (cost=0.28..2.01 rows=1 width=31) (actual time=0.005..0.006 rows=1 loops=1)
+        Buffers: shared hit=3
+        ->  Index Scan using audit_run_latest_idx on audit_run  (cost=0.28..47.02 rows=27 width=31) (actual time=0.005..0.005 rows=1 loops=1)
+              Index Cond: (environment_id = '7f492eb4-3c0f-45be-b0a3-f2f35d87c662'::uuid)
+              Buffers: shared hit=3
+  SubPlan 1
+    ->  Bitmap Heap Scan on audit_run_coverage c  (cost=4.57..73.99 rows=1 width=0) (actual time=0.013..0.013 rows=0 loops=1)
+          Recheck Cond: (audit_run_id = latest.id)
+          Filter: (status = 'failed'::text)
+          Rows Removed by Filter: 20
+          Heap Blocks: exact=5
+          Buffers: shared hit=8
+          ->  Bitmap Index Scan on audit_run_coverage_run_idx  (cost=0.00..4.57 rows=20 width=0) (actual time=0.005..0.005 rows=20 loops=1)
+                Index Cond: (audit_run_id = latest.id)
+                Buffers: shared hit=3
+  SubPlan 3
+    ->  Aggregate  (cost=21.61..21.62 rows=1 width=8) (actual time=0.006..0.008 rows=1 loops=1)
+          Buffers: shared hit=3
+          ->  Bitmap Heap Scan on database_snapshot d  (cost=4.32..21.60 rows=5 width=0) (actual time=0.003..0.005 rows=5 loops=1)
+                Recheck Cond: (audit_run_id = latest.id)
+                Filter: (NOT is_template)
+                Heap Blocks: exact=1
+                Buffers: shared hit=3
+                ->  Bitmap Index Scan on database_snapshot_audit_run_id_database_name_key  (cost=0.00..4.32 rows=5 width=0) (actual time=0.002..0.002 rows=5 loops=1)
+                      Index Cond: (audit_run_id = latest.id)
+                      Buffers: shared hit=2
+  SubPlan 4
+    ->  Aggregate  (cost=0.00..0.01 rows=1 width=8) (actual time=0.001..0.002 rows=1 loops=1)
+          ->  Seq Scan on schema_snapshot sc  (cost=0.00..0.00 rows=1 width=0) (actual time=0.001..0.001 rows=0 loops=1)
+                Filter: (audit_run_id = latest.id)
+  SubPlan 5
+    ->  Aggregate  (cost=2083.46..2083.47 rows=1 width=8) (actual time=1.709..1.710 rows=1 loops=1)
+          Buffers: shared hit=874
+          ->  Bitmap Heap Scan on table_snapshot t  (cost=66.49..2080.21 rows=1300 width=0) (actual time=0.351..1.264 rows=10000 loops=1)
+                Recheck Cond: (audit_run_id = latest.id)
+                Heap Blocks: exact=771
+                Buffers: shared hit=874
+                ->  Bitmap Index Scan on table_snapshot_audit_run_id_database_name_schema_name_table_key  (cost=0.00..66.17 rows=1300 width=0) (actual time=0.286..0.286 rows=10000 loops=1)
+                      Index Cond: (audit_run_id = latest.id)
+                      Buffers: shared hit=103
+  SubPlan 6
+    ->  Aggregate  (cost=21.62..21.63 rows=1 width=32) (actual time=0.011..0.011 rows=1 loops=1)
+          Buffers: shared hit=3
+          ->  Bitmap Heap Scan on database_snapshot d_1  (cost=4.32..21.60 rows=5 width=8) (actual time=0.007..0.007 rows=5 loops=1)
+                Recheck Cond: (audit_run_id = latest.id)
+                Filter: (NOT is_template)
+                Heap Blocks: exact=1
+                Buffers: shared hit=3
+                ->  Bitmap Index Scan on database_snapshot_audit_run_id_database_name_key  (cost=0.00..4.32 rows=5 width=0) (actual time=0.003..0.003 rows=5 loops=1)
+                      Index Cond: (audit_run_id = latest.id)
+                      Buffers: shared hit=2
+  SubPlan 7
+    ->  Aggregate  (cost=0.00..0.01 rows=1 width=8) (actual time=0.002..0.002 rows=1 loops=1)
+          ->  Seq Scan on hypertable_snapshot h  (cost=0.00..0.00 rows=1 width=0) (actual time=0.001..0.001 rows=0 loops=1)
+                Filter: (audit_run_id = latest.id)
+  SubPlan 8
+    ->  Aggregate  (cost=0.00..0.01 rows=1 width=8) (actual time=0.002..0.003 rows=1 loops=1)
+          ->  Seq Scan on job_snapshot j  (cost=0.00..0.00 rows=1 width=0) (actual time=0.001..0.001 rows=0 loops=1)
+                Filter: (scheduled AND (audit_run_id = latest.id))
+  SubPlan 9
+    ->  Aggregate  (cost=0.00..0.01 rows=1 width=8) (actual time=0.002..0.002 rows=1 loops=1)
+          ->  Seq Scan on policy_snapshot p  (cost=0.00..0.00 rows=1 width=0) (actual time=0.001..0.001 rows=0 loops=1)
+                Filter: (audit_run_id = latest.id)
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.174 ms
+Execution Time: 1.830 ms
+
