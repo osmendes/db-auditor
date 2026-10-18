@@ -234,10 +234,63 @@ WHERE r.environment_id=$1::uuid AND r.id=$2::uuid AND r.status='success'`, env, 
 	if err != nil {
 		return nil, err
 	}
+	// A table created after the baseline without a primary key is a
+	// structural regression too (#104, QA scenario 4); it counts with the
+	// removed and changed tables under the same persistence rule.
+	previousNoPK, err := s.addedTablesWithoutPK(ctx, baseline, prior)
+	if err != nil {
+		return nil, err
+	}
+	currentNoPK, err := s.addedTablesWithoutPK(ctx, baseline, run)
+	if err != nil {
+		return nil, err
+	}
+	previousChanges += len(previousNoPK)
+	currentChanges += len(currentNoPK)
 	out["structure"], err = s.recordRegression(ctx, env, baseline, run, "structure", PersistentRegression(0, previousChanges, currentChanges), currentChanges,
-		map[string]any{"previous": previousChanges, "current": currentChanges, "metric": "removed_or_changed_tables", "coverage": "complete",
+		map[string]any{"previous": previousChanges, "current": currentChanges, "metric": "removed_or_changed_tables_or_new_tables_without_pk", "coverage": "complete",
+			"added_tables_without_pk": boundedKeys(currentNoPK), "added_tables_without_pk_total": len(currentNoPK),
 			"threshold": "previous > 0 AND current > 0", "window_hours": started.Sub(priorStarted).Hours()})
 	return out, err
+}
+
+// maxStructureKeys bounds the table identities stored in alert evidence.
+const maxStructureKeys = 1000
+
+func boundedKeys(keys []string) []string {
+	if len(keys) > maxStructureKeys {
+		return keys[:maxStructureKeys]
+	}
+	return keys
+}
+
+// addedTablesWithoutPKSQL lists, as "db.schema.table", tables present in the
+// run but not in the baseline that have no primary key. It follows
+// integrity.missing_primary_key: partitions, foreign tables and TimescaleDB
+// internal chunks are excluded.
+const addedTablesWithoutPKSQL = `SELECT c.database_name||'.'||c.schema_name||'.'||c.table_name
+FROM table_snapshot c
+WHERE c.audit_run_id=$2::uuid AND NOT c.has_primary_key AND NOT c.is_partition AND c.relkind IN ('r','p')
+ AND c.schema_name NOT LIKE '\_timescaledb\_%' ESCAPE '\'
+ AND EXISTS (SELECT 1 FROM table_snapshot d WHERE d.audit_run_id=$1::uuid AND d.database_name=c.database_name)
+ AND NOT EXISTS (SELECT 1 FROM table_snapshot b WHERE b.audit_run_id=$1::uuid AND b.database_name=c.database_name AND b.schema_name=c.schema_name AND b.table_name=c.table_name)
+ORDER BY 1`
+
+func (s *Store) addedTablesWithoutPK(ctx context.Context, baseline, run string) ([]string, error) {
+	rows, err := s.pool.Query(ctx, addedTablesWithoutPKSQL, baseline, run)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	keys := []string{}
+	for rows.Next() {
+		var key string
+		if err = rows.Scan(&key); err != nil {
+			return nil, err
+		}
+		keys = append(keys, key)
+	}
+	return keys, rows.Err()
 }
 
 func (s *Store) recordRegression(ctx context.Context, env, baseline, run, category string, persistent bool, current int, evidence map[string]any) (string, error) {

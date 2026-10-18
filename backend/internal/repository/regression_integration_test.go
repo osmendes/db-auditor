@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -206,6 +207,78 @@ func TestRegressionNoiseControlIntegration(t *testing.T) {
 		alerts = f.alerts()
 		if len(alerts) != 2 || alerts[0].Status != "open" || alerts[1].Status != "acknowledged" {
 			t.Fatalf("expected one acknowledged and one new open alert: %+v", alerts)
+		}
+	})
+}
+
+// addTable adds one table to a run's snapshot.
+func (f *regressionFixture) addTable(run, schema, name string, primaryKey, partition bool) {
+	f.t.Helper()
+	if _, err := f.pool.Exec(f.ctx, `INSERT INTO table_snapshot(audit_run_id,environment_id,database_name,schema_name,table_name,has_primary_key,is_partition)
+VALUES($1::uuid,$2::uuid,'db',$3,$4,$5,$6)`, run, f.env, schema, name, primaryKey, partition); err != nil {
+		f.t.Fatal(err)
+	}
+}
+
+// #104 QA scenario 4: a table created after the baseline without a primary
+// key is a structural regression once it persists across two complete runs.
+func TestRegressionNewTableWithoutPKIntegration(t *testing.T) {
+	reset := time.Now().UTC().Add(-30 * 24 * time.Hour).Truncate(time.Second)
+	now := time.Now().UTC().Truncate(time.Second)
+	at := func(hoursAgo int) time.Time { return now.Add(-time.Duration(hoursAgo) * time.Hour) }
+
+	t.Run("persistente alerta uma vez", func(t *testing.T) {
+		f := newRegressionFixture(t)
+		f.baseline(f.run("success", at(5), false, 0, reset))
+		f.addTable(f.run("success", at(4), false, 0, reset), "public", "audit_log", false, false)
+		current := f.run("success", at(3), false, 0, reset)
+		f.addTable(current, "public", "audit_log", false, false)
+		if got := f.evaluate(current); got["structure"] != RegressionRecorded {
+			t.Fatalf("persistent new table without PK: %v", got)
+		}
+		alerts := f.alerts()
+		if len(alerts) != 1 || alerts[0].Category != "structure" || !strings.Contains(string(alerts[0].Evidence), `"added_tables_without_pk": ["db.public.audit_log"]`) {
+			t.Fatalf("alerts: %+v", alerts)
+		}
+		again := f.run("success", at(2), false, 0, reset)
+		f.addTable(again, "public", "audit_log", false, false)
+		if got := f.evaluate(again); got["structure"] != RegressionAlreadyAlerted || len(f.alerts()) != 1 {
+			t.Fatalf("must alert once: %v %+v", got, f.alerts())
+		}
+	})
+	t.Run("uma coleta só não alerta", func(t *testing.T) {
+		f := newRegressionFixture(t)
+		f.baseline(f.run("success", at(5), false, 0, reset))
+		f.run("success", at(4), false, 0, reset)
+		current := f.run("success", at(3), false, 0, reset)
+		f.addTable(current, "public", "audit_log", false, false)
+		if got := f.evaluate(current); got["structure"] != RegressionNotPersistent {
+			t.Fatalf("first appearance: %v", got)
+		}
+		f.addTable(f.run("success", at(2), false, 0, reset), "public", "tmp_load", false, false)
+		gone := f.run("success", at(1), false, 0, reset)
+		if got := f.evaluate(gone); got["structure"] != RegressionNotPersistent || len(f.alerts()) != 0 {
+			t.Fatalf("table dropped again: %v %+v", got, f.alerts())
+		}
+	})
+	t.Run("tabela nova com PK, partição ou já na referência não conta", func(t *testing.T) {
+		f := newRegressionFixture(t)
+		base := f.run("success", at(5), false, 0, reset)
+		f.addTable(base, "public", "legacy_nopk", false, false)
+		f.baseline(base)
+		var current string
+		for _, hoursAgo := range []int{4, 3} {
+			current = f.run("success", at(hoursAgo), false, 0, reset)
+			f.addTable(current, "public", "legacy_nopk", false, false)
+			f.addTable(current, "public", "with_pk", true, false)
+			f.addTable(current, "public", "events_2026_10", false, true)
+			f.addTable(current, "_timescaledb_internal", "_hyper_1_1_chunk", false, false)
+		}
+		if got := f.evaluate(current); got["structure"] != RegressionNotPersistent {
+			t.Fatalf("not a regression: %v", got)
+		}
+		if len(f.alerts()) != 0 {
+			t.Fatalf("alerts: %+v", f.alerts())
 		}
 	})
 }

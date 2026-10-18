@@ -106,8 +106,10 @@ Uma regressão só é registrada quando:
 4. a referência (baseline) é completa, anterior e com o mesmo perfil, versão
    de coletor e manifesto de regras;
 5. o limiar é **persistente**: a anterior **e** a atual ficam acima da
-   referência (achados altos/críticos observados; tabelas removidas ou
-   alteradas para estrutura). Um pico isolado não alerta.
+   referência (achados altos/críticos observados; para estrutura, tabelas
+   removidas ou alteradas e tabelas criadas depois da referência sem chave
+   primária, fora partições, tabelas externas e chunks internos do
+   TimescaleDB). Um pico isolado não alerta.
 
 Deduplicação: para a mesma referência e categoria, um novo alerta só é criado
 quando o nível atual é pior que o do último alerta, reconhecido ou não.
