@@ -1225,10 +1225,10 @@
         "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetentionPolicy"}}}}, "403": {"description": "Operator session required"}}
       },
       "put": {
-        "summary": "Update (and optionally approve) the retention policy",
-        "description": "Operator session required. Any change clears the previous approval unless approve=true in the same request, which records the session user as approver.",
-        "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["snapshot_retention_days", "report_job_retention_days", "owner_name", "encryption_at_rest"], "properties": {"snapshot_retention_days": {"type": "integer", "minimum": 0, "maximum": 3650}, "report_job_retention_days": {"type": "integer", "minimum": 30, "maximum": 3650}, "owner_name": {"type": "string", "maxLength": 128}, "encryption_at_rest": {"type": "string", "maxLength": 500}, "archive_note": {"type": "string", "maxLength": 2000}, "approve": {"type": "boolean"}}}}}},
-        "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetentionPolicy"}}}}, "400": {"description": "Invalid policy"}, "403": {"description": "Operator session required"}}
+        "summary": "Update and approve the retention policy",
+        "description": "Operator session required. Writes only when the body carries the exact key approve with the JSON literal true; the session user is recorded as approver. Missing, false, null, string or numeric approve, unknown keys or case variants (Approve, APPROVE) return 400 and nothing is written.",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["snapshot_retention_days", "report_job_retention_days", "owner_name", "encryption_at_rest", "approve"], "additionalProperties": false, "properties": {"snapshot_retention_days": {"type": "integer", "minimum": 0, "maximum": 3650}, "report_job_retention_days": {"type": "integer", "minimum": 30, "maximum": 3650}, "owner_name": {"type": "string", "maxLength": 128}, "encryption_at_rest": {"type": "string", "maxLength": 500}, "archive_note": {"type": "string", "maxLength": 2000}, "approve": {"type": "boolean", "enum": [true]}}}}}},
+        "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetentionPolicy"}}}}, "400": {"description": "Invalid policy or approve not exactly true; nothing is written"}, "403": {"description": "Operator session required"}}
       }
     },
     "/api/v1/retention-policy/plan": {

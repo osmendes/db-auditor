@@ -143,7 +143,7 @@ A política fica em `retention_policy` e só um **operador** autenticado a lê o
 | `owner_name` | `operator` | Responsável pela política. |
 | `encryption_at_rest` | `required-external` | Como volumes, backups e artefatos são cifrados (texto da política aprovada). |
 | `archive_note` | vazio | Onde ficam os backups arquivados e por quanto tempo. |
-| `approved_by` / `approved_at` | vazio | Preenchidos só quando o responsável aprova. Qualquer edição remove a aprovação. |
+| `approved_by` / `approved_at` | vazio | Preenchidos pelo próprio `PUT`, que só grava com `"approve": true` (exatamente esse campo, minúsculo, com o literal `true`). Sem aprovação, com campo desconhecido ou com variação de caixa (`Approve`, `APPROVE`), a resposta é 400 e nada é gravado. Uma alteração feita fora da API depois da aprovação bloqueia a limpeza até nova aprovação. |
 
 ```bash
 # ler / alterar e aprovar (sessão de operador; cookie + X-CSRF-Token da UI)
@@ -154,7 +154,7 @@ curl -sS -b cookies.txt -H "X-CSRF-Token: $CSRF" -X PUT https://auditor.exemplo/
 curl -sS -b cookies.txt https://auditor.exemplo/api/v1/retention-policy/plan
 ```
 
-**Nenhuma limpeza destrutiva** roda sem: política aprovada e não alterada depois da aprovação, backup verificado há no máximo 7 dias e restauração de teste bem-sucedida em ambiente isolado há no máximo 30 dias. `POST /api/v1/retention-policy/apply` exige `confirm=true` e a contagem exata `expected_report_jobs` do plano atual; remove apenas linhas de `report_job` além do prazo cujo PDF já venceu. Snapshots (execuções, tabelas, achados) só saem por procedimento manual, depois de arquivados em backup verificado e com aprovação registrada.
+**Nenhuma limpeza destrutiva** roda sem: política aprovada e não alterada depois da aprovação, backup verificado há no máximo 7 dias e restauração de teste bem-sucedida em ambiente isolado há no máximo 30 dias. `POST /api/v1/retention-policy/apply` exige `confirm=true` e a contagem exata `expected_report_jobs` do plano atual; remove apenas linhas de `report_job` encerradas (`success`, `failed`, `cancelled`), além do prazo, com PDF vencido e sem artefato guardado. Plano, verificação dos bloqueios e `DELETE` rodam na mesma transação, com a linha da política travada (`FOR UPDATE`); se a contagem removida divergir do esperado, tudo é desfeito. O log da aplicação e o `auditor_operation_log` registram quem aprovou, os prazos aprovados e quantas linhas foram removidas (sem o texto de criptografia nem notas). Snapshots (execuções, tabelas, achados) só saem por procedimento manual, depois de arquivados em backup verificado e com aprovação registrada.
 
 ### Backup verificado e restauração de teste (BA-10)
 
