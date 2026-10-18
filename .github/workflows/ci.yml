@@ -28,6 +28,17 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U postgres -d db_auditor_test"
           --health-interval 10s --health-timeout 5s --health-retries 12
+      timescale:
+        # Disposable TimescaleDB target for the full-collection test (#125).
+        # Same digest QA used as latest-pg17.
+        image: timescale/timescaledb:2.30.2-pg17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 55438:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s --health-timeout 5s --health-retries 12
       mongodb:
         image: mongo:8
         ports:
@@ -97,6 +108,7 @@ jobs:
         env:
           AUDITOR_MONGO_TEST_URI: mongodb://127.0.0.1:27017/db_auditor_ci?tls=false&directConnection=true
           AUDITOR_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:55437/db_auditor_test?sslmode=disable
+          AUDITOR_TEST_TIMESCALE_ADMIN_URL: postgresql://postgres@127.0.0.1:55438/postgres?sslmode=disable
           AUDITOR_TEST_DISPOSABLE: "1"
           AUDITOR_TEST_SCALE: "1"
         run: go test -p 1 ./... -coverprofile=coverage.out
