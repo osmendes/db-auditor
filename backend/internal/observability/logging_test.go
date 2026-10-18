@@ -7,6 +7,8 @@ import (
 	"log/slog"
 	"strings"
 	"testing"
+
+	"github.com/osmendes/db-auditor/internal/config"
 )
 
 const fakeSecret = "S3cr3t-Pa55"
@@ -47,6 +49,24 @@ func TestLogRedactsPasswordOnEveryAttributeShape(t *testing.T) {
 			if !strings.Contains(buf.String(), want) {
 				t.Fatalf("expected %q in %s", want, buf.String())
 			}
+		}
+	}
+}
+
+// R2 #1: the boot log of an invalid AUDITOR_DATABASE_URL, exactly as
+// cmd/auditor writes it, never carries the password, even when it holds a
+// space or a quote that defeats pattern redaction.
+func TestBootLogOfInvalidDatabaseURLNeverEchoesPassword(t *testing.T) {
+	for _, password := range []string{"my Secret2", `Ab"Secret3`} {
+		t.Setenv("AUDITOR_DATABASE_URL", "postgres://u:"+password+"@h/db")
+		_, err := config.Load()
+		if err == nil {
+			t.Fatal("expected invalid configuration")
+		}
+		var buf bytes.Buffer
+		slog.New(redactHandler{next: slog.NewJSONHandler(&buf, nil)}).Error("invalid configuration", "error", err)
+		if strings.Contains(buf.String(), "Secret") {
+			t.Fatalf("boot log leaked the password: %s", buf.String())
 		}
 	}
 }
