@@ -3,6 +3,8 @@ package analyzer
 import (
 	"context"
 	"fmt"
+	"slices"
+	"sort"
 	"strings"
 )
 
@@ -117,17 +119,12 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 				})
 			}
 		}
-		if !role.Superuser && !role.BypassRLS && !role.Replication {
+		if !role.Superuser && !role.BypassRLS && !role.Replication && !role.CreateRole && len(role.Inherited) == 0 {
 			continue
 		}
 		key := fmt.Sprintf("%s.role:%s", role.Database, role.RoleName)
 		if at, ok := powerful[key]; ok {
-			evidence := out[at].Evidence
-			for name, set := range map[string]bool{"superuser": role.Superuser, "bypass_rls": role.BypassRLS, "replication": role.Replication, "login": role.Login} {
-				if set {
-					evidence[name] = true
-				}
-			}
+			mergePowerfulRole(&out[at], role)
 			continue
 		}
 		powerful[key] = len(out)
@@ -136,23 +133,24 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 			EnvironmentID: facts.EnvironmentID,
 			AuditRunID:    facts.AuditRunID,
 			FindingType:   "security.powerful_role",
-			Severity:      SeverityHigh,
 			Status:        StatusOpen,
 			Title:         title,
-			Summary:       "Role has elevated attributes (superuser, bypass RLS, or replication). Confirm least-privilege need.",
+			Summary:       "Role has elevated attributes (superuser, bypass RLS, replication or CREATEROLE), directly or through membership in a role that has them or in a predefined role that reaches server files, programs or every table. Confirm least-privilege need.",
 			ObjectType:    "role",
 			ObjectKey:     key,
 			DatabaseName:  role.Database,
 			ObjectName:    role.RoleName,
 			Evidence: map[string]any{
-				"superuser":   role.Superuser,
-				"bypass_rls":  role.BypassRLS,
-				"replication": role.Replication,
-				"login":       role.Login,
+				"superuser":   false,
+				"bypass_rls":  false,
+				"replication": false,
+				"createrole":  false,
+				"login":       false,
 				"safety_note": "Never ALTER ROLE or REVOKE automatically",
 			},
 			DedupKey: DedupKey("security.powerful_role", key, title),
 		}
+		mergePowerfulRole(&f, role)
 		out = append(out, f)
 	}
 
@@ -202,4 +200,60 @@ func (SecurityAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findi
 	}
 
 	return out, nil
+}
+
+// powerfulPrivilegeHigh lists inherited privileges that rate the role high;
+// CREATEROLE alone (direct or inherited) is medium: since PostgreSQL 16 it
+// only administers the roles it creates, but it still creates and manages
+// roles.
+var powerfulPrivilegeHigh = map[string]bool{
+	"superuser": true, "bypass_rls": true, "replication": true,
+	"pg_execute_server_program": true, "pg_read_server_files": true, "pg_write_server_files": true, "pg_write_all_data": true,
+}
+
+// mergePowerfulRole folds one source of a role's power into its finding:
+// own attributes, and inherited ones with the role they come from (#126).
+func mergePowerfulRole(f *Finding, role RoleFact) {
+	evidence := f.Evidence
+	for name, set := range map[string]bool{"superuser": role.Superuser, "bypass_rls": role.BypassRLS, "replication": role.Replication, "createrole": role.CreateRole, "login": role.Login} {
+		if set {
+			evidence[name] = true
+		}
+	}
+	inherited, _ := evidence["inherited"].([]map[string]string)
+	seen := map[string]bool{}
+	for _, item := range inherited {
+		seen[item["privilege"]+":"+item["source"]] = true
+	}
+	for _, entry := range role.Inherited {
+		privilege, source, ok := strings.Cut(entry, ":")
+		if !ok || seen[entry] {
+			continue
+		}
+		seen[entry] = true
+		inherited = append(inherited, map[string]string{"privilege": privilege, "source": source})
+	}
+	sort.Slice(inherited, func(i, j int) bool {
+		if inherited[i]["privilege"] != inherited[j]["privilege"] {
+			return inherited[i]["privilege"] < inherited[j]["privilege"]
+		}
+		return inherited[i]["source"] < inherited[j]["source"]
+	})
+	sources := []string{}
+	high := evidence["superuser"] == true || evidence["bypass_rls"] == true || evidence["replication"] == true
+	for _, item := range inherited {
+		if !slices.Contains(sources, item["source"]) {
+			sources = append(sources, item["source"])
+		}
+		high = high || powerfulPrivilegeHigh[item["privilege"]]
+	}
+	sort.Strings(sources)
+	if len(inherited) > 0 {
+		evidence["inherited"] = inherited
+		evidence["source_roles"] = sources
+	}
+	f.Severity = SeverityMedium
+	if high {
+		f.Severity = SeverityHigh
+	}
 }

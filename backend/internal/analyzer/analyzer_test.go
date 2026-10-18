@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 )
@@ -325,5 +326,39 @@ func TestPowerfulRoleCoversEveryLoginRole(t *testing.T) {
 	}
 	if got["rls_bypass"].Evidence["bypass_rls"] != true {
 		t.Fatalf("bypass_rls ausente: %v", got["rls_bypass"].Evidence)
+	}
+}
+
+// #126 (R2): power reached through membership is reported with its source
+// role; CREATEROLE alone is medium; sources merge across duplicate entries.
+func TestPowerfulRoleInheritedPrivileges(t *testing.T) {
+	facts := SnapshotFacts{EnvironmentID: "env-1", Roles: []RoleFact{
+		{Database: "db", RoleName: "ops", Login: true, CreateRole: true},
+		{Database: "db", RoleName: "ops", Login: true, Inherited: []string{"pg_execute_server_program:pg_execute_server_program", "superuser:g_admin"}},
+		{Database: "db", RoleName: "hr", Login: true, Inherited: []string{"createrole:g_hr"}},
+	}}
+	out, err := SecurityAnalyzer{}.Analyze(context.Background(), facts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]Finding{}
+	for _, f := range out {
+		if f.FindingType == "security.powerful_role" {
+			got[f.ObjectName] = f
+		}
+	}
+	ops := got["ops"]
+	if ops.Severity != SeverityHigh || ops.Evidence["createrole"] != true {
+		t.Fatalf("ops: %s %v", ops.Severity, ops.Evidence)
+	}
+	if sources, _ := ops.Evidence["source_roles"].([]string); strings.Join(sources, ",") != "g_admin,pg_execute_server_program" {
+		t.Fatalf("ops sources: %v", ops.Evidence["source_roles"])
+	}
+	inherited, _ := ops.Evidence["inherited"].([]map[string]string)
+	if len(inherited) != 2 || inherited[0]["privilege"] != "pg_execute_server_program" || inherited[1]["source"] != "g_admin" {
+		t.Fatalf("ops inherited: %v", inherited)
+	}
+	if hr := got["hr"]; hr.Severity != SeverityMedium {
+		t.Fatalf("CREATEROLE alone must be medium: %s", hr.Severity)
 	}
 }

@@ -373,6 +373,9 @@ type RoleFact struct {
 	SampledActive        bool       `json:"sampled_active,omitempty"`
 	PossiblyInactive     bool       `json:"possibly_inactive,omitempty"`
 	CollectedAt          time.Time  `json:"collected_at,omitempty"`
+	// Inherited is power reached through membership, as
+	// "privilege:source role" (#126).
+	Inherited []string `json:"inherited,omitempty"`
 }
 
 // GrantFact is an ACL entry for review (no automatic REVOKE).
