@@ -182,6 +182,12 @@ var (
 		PostValidation: "Compare planos e latência das consultas dominantes em nova coleta."}
 )
 
+// narratedRules are rules whose entry states its own meaning and next step.
+// Every other rule takes them from ruleText (text_pt.go), the single source
+// of user-facing text that guidance.For also reads (AR-06).
+var narratedRules = map[string]bool{}
+
+// entry: meaning and next are empty for rules declared in ruleText.
 type entry struct {
 	id, category, effort      string
 	meaning, evidence, impact string
@@ -198,77 +204,77 @@ var entries = []entry{
 	// structure / integrity
 	{"integrity.missing_primary_key", "structure", "alto", "Esta relação não tem chave primária observada na coleta.", "pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.", "não estimado: ausência de chave não tem tamanho nem latência mensuráveis nesta coleta.", "Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.", qPrimaryKey, nil},
 	{"model.no_primary_key", "structure", "alto", "Esta relação não tem chave primária observada na coleta.", "pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.", "não estimado: ausência de chave não tem tamanho nem latência mensuráveis nesta coleta.", "Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.", qPrimaryKey, nil},
-	{"integrity.constraint_unvalidated", "structure", "médio", "Uma constraint foi criada como NOT VALID e ainda não cobre as linhas antigas.", "pg_constraint.convalidated = false na coleta.", notEstimated("a contagem de linhas que violam a regra (não coletada)"), "Conte as linhas incompatíveis em homologação e planeje VALIDATE CONSTRAINT fora do horário de pico.", qUnvalidated, nil},
-	{"integrity.fk_without_index", "structure", "médio", "A chave estrangeira não tem índice com as mesmas colunas iniciais na tabela filha.", "conkey da FK comparado a indkey dos índices da tabela filha.", notEstimated("tempo de DELETE/UPDATE na tabela pai e volume da filha"), "Meça o custo de DELETE/UPDATE na tabela pai e de JOINs antes de avaliar um índice.", qFKIndex, nil},
-	{"integrity.fk_type_mismatch", "structure", "alto", "Colunas ligadas pela FK têm tipos diferentes.", "atttypid das colunas da FK e das colunas referenciadas.", notEstimated("planos que mostrem conversão implícita"), "Confirme a semântica dos tipos com o dono dos dados antes de migrar.", qFKTypes, nil},
-	{"integrity.orphan_sequence", "structure", "baixo", "A sequência não tem dependência OWNED BY nem coluna que a use como padrão.", "pg_depend sem deptype 'a' para a sequência.", "não estimado: uma sequência isolada ocupa poucos bytes.", "Procure nextval na aplicação e em funções antes de vincular ou aposentar a sequência.", qSequenceDepend, nil},
-	{"integrity.sequence_default_mismatch", "structure", "médio", "O DEFAULT da coluna chama uma sequência diferente da que pertence a ela.", "pg_attrdef da coluna comparado a pg_depend da sequência.", notEstimated("risco de colisão medido por last_value das duas sequências"), "Compare last_value das sequências e o maior valor da coluna antes de corrigir o vínculo.", qColumnDefault, nil},
-	{"sequence.near_limit", "structure", "alto", "A sequência consumiu uma fração alta do seu valor máximo.", "last_value e max_value de pg_sequences na coleta.", notEstimated("taxa de consumo entre duas coletas completas"), "Calcule o ritmo de consumo entre coletas e planeje a troca de tipo com antecedência.", qSequence, nil},
-	{"index.invalid", "structure", "médio", "O índice está marcado como inválido e não é usado pelo planejador.", "pg_index.indisvalid = false na coleta (CREATE INDEX CONCURRENTLY interrompido ou falha).", notEstimated("bytes do índice inválido"), "Descubra por que a criação falhou; reconstrua com CONCURRENTLY em janela, fora do auditor.", qIndexValidity, nil},
-	{"model.naming_inconsistent", "structure", "baixo", "O nome do objeto foge da convenção configurada para o schema.", "Nome do objeto comparado à convenção da regra (padrão snake_case).", "não estimado: convenção de nomes não tem métrica de custo.", "Registre a exceção ou planeje renomeação com camada de compatibilidade.", qNaming, nil},
-	{"model.implicit_relationship", "structure", "médio", "Uma coluna parece referenciar outra tabela sem FK declarada.", "Nome e tipo da coluna combinam com a chave de outra tabela; nenhuma FK em pg_constraint.", notEstimated("contagem de linhas órfãs (não coletada)"), "Confirme a regra de negócio e conte órfãos em homologação antes de criar a FK.", qForeignKeys, nil},
-	{"model.wide_table", "structure", "alto", "A tabela tem mais colunas que o limite configurado.", "Contagem de colunas de pg_attribute na coleta.", notEstimated("padrão de leitura por coluna"), "Revise com o domínio quais colunas são lidas juntas antes de propor divisão.", qColumns, nil},
-	{"model.repeated_columns", "structure", "médio", "Colunas com nomes numerados sugerem grupo repetido.", "Nomes de colunas com sufixo numérico na mesma tabela.", "não estimado: a regra observa só nomes.", "Confirme se os valores representam uma lista antes de normalizar.", qColumns, nil},
-	{"model.duplicate_entity", "structure", "alto", "Duas tabelas parecem representar a mesma entidade.", "Nomes e colunas semelhantes entre as tabelas.", "não estimado: a regra compara só estrutura.", "Valide com os responsáveis e as aplicações antes de consolidar dados.", qColumns, nil},
-	{"model.type_review", "structure", "médio", "O tipo de uma coluna merece revisão (money, timestamp sem fuso ou status em texto).", "atttypid da coluna na coleta.", "não estimado: o tipo não indica erro sem os valores.", "Discuta a semântica do valor com o domínio antes de propor migração.", qColumns, nil},
-	{"model.jsonb_critical", "structure", "médio", "Campos essenciais parecem concentrados em JSONB.", "Colunas jsonb em tabela grande ou central.", notEstimated("consultas que filtram por chaves do JSON"), "Liste as chaves usadas em filtros e contratos antes de extrair colunas.", qColumns, nil},
-	{"model.undocumented_critical", "structure", "baixo", "Uma tabela grande não tem comentário de finalidade ou dono.", "obj_description vazio e tamanho acima do limite.", "não estimado: documentação não tem métrica de custo.", "Registre finalidade, dono e retenção com COMMENT ON após confirmação do responsável.", qComment, nil},
-	{"inactivity.possibly_inactive", "structure", "baixo", "O objeto não mostrou escrita nem leitura recente nas estatísticas.", "n_tup_ins/upd/del e scans sem variação; data da última mudança de dados.", "não estimado: ausência de uso observado não comprova inatividade.", "Confirme com a aplicação; não remova nada a partir deste sinal.", qActivity, nil},
+	{"integrity.constraint_unvalidated", "structure", "médio", "", "pg_constraint.convalidated = false na coleta.", notEstimated("a contagem de linhas que violam a regra (não coletada)"), "", qUnvalidated, nil},
+	{"integrity.fk_without_index", "structure", "médio", "", "conkey da FK comparado a indkey dos índices da tabela filha.", notEstimated("tempo de DELETE/UPDATE na tabela pai e volume da filha"), "", qFKIndex, nil},
+	{"integrity.fk_type_mismatch", "structure", "alto", "", "atttypid das colunas da FK e das colunas referenciadas.", notEstimated("planos que mostrem conversão implícita"), "", qFKTypes, nil},
+	{"integrity.orphan_sequence", "structure", "baixo", "", "pg_depend sem deptype 'a' para a sequência.", "não estimado: uma sequência isolada ocupa poucos bytes.", "", qSequenceDepend, nil},
+	{"integrity.sequence_default_mismatch", "structure", "médio", "", "pg_attrdef da coluna comparado a pg_depend da sequência.", notEstimated("risco de colisão medido por last_value das duas sequências"), "", qColumnDefault, nil},
+	{"sequence.near_limit", "structure", "alto", "", "last_value e max_value de pg_sequences na coleta.", notEstimated("taxa de consumo entre duas coletas completas"), "", qSequence, nil},
+	{"index.invalid", "structure", "médio", "", "pg_index.indisvalid = false na coleta (CREATE INDEX CONCURRENTLY interrompido ou falha).", notEstimated("bytes do índice inválido"), "", qIndexValidity, nil},
+	{"model.naming_inconsistent", "structure", "baixo", "", "Nome do objeto comparado à convenção da regra (padrão snake_case).", "não estimado: convenção de nomes não tem métrica de custo.", "", qNaming, nil},
+	{"model.implicit_relationship", "structure", "médio", "", "Nome e tipo da coluna combinam com a chave de outra tabela; nenhuma FK em pg_constraint.", notEstimated("contagem de linhas órfãs (não coletada)"), "", qForeignKeys, nil},
+	{"model.wide_table", "structure", "alto", "", "Contagem de colunas de pg_attribute na coleta.", notEstimated("padrão de leitura por coluna"), "", qColumns, nil},
+	{"model.repeated_columns", "structure", "médio", "", "Nomes de colunas com sufixo numérico na mesma tabela.", "não estimado: a regra observa só nomes.", "", qColumns, nil},
+	{"model.duplicate_entity", "structure", "alto", "", "Nomes e colunas semelhantes entre as tabelas.", "não estimado: a regra compara só estrutura.", "", qColumns, nil},
+	{"model.type_review", "structure", "médio", "", "atttypid da coluna na coleta.", "não estimado: o tipo não indica erro sem os valores.", "", qColumns, nil},
+	{"model.jsonb_critical", "structure", "médio", "", "Colunas jsonb em tabela grande ou central.", notEstimated("consultas que filtram por chaves do JSON"), "", qColumns, nil},
+	{"model.undocumented_critical", "structure", "baixo", "", "obj_description vazio e tamanho acima do limite.", "não estimado: documentação não tem métrica de custo.", "", qComment, nil},
+	{"inactivity.possibly_inactive", "structure", "baixo", "", "n_tup_ins/upd/del e scans sem variação; data da última mudança de dados.", "não estimado: ausência de uso observado não comprova inatividade.", "", qActivity, nil},
 	// query and index
 	{"index.unused", "query_and_index", "médio", "O índice não teve uso observado na janela entre duas coletas.", "idx_scan igual nas duas coletas, sem stats_reset no intervalo.", notEstimated("bytes do índice, janela de idx_scan e tamanho total dos índices da tabela"), "Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.", qIndexUsage, nil},
-	{"index.overlap", "query_and_index", "médio", "Dois índices têm a mesma definição de colunas.", "pg_get_indexdef normalizado igual para os índices listados.", notEstimated("bytes de cada índice e uso de cada um"), "Compare unicidade, predicados e uso; mantenha o que sustenta constraints.", qIndexDefinitions, nil},
-	{"index.prefix_overlap", "query_and_index", "médio", "As colunas de um índice são o início de outro índice.", "indkey de um índice é prefixo do indkey de outro na mesma tabela.", notEstimated("bytes e uso de cada índice"), "Confira se o índice menor atende consultas que o maior não cobre bem.", qIndexDefinitions, nil},
-	{"index.write_burden", "query_and_index", "médio", "A tabela tem muitos índices e escrita intensa.", "Número de índices e n_tup_ins/upd/del da coleta.", notEstimated("latência de escrita medida"), "Meça latência de escrita e uso de cada índice antes de mudar o conjunto.", qIndexWrites, nil},
-	{"index.investigate_missing", "query_and_index", "médio", "Uma consulta frequente lê muitos blocos e pode não ter índice adequado.", "calls e shared_blks_read do fingerprint em pg_stat_statements.", notEstimated("plano de execução representativo"), "Analise EXPLAIN (sem ANALYZE) em homologação; o fingerprint não define as colunas do índice.", qStatements, nil},
-	{"index.candidate", "query_and_index", "médio", "Uma tabela recebe muitas varreduras sequenciais e pode se beneficiar de índice.", "seq_scan e seq_tup_read da tabela na coleta.", notEstimated("razão seq_scan/idx_scan dentro de uma janela conhecida"), "Identifique as consultas e os filtros antes de desenhar um índice.", qTableScans, nil},
-	{"performance.lock_wait", "query_and_index", "médio", "Sessões aguardaram bloqueio no momento da coleta.", "pg_locks com granted = false e tempo de espera.", notEstimated("frequência das esperas em várias coletas"), "Identifique a transação bloqueadora e o horário; repita a coleta antes de mudar parâmetros.", qLocks, nil},
-	{"performance.high_connections", "query_and_index", "médio", "O número de conexões chegou perto de max_connections.", "Contagem em pg_stat_activity comparada a max_connections.", notEstimated("série de conexões ao longo do tempo"), "Revise pool de conexões e sessões ociosas; não aumente max_connections sem medir memória.", qConnections, nil},
-	{"performance.slow_query", "query_and_index", "médio", "Um fingerprint tem tempo médio de execução alto.", "mean_exec_time e calls de pg_stat_statements.", notEstimated("janela desde stats_reset e tempo total do banco"), "Compare o plano em janela representativa antes de criar índice ou reescrever a consulta.", qStatements, nil},
-	{"performance.workload_scan", "query_and_index", "médio", "Uma consulta lê mais blocos do disco que do cache.", "shared_blks_read e shared_blks_hit do fingerprint, com a janela de observação.", notEstimated("blocos lidos, total de blocos acessados e janela de observação"), "Inspecione um plano representativo e os filtros usados pela aplicação.", qStatements, nil},
-	{"performance.workload_write", "query_and_index", "médio", "Uma carga de escrita frequente pode elevar custo de índices e vacuum.", "calls de INSERT/UPDATE/DELETE do fingerprint.", notEstimated("latência de escrita e volume por janela"), "Avalie latência, índices e volume de alterações antes de agir.", qStatements, nil},
-	{"performance.workload_cost", "query_and_index", "médio", "Uma consulta concentra tempo de execução acumulado.", "total_exec_time do fingerprint na janela das estatísticas.", notEstimated("tempo total do banco na mesma janela"), "Valide plano e frequência em ambiente autorizado.", qStatements, nil},
+	{"index.overlap", "query_and_index", "médio", "", "pg_get_indexdef normalizado igual para os índices listados.", notEstimated("bytes de cada índice e uso de cada um"), "", qIndexDefinitions, nil},
+	{"index.prefix_overlap", "query_and_index", "médio", "", "indkey de um índice é prefixo do indkey de outro na mesma tabela.", notEstimated("bytes e uso de cada índice"), "", qIndexDefinitions, nil},
+	{"index.write_burden", "query_and_index", "médio", "", "Número de índices e n_tup_ins/upd/del da coleta.", notEstimated("latência de escrita medida"), "", qIndexWrites, nil},
+	{"index.investigate_missing", "query_and_index", "médio", "", "calls e shared_blks_read do fingerprint em pg_stat_statements.", notEstimated("plano de execução representativo"), "", qStatements, nil},
+	{"index.candidate", "query_and_index", "médio", "", "seq_scan e seq_tup_read da tabela na coleta.", notEstimated("razão seq_scan/idx_scan dentro de uma janela conhecida"), "", qTableScans, nil},
+	{"performance.lock_wait", "query_and_index", "médio", "", "pg_locks com granted = false e tempo de espera.", notEstimated("frequência das esperas em várias coletas"), "", qLocks, nil},
+	{"performance.high_connections", "query_and_index", "médio", "", "Contagem em pg_stat_activity comparada a max_connections.", notEstimated("série de conexões ao longo do tempo"), "", qConnections, nil},
+	{"performance.slow_query", "query_and_index", "médio", "", "mean_exec_time e calls de pg_stat_statements.", notEstimated("janela desde stats_reset e tempo total do banco"), "", qStatements, nil},
+	{"performance.workload_scan", "query_and_index", "médio", "", "shared_blks_read e shared_blks_hit do fingerprint, com a janela de observação.", notEstimated("blocos lidos, total de blocos acessados e janela de observação"), "", qStatements, nil},
+	{"performance.workload_write", "query_and_index", "médio", "", "calls de INSERT/UPDATE/DELETE do fingerprint.", notEstimated("latência de escrita e volume por janela"), "", qStatements, nil},
+	{"performance.workload_cost", "query_and_index", "médio", "", "total_exec_time do fingerprint na janela das estatísticas.", notEstimated("tempo total do banco na mesma janela"), "", qStatements, nil},
 	// maintenance
 	{"storage.large_table", "maintenance", "alto", "A relação passou do limite de tamanho da regra.", "pg_total_relation_size da coleta.", notEstimated("tamanho total do banco na mesma coleta"), "Compare crescimento em coletas completas e a retenção aprovada. Não proponha DROP nem particionamento automático.", qSize, costPartition},
-	{"storage.top_consumer", "maintenance", "médio", "O objeto está entre os maiores consumidores de espaço do banco.", "pg_total_relation_size e posição no ranking da coleta.", notEstimated("tamanho total do banco na mesma coleta"), "Acompanhe a evolução e confirme quais dados precisam permanecer.", qSize, nil},
+	{"storage.top_consumer", "maintenance", "médio", "", "pg_total_relation_size e posição no ranking da coleta.", notEstimated("tamanho total do banco na mesma coleta"), "", qSize, nil},
 	{"vacuum.high_dead_tuples", "maintenance", "médio", "A relação acumulou tuplas mortas acima do limiar da regra.", "n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.", notEstimated("n_dead_tup, n_live_tup e o instante do último (auto)vacuum"), "Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.", qDeadTuples, costAutovacuum},
-	{"maintenance.dead_tuple_pressure", "maintenance", "médio", "Tuplas mortas pressionam a manutenção da tabela.", "n_dead_tup e n_live_tup marcados como estimativa.", notEstimated("n_dead_tup, n_live_tup e o instante do último (auto)vacuum"), "Confirme a tendência e a configuração de autovacuum da tabela.", qDeadTuples, costAutovacuum},
-	{"timescale.chunk_dead_tuples", "maintenance", "médio", "Um chunk amostrado acumulou tuplas mortas.", "n_dead_tup e n_live_tup do chunk (amostra limitada, não a hypertable inteira).", notEstimated("n_dead_tup, n_live_tup e o instante do último autovacuum do chunk"), "Revise autovacuum e escrita tardia nesse chunk.", qDeadTuples, costAutovacuum},
-	{"maintenance.stale_analyze", "maintenance", "baixo", "As estatísticas do planejador estão mais antigas que o limite.", "last_analyze/last_autoanalyze da coleta.", notEstimated("n_mod_since_analyze e planos afetados"), "Confira n_mod_since_analyze e os limiares de autoanalyze antes de ajustar.", qAnalyze, costAnalyze},
+	{"maintenance.dead_tuple_pressure", "maintenance", "médio", "", "n_dead_tup e n_live_tup marcados como estimativa.", notEstimated("n_dead_tup, n_live_tup e o instante do último (auto)vacuum"), "", qDeadTuples, costAutovacuum},
+	{"timescale.chunk_dead_tuples", "maintenance", "médio", "", "n_dead_tup e n_live_tup do chunk (amostra limitada, não a hypertable inteira).", notEstimated("n_dead_tup, n_live_tup e o instante do último autovacuum do chunk"), "", qDeadTuples, costAutovacuum},
+	{"maintenance.stale_analyze", "maintenance", "baixo", "", "last_analyze/last_autoanalyze da coleta.", notEstimated("n_mod_since_analyze e planos afetados"), "", qAnalyze, costAnalyze},
 	{"maintenance.growth_trend", "maintenance", "médio", "Duas coletas completas mostram mudança de tamanho.", "Tamanhos das duas coletas, janela e stats_reset. Tuplas mortas são estimativa.", notEstimated("duas coletas completas, denominador e janela"), "Confirme tendência, janela e backup. Não há DROP, DELETE nem retenção automática.", qGrowth, costPartition},
-	{"chunk.high_count", "maintenance", "médio", "A hypertable tem muitos chunks.", "num_chunks de timescaledb_information.hypertables.", notEstimated("tempo de planejamento das consultas"), "Revise chunk_time_interval com a equipe; a mudança só vale para chunks novos.", qTSHypertable, nil},
-	{"chunk.size_skew", "maintenance", "médio", "Os chunks têm tamanhos muito diferentes.", "Maior chunk comparado à média dos chunks coletados.", notEstimated("padrão de ingestão por período"), "Confirme o padrão de ingestão e cargas retroativas.", qTSChunks, nil},
-	{"chunk.inventory_truncated", "maintenance", "baixo", "A coleta de chunks atingiu o limite configurado.", "Contagem de chunks igual ao teto da coleta.", "não estimado: o inventário está incompleto.", "Aumente a cobertura de forma controlada antes de concluir sobre todos os chunks.", qTSChunks, nil},
-	{"cagg.missing_refresh_policy", "maintenance", "baixo", "O agregado contínuo não tem política de refresh.", "Nenhum job policy_refresh_continuous_aggregate ligado ao agregado.", notEstimated("frescor exigido pelos usuários"), "Confirme a frequência esperada antes de criar a política.", qTSCagg, nil},
-	{"cagg.overlap", "maintenance", "médio", "Políticas de refresh trabalham sobre períodos sobrepostos.", "start_offset/end_offset das políticas do agregado.", notEstimated("duração dos jobs de refresh"), "Revise janelas e custo dos jobs antes de ajustá-las.", qTSCaggJobs, nil},
-	{"cagg.materialization_lag", "maintenance", "médio", "O agregado contínuo está atrasado em relação aos dados.", "Último refresh comparado ao dado mais recente.", notEstimated("frescor exigido e duração do refresh"), "Compare atraso, política e necessidade dos usuários.", qTSCaggJobs, nil},
-	{"cagg.realtime_hypothesis", "maintenance", "baixo", "O modo tempo real do agregado merece validação.", "materialized_only do agregado.", notEstimated("latência das consultas ao agregado"), "Confirme o frescor necessário e o custo das consultas.", qTSCagg, nil},
-	{"cagg.refresh_window_exceeded", "maintenance", "médio", "O refresh do agregado dura mais que o intervalo agendado.", "last_run_duration comparado a schedule_interval.", notEstimated("série de durações do job"), "Revise volume, frequência e duração dos refreshes.", qTSCaggJobs, nil},
-	{"policy.missing_retention", "maintenance", "médio", "A hypertable não tem política de retenção.", "Nenhum job policy_retention para a hypertable.", notEstimated("volume por período e prazo legal aprovado"), "Confirme o prazo de guarda com negócio/compliance. Retenção exige aprovação e backup restaurável.", qTSJobs, costRetention},
-	{"policy.missing_compression", "maintenance", "médio", "A hypertable não tem política de compressão.", "compression_enabled e ausência de job policy_compression.", notEstimated("razão de compressão medida em amostra"), "Teste compressão em homologação com dados reais antes de configurar a política.", qTSHypertable, costCompression},
-	{"policy.job_failed", "maintenance", "médio", "Um job de política falhou na última execução.", "last_run_status e total_failures de job_stats.", "não estimado: a falha é operacional, sem métrica de impacto.", "Leia o erro do job no log do servidor e confirme a próxima execução.", qTSJobs, nil},
-	{"policy.retention_chunk_mismatch", "maintenance", "baixo", "O prazo de retenção não é múltiplo do intervalo dos chunks.", "drop_after da política comparado a chunk_time_interval.", notEstimated("dados retidos além do prazo"), "Compare períodos e prazo aprovado antes de ajustar.", qTSJobs, costRetention},
-	{"policy.reorder_hypothesis", "maintenance", "baixo", "Uma política de reordenação pode ajudar consultas por faixa.", "Hypertable sem reorder com índice dominante.", notEstimated("planos das consultas dominantes"), "Confirme as consultas e o custo de manutenção antes de criar a política.", qTSJobs, costReorder},
-	{"policy.compression_not_applied", "maintenance", "médio", "Chunks elegíveis continuam sem compressão.", "Chunks fechados com is_compressed = false e política existente.", notEstimated("bytes dos chunks não comprimidos"), "Confira agenda e falhas do job de compressão.", qTSChunks, costCompression},
-	{"policy.compression_ratio", "maintenance", "médio", "A compressão observada está abaixo do esperado.", "Bytes antes e depois da compressão por hypertable.", notEstimated("razão por chunk e segmentby testado"), "Compare dados, segmentos e consultas antes de ajustar a política.", qTSHypertable, costCompression},
-	{"policy.compression_settings", "maintenance", "médio", "segmentby/orderby podem não combinar com as consultas.", "Configuração de compressão comparada às colunas filtradas.", notEstimated("teste de configuração em homologação"), "Teste segmentação e ordenação em ambiente controlado.", qTSHypertable, costCompression},
-	{"job.unhealthy", "maintenance", "médio", "Um job não está executando como esperado.", "scheduled, last_run_status e next_start do job.", "não estimado: o estado do job não tem métrica de impacto.", "Confira histórico, agenda e erros do job.", qTSJobByID, nil},
-	{"job.slo_exceeded", "maintenance", "médio", "Um job ultrapassou a janela de execução esperada.", "last_run_duration comparado a schedule_interval.", notEstimated("série de durações"), "Compare duração, agenda e concorrência dos jobs.", qTSJobByID, nil},
-	{"job.workers_saturated", "maintenance", "médio", "Os workers de background podem estar ocupados em excesso.", "Jobs agendados comparados a timescaledb.max_background_workers.", notEstimated("fila de jobs atrasados"), "Confira filas e limites antes de aumentar a concorrência.", qTSWorkers, nil},
-	{"replication.lag_high", "maintenance", "alto", "A réplica está atrasada na aplicação do WAL.", "pg_wal_lsn_diff(sent_lsn, replay_lsn) em pg_stat_replication.", notEstimated("série de atraso e RPO acordado"), "Verifique rede, carga da réplica e conflitos de replay antes de mudar parâmetros.", qReplication, nil},
-	{"replication.archive_stalled", "maintenance", "alto", "O arquivamento de WAL parou ou está falhando.", "last_archived_time e failed_count de pg_stat_archiver.", notEstimated("WAL acumulado e RPO acordado"), "Confira logs e destino do archive_command; o disco de WAL pode encher.", qArchiver, nil},
+	{"chunk.high_count", "maintenance", "médio", "", "num_chunks de timescaledb_information.hypertables.", notEstimated("tempo de planejamento das consultas"), "", qTSHypertable, nil},
+	{"chunk.size_skew", "maintenance", "médio", "", "Maior chunk comparado à média dos chunks coletados.", notEstimated("padrão de ingestão por período"), "", qTSChunks, nil},
+	{"chunk.inventory_truncated", "maintenance", "baixo", "", "Contagem de chunks igual ao teto da coleta.", "não estimado: o inventário está incompleto.", "", qTSChunks, nil},
+	{"cagg.missing_refresh_policy", "maintenance", "baixo", "", "Nenhum job policy_refresh_continuous_aggregate ligado ao agregado.", notEstimated("frescor exigido pelos usuários"), "", qTSCagg, nil},
+	{"cagg.overlap", "maintenance", "médio", "", "start_offset/end_offset das políticas do agregado.", notEstimated("duração dos jobs de refresh"), "", qTSCaggJobs, nil},
+	{"cagg.materialization_lag", "maintenance", "médio", "", "Último refresh comparado ao dado mais recente.", notEstimated("frescor exigido e duração do refresh"), "", qTSCaggJobs, nil},
+	{"cagg.realtime_hypothesis", "maintenance", "baixo", "", "materialized_only do agregado.", notEstimated("latência das consultas ao agregado"), "", qTSCagg, nil},
+	{"cagg.refresh_window_exceeded", "maintenance", "médio", "", "last_run_duration comparado a schedule_interval.", notEstimated("série de durações do job"), "", qTSCaggJobs, nil},
+	{"policy.missing_retention", "maintenance", "médio", "", "Nenhum job policy_retention para a hypertable.", notEstimated("volume por período e prazo legal aprovado"), "", qTSJobs, costRetention},
+	{"policy.missing_compression", "maintenance", "médio", "", "compression_enabled e ausência de job policy_compression.", notEstimated("razão de compressão medida em amostra"), "", qTSHypertable, costCompression},
+	{"policy.job_failed", "maintenance", "médio", "", "last_run_status e total_failures de job_stats.", "não estimado: a falha é operacional, sem métrica de impacto.", "", qTSJobs, nil},
+	{"policy.retention_chunk_mismatch", "maintenance", "baixo", "", "drop_after da política comparado a chunk_time_interval.", notEstimated("dados retidos além do prazo"), "", qTSJobs, costRetention},
+	{"policy.reorder_hypothesis", "maintenance", "baixo", "", "Hypertable sem reorder com índice dominante.", notEstimated("planos das consultas dominantes"), "", qTSJobs, costReorder},
+	{"policy.compression_not_applied", "maintenance", "médio", "", "Chunks fechados com is_compressed = false e política existente.", notEstimated("bytes dos chunks não comprimidos"), "", qTSChunks, costCompression},
+	{"policy.compression_ratio", "maintenance", "médio", "", "Bytes antes e depois da compressão por hypertable.", notEstimated("razão por chunk e segmentby testado"), "", qTSHypertable, costCompression},
+	{"policy.compression_settings", "maintenance", "médio", "", "Configuração de compressão comparada às colunas filtradas.", notEstimated("teste de configuração em homologação"), "", qTSHypertable, costCompression},
+	{"job.unhealthy", "maintenance", "médio", "", "scheduled, last_run_status e next_start do job.", "não estimado: o estado do job não tem métrica de impacto.", "", qTSJobByID, nil},
+	{"job.slo_exceeded", "maintenance", "médio", "", "last_run_duration comparado a schedule_interval.", notEstimated("série de durações"), "", qTSJobByID, nil},
+	{"job.workers_saturated", "maintenance", "médio", "", "Jobs agendados comparados a timescaledb.max_background_workers.", notEstimated("fila de jobs atrasados"), "", qTSWorkers, nil},
+	{"replication.lag_high", "maintenance", "alto", "", "pg_wal_lsn_diff(sent_lsn, replay_lsn) em pg_stat_replication.", notEstimated("série de atraso e RPO acordado"), "", qReplication, nil},
+	{"replication.archive_stalled", "maintenance", "alto", "", "last_archived_time e failed_count de pg_stat_archiver.", notEstimated("WAL acumulado e RPO acordado"), "", qArchiver, nil},
 	// security
 	{"security.excessive_privilege", "security", "alto", "Um papel tem privilégio mais amplo do que o uso conhecido da aplicação.", "Grants efetivos gravados na coleta. A API não executa SQL no alvo.", "não estimado: exposição não vira nota sem o privilégio e o papel.", "Confirme se o privilégio é operacional antes de qualquer revogação.", qTableGrants, nil},
-	{"security.powerful_role", "security", "alto", "Um papel tem atributos elevados (superuser, createrole, bypassrls ou replication).", "Atributos de pg_roles na coleta.", "não estimado: o atributo não indica uso indevido por si.", "Liste quem usa o papel e justifique cada atributo.", qRole, nil},
-	{"security.security_definer", "security", "alto", "Uma função executa com os privilégios do dono.", "prosecdef = true em pg_proc.", "não estimado: o risco depende do código e de quem pode executar.", "Revise código, dono, proacl e search_path da função.", qDefiner, nil},
-	{"security.definer_search_path", "security", "alto", "Uma função SECURITY DEFINER não fixa search_path.", "proconfig sem search_path e definição sem SET search_path.", "não estimado: o risco depende de schemas graváveis por terceiros.", "Fixe search_path na função após revisão do dono.", qDefiner, nil},
-	{"security.auditor_not_readonly", "security", "alto", "A conta de auditoria tem privilégio de escrita ou elevado.", "Atributos e associação a papéis de escrita da conta atual.", "não estimado: o auditor não escreve, mas a credencial vazada poderia.", "Troque a credencial por uma conta somente leitura dedicada.", qAuditorRole, nil},
-	{"security.auditor_privilege_unknown", "security", "médio", "Não foi possível confirmar as permissões da conta de auditoria.", "A verificação de privilégios falhou ou foi negada.", "não estimado: sem leitura de pg_roles.", "Repita a verificação; não presuma que a conta seja somente leitura.", qAuditorRole, nil},
-	{"security.rls_disabled_hypothesis", "security", "médio", "Uma tabela com dados por cliente pode exigir RLS.", "relrowsecurity = false e colunas de tenant na tabela.", "não estimado: depende da política de acesso.", "Confirme a política de acesso antes de habilitar RLS.", qRLS, nil},
-	{"security.public_schema_create", "security", "médio", "PUBLIC pode criar objetos no schema.", "nspacl concede CREATE a PUBLIC.", "não estimado: depende de quem conecta ao banco.", "Confirme dependências de criação antes de restringir CREATE.", qPublicSchema, nil},
-	{"security.account_inactive_review", "security", "baixo", "Uma conta expirou ou não apareceu ativa nas amostras.", "rolvaliduntil e amostras de pg_stat_activity entre coletas.", "não estimado: amostras não comprovam ausência de uso.", "Confirme o uso real com a equipe antes de desativar a conta.", qRoleMembers, nil},
-	{"config.version_drift", "security", "médio", "Os ambientes comparados rodam versões diferentes do servidor.", "server_version de cada ambiente.", "não estimado: a diferença pode ser planejada.", "Confirme se a diferença é planejada e revise compatibilidade.", qVersion, nil},
-	{"config.extension_drift", "security", "médio", "Extensões ou versões diferem entre ambientes.", "pg_extension de cada ambiente.", "não estimado: a diferença pode ser planejada.", "Confirme necessidade e versão antes de alinhar.", qExtensions, nil},
-	{"config.guc_drift", "security", "médio", "Um parâmetro de configuração difere da referência.", "pg_settings de cada ambiente.", "não estimado: o efeito depende da carga.", "Confirme a intenção da diferença e o efeito antes de alinhar.", qSetting, nil},
+	{"security.powerful_role", "security", "alto", "", "Atributos de pg_roles na coleta.", "não estimado: o atributo não indica uso indevido por si.", "", qRole, nil},
+	{"security.security_definer", "security", "alto", "", "prosecdef = true em pg_proc.", "não estimado: o risco depende do código e de quem pode executar.", "", qDefiner, nil},
+	{"security.definer_search_path", "security", "alto", "", "proconfig sem search_path e definição sem SET search_path.", "não estimado: o risco depende de schemas graváveis por terceiros.", "", qDefiner, nil},
+	{"security.auditor_not_readonly", "security", "alto", "", "Atributos e associação a papéis de escrita da conta atual.", "não estimado: o auditor não escreve, mas a credencial vazada poderia.", "", qAuditorRole, nil},
+	{"security.auditor_privilege_unknown", "security", "médio", "", "A verificação de privilégios falhou ou foi negada.", "não estimado: sem leitura de pg_roles.", "", qAuditorRole, nil},
+	{"security.rls_disabled_hypothesis", "security", "médio", "", "relrowsecurity = false e colunas de tenant na tabela.", "não estimado: depende da política de acesso.", "", qRLS, nil},
+	{"security.public_schema_create", "security", "médio", "", "nspacl concede CREATE a PUBLIC.", "não estimado: depende de quem conecta ao banco.", "", qPublicSchema, nil},
+	{"security.account_inactive_review", "security", "baixo", "", "rolvaliduntil e amostras de pg_stat_activity entre coletas.", "não estimado: amostras não comprovam ausência de uso.", "", qRoleMembers, nil},
+	{"config.version_drift", "security", "médio", "", "server_version de cada ambiente.", "não estimado: a diferença pode ser planejada.", "", qVersion, nil},
+	{"config.extension_drift", "security", "médio", "", "pg_extension de cada ambiente.", "não estimado: a diferença pode ser planejada.", "", qExtensions, nil},
+	{"config.guc_drift", "security", "médio", "", "pg_settings de cada ambiente.", "não estimado: o efeito depende da carga.", "", qSetting, nil},
 }
 
 // rulePlans is the only match table. Unknown ids use the investigation fallback.
@@ -278,6 +284,11 @@ func init() {
 	for _, e := range entries {
 		p := base(e.category)
 		p.Meaning, p.Evidence, p.Impact, p.Next = e.meaning, e.evidence, e.impact, e.next
+		if text, ok := ruleText[e.id]; ok {
+			p.Meaning, p.Next = text.Meaning, text.Next
+		} else if e.meaning != "" {
+			narratedRules[e.id] = true
+		}
 		if e.effort != "" {
 			p.Effort = e.effort
 		}
@@ -357,6 +368,16 @@ func For(rule string) Plan {
 }
 
 // Rules lists every rule id with an explicit plan.
+// Has reports whether rule has its own Portuguese meaning and next step,
+// either narrated in its entry or declared in ruleText.
+func Has(rule string) bool {
+	if _, ok := rulePlans[rule]; !ok {
+		return false
+	}
+	_, declared := ruleText[rule]
+	return declared || narratedRules[rule]
+}
+
 func Rules() []string {
 	out := make([]string, 0, len(entries))
 	for _, e := range entries {

@@ -44,7 +44,7 @@ func ForEachUserDatabase(
 
 	root, err := ConnectReadOnly(ctx, baseURL)
 	if err != nil {
-		return nil, fmt.Errorf("connect target: %s", config.SanitizeError(err))
+		return nil, fmt.Errorf("connect target: %s", config.RedactSecrets(err.Error(), baseURL))
 	}
 	defer func() { _ = root.Close(ctx) }()
 

@@ -2,6 +2,7 @@ package observability
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"strings"
@@ -63,9 +64,34 @@ func (h redactHandler) WithGroup(name string) slog.Handler {
 	return redactHandler{next: h.next.WithGroup(name)}
 }
 
+// redactAttr sanitizes every value that can render text: strings, errors,
+// fmt.Stringer and any other KindAny value (an error passed as "error", err is
+// KindAny, not KindString), LogValuer results and nested groups.
 func redactAttr(attr slog.Attr) slog.Attr {
-	if attr.Value.Kind() == slog.KindString {
-		attr.Value = slog.StringValue(config.SanitizeDSN(attr.Value.String()))
+	value := attr.Value.Resolve()
+	switch value.Kind() {
+	case slog.KindString:
+		attr.Value = slog.StringValue(config.SanitizeDSN(value.String()))
+	case slog.KindGroup:
+		group := value.Group()
+		clean := make([]slog.Attr, len(group))
+		for i, member := range group {
+			clean[i] = redactAttr(member)
+		}
+		attr.Value = slog.GroupValue(clean...)
+	case slog.KindAny:
+		switch v := value.Any().(type) {
+		case nil:
+			attr.Value = value
+		case error:
+			attr.Value = slog.StringValue(config.SanitizeError(v))
+		case fmt.Stringer:
+			attr.Value = slog.StringValue(config.SanitizeDSN(v.String()))
+		default:
+			attr.Value = slog.StringValue(config.SanitizeDSN(fmt.Sprintf("%+v", v)))
+		}
+	default:
+		attr.Value = value
 	}
 	return attr
 }

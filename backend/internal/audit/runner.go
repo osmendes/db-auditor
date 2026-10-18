@@ -256,13 +256,16 @@ func (r *Runner) Run(ctx context.Context, environmentID, profile string) (RunRes
 		analysis = &AnalysisOutcome{Status: "success", Produced: produced, Saved: saved}
 		if analysisErr != nil {
 			analysis.Status = "failed"
-			analysis.Error = analysisErr.Error()
-			errs = append(errs, "analysis: "+analysisErr.Error())
+			analysis.Error = config.SanitizeError(analysisErr)
+			errs = append(errs, "analysis: "+analysis.Error)
 			if status == RunStatusSuccess {
 				status = RunStatusPartialSuccess
 			}
 		}
 	}
+	// Last line of defence before anything reaches the run record, the API and
+	// the logs: every warning and error is credential-redacted.
+	warnings, errs = sanitizeAll(warnings), sanitizeAll(errs)
 	if err := r.store.FinishAuditRun(finalCtx, auditRunID, status, warnings, errs); err != nil {
 		return RunResult{AuditRunID: auditRunID, Status: status, Collectors: outcomes, Warnings: warnings, Errors: errs, Analysis: analysis},
 			fmt.Errorf("finish audit run: %w", err)
@@ -296,7 +299,7 @@ func (r *Runner) runOne(ctx context.Context, auditRunID string, spec CollectorSp
 	meta, _ := RunMetaFromContext(ctx)
 	collectorRunID, err := r.store.StartCollectorRun(ctx, auditRunID, spec.Name, spec.Version)
 	if err != nil {
-		return CollectorOutcome{Name: spec.Name, Status: CollectorStatusFailed, Error: err.Error()}
+		return CollectorOutcome{Name: spec.Name, Status: CollectorStatusFailed, Error: config.SanitizeError(err)}
 	}
 
 	var (
@@ -365,13 +368,14 @@ func (r *Runner) runOne(ctx context.Context, auditRunID string, spec CollectorSp
 		status = CollectorStatusFailed
 		errMsg = classifyCollectorFailure(spec.Name, runErr)
 	}
+	warning = config.SanitizeDSN(warning)
 	finalCtx := context.WithoutCancel(ctx)
 	if ferr := r.store.FinishCollectorRun(finalCtx, collectorRunID, status, rows, warning, errMsg); ferr != nil && errMsg == "" {
-		errMsg = ferr.Error()
+		errMsg = config.SanitizeError(ferr)
 		status = CollectorStatusFailed
 	}
 	if cerr := r.store.RecordCollectorCoverage(finalCtx, auditRunID, spec.Name, "", status, rows, warning, errMsg); cerr != nil && errMsg == "" {
-		errMsg = cerr.Error()
+		errMsg = config.SanitizeError(cerr)
 		status = CollectorStatusFailed
 	}
 	for _, failure := range failures {
@@ -438,6 +442,13 @@ func isRetryable(err error) bool {
 	}
 	var t *TransientError
 	return errors.As(err, &t)
+}
+
+func sanitizeAll(items []string) []string {
+	for i, item := range items {
+		items[i] = config.SanitizeDSN(item)
+	}
+	return items
 }
 
 // TransientError marks an error as safe to retry.

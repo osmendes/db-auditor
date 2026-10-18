@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { useEffect, useId } from "react";
+import { useId, useRef } from "react";
 import { Button } from "./Button";
+import { useFocusTrap } from "./useFocusTrap";
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -28,22 +29,14 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const titleId = useId();
   const descId = useId();
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !busy) {
-        e.preventDefault();
-        onCancel();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open, busy, onCancel]);
+  const panelRef = useRef<HTMLDivElement>(null);
+  // Tab cycles inside, Escape cancels (unless busy), focus returns to the
+  // trigger on close (UI-05).
+  useFocusTrap(open, panelRef, {
+    onEscape: () => {
+      if (!busy) onCancel();
+    },
+  });
 
   if (!open) {
     return null;
@@ -61,10 +54,12 @@ export function ConfirmDialog({
         type="button"
         className="absolute inset-0 bg-slate-950/70"
         aria-label="Fechar diálogo"
+        tabIndex={-1}
         disabled={busy}
         onClick={dismiss}
       />
       <div
+        ref={panelRef}
         className="relative z-10 w-full max-w-md rounded-xl border border-slate-700 bg-slate-900 shadow-xl"
         role="dialog"
         aria-modal="true"

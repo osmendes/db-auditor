@@ -423,7 +423,8 @@ export function Shell({
 
       <main
         id="conteudo"
-        className="w-full min-w-0 px-4 py-6 sm:px-6 md:px-8 md:py-8 lg:px-10"
+        tabIndex={-1}
+        className="w-full min-w-0 focus:outline-none px-4 py-6 sm:px-6 md:px-8 md:py-8 lg:px-10"
       >
         <div className="mx-auto w-full max-w-[1600px]">{children}</div>
       </main>

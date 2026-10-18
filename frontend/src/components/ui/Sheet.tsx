@@ -26,26 +26,18 @@ export function Sheet({
   const titleId = useId();
   const descId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(open, panelRef);
+  useFocusTrap(open, panelRef, { onEscape: () => onOpenChange(false) });
 
   useEffect(() => {
     if (!open) {
       return;
     }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onOpenChange(false);
-      }
-    };
-    window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
     };
-  }, [open, onOpenChange]);
+  }, [open]);
 
   if (!open) {
     return null;
@@ -59,6 +51,7 @@ export function Sheet({
         type="button"
         className="absolute inset-0 bg-slate-950/70 transition-opacity"
         aria-label="Fechar painel"
+        tabIndex={-1}
         onClick={() => onOpenChange(false)}
       />
       <div

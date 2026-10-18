@@ -26,6 +26,8 @@ export interface TableProps {
    */
   virtualize?: boolean;
   rowHeight?: number;
+  /** Accessible name of the table (rendered as an sr-only caption). */
+  caption?: string;
 }
 
 const DEFAULT_WINDOW = 30;
@@ -56,6 +58,7 @@ export function Table({
   pagination = true,
   virtualize = false,
   rowHeight = 36,
+  caption,
 }: TableProps) {
   const thPad = dense ? "px-3 py-2" : "px-4 py-3";
   const [size, setSize] = useState<PageSize>(20);
@@ -88,8 +91,13 @@ export function Table({
 
   return (
     <div className={className}>
-      <div
-        className="overflow-x-auto rounded-lg border border-slate-700"
+      {/* Focusable scroll region so keyboard users can scroll wide tables
+          (axe: scrollable-region-focusable). */}
+      <section
+        className="overflow-x-auto rounded-lg border border-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+        aria-label={caption ?? `Tabela: ${headers.map(headerLabel).join(", ")}`}
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region must be keyboard-reachable
+        tabIndex={0}
         style={virtualize ? { maxHeight: 640, overflowY: "auto" } : undefined}
         onScroll={
           virtualize
@@ -101,6 +109,7 @@ export function Table({
         }
       >
         <table className="min-w-full text-left text-sm text-slate-200">
+          {caption ? <caption className="sr-only">{caption}</caption> : null}
           <thead className="sticky top-0 z-10 bg-slate-900/95 text-slate-400 backdrop-blur-sm">
             <tr>
               {headers.map((header, index) => {
@@ -110,7 +119,18 @@ export function Table({
                 const active = sortable && sortKey === id;
                 if (sortable && onSort) {
                   return (
-                    <th key={id} className={`${thPad} font-medium`}>
+                    <th
+                      key={id}
+                      scope="col"
+                      className={`${thPad} font-medium`}
+                      aria-sort={
+                        active
+                          ? sortDir === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
+                    >
                       <button
                         type="button"
                         onClick={() => onSort(id)}
@@ -128,7 +148,7 @@ export function Table({
                   );
                 }
                 return (
-                  <th key={id} className={`${thPad} font-medium`}>
+                  <th key={id} scope="col" className={`${thPad} font-medium`}>
                     {label}
                   </th>
                 );
@@ -149,7 +169,7 @@ export function Table({
             ) : null}
           </tbody>
         </table>
-      </div>
+      </section>
       {pagination ? (
         <PaginationControls
           total={rows.length}

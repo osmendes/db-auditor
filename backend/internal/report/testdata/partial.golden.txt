@@ -38,7 +38,7 @@ subheading	Matriz impacto × esforço × confiança × risco
 body	#1 | achado f-unused | pontuação 2.10/7.5 | severidade média | impacto alto | esforço médio | confiança média (70%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
 body	#2 | achado f-pk | pontuação 1.44/7.5 | severidade alta | impacto não estimado | esforço alto | confiança alta (90%) | risco: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
 body	#3 | achado f-growth | pontuação 0.88/7.5 | severidade média | impacto não estimado | esforço médio | confiança média (55%) | risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
-subheading	[MÉDIA] Este índice não teve uso observado no período disponível. - erp.public.orders_old_idx
+subheading	[MÉDIA] O índice não teve uso observado na janela entre duas coletas. - erp.public.orders_old_idx
 body	ID do achado: f-unused | severidade: média | esforço preliminar: médio (teste e retorno)
 body	Impacto: 41943040 bytes de 104857600 bytes de todos os índices da tabela (40.0%) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto
 body	Unidade: bytes / bytes de todos os índices da tabela | Período de referência: 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC
@@ -47,24 +47,24 @@ body	Hipótese: Índice sem uso. Hipótese até confirmação humana.
 body	Ganho previsto: no máximo a condição observada (41943040 bytes de 104857600 bytes de todos os índices da tabela (40.0%) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto); o ganho real depende da ação e só é conhecido após nova coleta.
 body	Ganho medido: table_size_bytes: antes 1000, depois 600 bytes (variação -400) na execução run-after
 body	Evidência técnica: {"idx_scan":0}
-body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 70% | Regra: rules-v3
-subheading	[ALTA] Esta tabela não tem chave primária identificada. - erp.public.audit_log
+subheading	[ALTA] Esta relação não tem chave primária observada na coleta. - erp.public.audit_log
 body	ID do achado: f-pk | severidade: alta | esforço preliminar: alto (dependências e janela)
 body	Impacto: impacto não estimado: a regra não coleta métrica com denominador e período
 body	Unidade: não informada | Período de referência: não informado
 body	Risco da mudança: Uma mudança sem conhecer dependências e carga pode afetar a aplicação.
-body	Hipótese: Esta tabela não tem chave primária identificada. Hipótese até confirmação humana.
+body	Hipótese: Esta relação não tem chave primária observada na coleta. Hipótese até confirmação humana.
 body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
 body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
-body	Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
+body	Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.
 body	Confiança: 90% | Regra: rules-v3
-subheading	[MÉDIA] O tamanho ou a atividade mudou entre duas coletas completas. - erp.public.events
+subheading	[MÉDIA] Duas coletas completas mostram mudança de tamanho. - erp.public.events
 body	ID do achado: f-growth | severidade: média | esforço preliminar: médio (teste e retorno)
 body	Impacto: impacto não estimado: sem duas coletas completas e comparáveis
 body	Unidade: não informada | Período de referência: não informado
 body	Risco da mudança: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
-body	Hipótese: O tamanho ou a atividade mudou entre duas coletas completas. Hipótese até confirmação humana.
+body	Hipótese: Duas coletas completas mostram mudança de tamanho. Hipótese até confirmação humana.
 body	Ganho previsto: não estimado: teste a mudança em homologação antes de prever ganho.
 body	Ganho medido: não medido: exige nova coleta completa e comparável depois da ação externa.
 subheading	Custos de particionamento (PostgreSQL 10+ (particionamento declarativo) ou hypertable TimescaleDB)
@@ -76,13 +76,13 @@ body	Janela: Janela de manutenção dedicada, com estimativa de duração medida
 body	Risco: Bloqueios longos, quebra de FKs/aplicação e plano pior para consultas sem a chave.
 body	Validação posterior: Nova coleta completa: tamanho por partição, planos das consultas principais e latência comparados ao período anterior.
 body	Exige aprovação de negócio antes de qualquer execução; o auditor não aplica a mudança.
-body	Próximo passo: Trate o número como hipótese. Confirme período, backup e aprovação antes de qualquer manutenção.
+body	Próximo passo: Confirme tendência, janela e backup. Não há DROP, DELETE nem retenção automática.
 body	Confiança: 55% | Regra: rules-v3
 heading	Análise final e próximos passos
 body	Foram observados 3 achados neste recorte, incluindo 0 críticos e 1 alto. Priorize a validação dos itens de maior severidade com a equipe responsável pelo banco.
-body	Prioridade 1 (achado f-unused, média, pontuação 2.10): Este índice não teve uso observado no período disponível. em erp.public.orders_old_idx. Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
-body	Prioridade 2 (achado f-pk, alta, pontuação 1.44): Esta tabela não tem chave primária identificada. em erp.public.audit_log. Próximo passo: Confirme como os registros são identificados e valide os dados antes de criar uma chave.
-body	Prioridade 3 (achado f-growth, média, pontuação 0.88): O tamanho ou a atividade mudou entre duas coletas completas. em erp.public.events. Próximo passo: Trate o número como hipótese. Confirme período, backup e aprovação antes de qualquer manutenção.
+body	Prioridade 1 (achado f-unused, média, pontuação 2.10): O índice não teve uso observado na janela entre duas coletas. em erp.public.orders_old_idx. Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
+body	Prioridade 2 (achado f-pk, alta, pontuação 1.44): Esta relação não tem chave primária observada na coleta. em erp.public.audit_log. Próximo passo: Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.
+body	Prioridade 3 (achado f-growth, média, pontuação 0.88): Duas coletas completas mostram mudança de tamanho. em erp.public.events. Próximo passo: Confirme tendência, janela e backup. Não há DROP, DELETE nem retenção automática.
 body	A cobertura é parcial ou o conteúdo foi limitado. Execute uma coleta completa antes de decidir alterações com base na ausência de achados.
 body	Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O auditor não aplica mudanças no banco auditado.
 heading	Metodologia e glossário

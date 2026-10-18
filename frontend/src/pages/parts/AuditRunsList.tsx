@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   EmptyState,
   ErrorBanner,
   Select,
@@ -11,6 +10,9 @@ import {
   type PageSize,
   PaginationControls,
 } from "../../components/ui/PaginationControls";
+import { useApp } from "../../context/AppContext";
+import { useEmptyContext } from "../../hooks/useEmptyContext";
+import { resolveEmptyCause } from "../../lib/emptyCause";
 import { labels } from "../../lib/labels";
 import type { AuditRun } from "../../types";
 import {
@@ -60,6 +62,16 @@ export function AuditRunsList({
   runOffset: number;
   setRunPageSize: (value: PageSize) => void;
 }) {
+  const { setSection } = useApp();
+  const filtered = Boolean(statusFilter || profileFilter);
+  const empty = runs !== null && runs.length === 0;
+  const context = useEmptyContext(triggerEnv || null, empty && !filtered);
+  // An empty, unfiltered run list means nothing was ever collected.
+  const cause = resolveEmptyCause({
+    filtered,
+    dsnMissing: context.dsnMissing,
+    collected: false,
+  });
   return (
     <>
       <div className="grid w-full gap-3 sm:grid-cols-2">
@@ -91,13 +103,25 @@ export function AuditRunsList({
         <Skeleton className="h-40 w-full" />
       ) : runs.length === 0 ? (
         <EmptyState
-          title="Nenhuma execução"
-          description="Dispare uma auditoria manual acima ou aguarde o scheduler. Os ambientes iniciais vêm do .env."
-          action={
-            <Button onClick={onTriggerClick} disabled={busy || !triggerEnv}>
-              Executar agora
-            </Button>
+          cause={cause}
+          subject={{ none: "Nenhuma execução", plural: "execuções" }}
+          description={
+            cause === "never"
+              ? "Ainda não há execução neste ambiente. Dispare uma auditoria manual ou aguarde o agendamento."
+              : undefined
           }
+          actionDisabled={cause === "never" && (busy || !triggerEnv)}
+          onAction={() => {
+            if (cause === "filter") {
+              setStatusFilter("");
+              setProfileFilter("");
+              setRunOffset(0);
+            } else if (cause === "dsn") {
+              setSection("Ambientes");
+            } else {
+              onTriggerClick();
+            }
+          }}
         />
       ) : (
         <>

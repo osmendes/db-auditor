@@ -2,6 +2,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -96,7 +97,14 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("AUDITOR_DATABASE_URL is required")
 	}
 	if _, err := url.ParseRequestURI(cfg.Database.URL); err != nil {
-		return Config{}, fmt.Errorf("AUDITOR_DATABASE_URL is invalid: %w", err)
+		// *url.Error quotes the whole URL, password included, and a password
+		// with a space or a quote defeats the pattern redaction of the logger.
+		// Keep only the reason, redacted against the known URL.
+		var urlErr *url.Error
+		if errors.As(err, &urlErr) {
+			err = urlErr.Err
+		}
+		return Config{}, fmt.Errorf("AUDITOR_DATABASE_URL is invalid: %w", RedactError(err, cfg.Database.URL))
 	}
 	return cfg, nil
 }

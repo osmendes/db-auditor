@@ -605,9 +605,10 @@ export const api = {
     postJSON<{ id: string; name: string; dsn: null }>("/api/v1/environments", {
       name,
     }),
-  environmentCapabilities: (env: string) =>
+  environmentCapabilities: (env: string, signal?: AbortSignal) =>
     getJSON<EnvironmentCapabilities>(
       `/api/v1/environments/${env}/capabilities`,
+      signal,
     ),
   qualityScans: (env: string) =>
     getJSON<ItemsResponse<QualityScan> & { enabled: boolean }>(
@@ -1167,9 +1168,10 @@ export const api = {
     ),
   auditRunCollectors: (id: string) =>
     getJSON<ItemsResponse<CollectorRun>>(`/api/v1/audit-runs/${id}/collectors`),
-  auditRunCoverage: (id: string) =>
+  auditRunCoverage: (id: string, signal?: AbortSignal) =>
     getJSON<ItemsResponse<AuditRunCoverage>>(
       `/api/v1/audit-runs/${id}/coverage`,
+      signal,
     ),
   auditRunAnalysis: (id: string) =>
     getJSON<AnalysisRun>(`/api/v1/audit-runs/${id}/analysis`),

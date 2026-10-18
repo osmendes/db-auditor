@@ -1,10 +1,11 @@
 import type { PageSize } from "../../components/ui/PaginationControls";
+import { fetchEmptyContext } from "../../hooks/useEmptyContext";
+import { type EmptyCause, resolveEmptyCause } from "../../lib/emptyCause";
 import { fetchAllPages } from "../../lib/pagination";
 import { api } from "../../services/api";
 import type { Finding } from "../../types";
 
-export type FindingsEmptyKind = "never" | "zero" | "filter" | "dsn" | null;
-export type FindingsCoverageKind = "partial" | "gap" | "permission" | null;
+export type FindingsEmptyKind = EmptyCause | null;
 
 export async function fetchFindingsList(input: {
   presetCategory?: "performance" | "security";
@@ -21,7 +22,6 @@ export async function fetchFindingsList(input: {
   items: Finding[];
   total: number;
   emptyKind: FindingsEmptyKind;
-  coverageKind?: FindingsCoverageKind;
 }> {
   const {
     presetCategory,
@@ -99,7 +99,6 @@ export async function fetchFindingsList(input: {
     count = res.page.total;
   }
   let emptyKind: FindingsEmptyKind = null;
-  let coverageKind: FindingsCoverageKind | undefined;
   if (count === 0) {
     const unfiltered = await api.findingsPage(
       {
@@ -109,30 +108,17 @@ export async function fetchFindingsList(input: {
       },
       signal,
     );
-    if (unfiltered.page.total > 0) {
-      emptyKind = "filter";
-    } else {
-      const [runs, connections] = await Promise.all([
-        api.auditRuns({ environment_id: environmentId || undefined }, signal),
-        api.connectionStatus(signal),
-      ]);
-      const scoped = environmentId
-        ? connections.items.filter(
-            (item) => item.environment_id === environmentId,
-          )
-        : connections.items;
-      const missingDsn =
-        scoped.length > 0 && scoped.every((item) => !item.dsn_configured);
-      const collected = runs.items.some(
-        (run) => run.status === "success" || run.status === "partial_success",
-      );
-      emptyKind = missingDsn ? "dsn" : collected ? "zero" : "never";
-      coverageKind = runs.items.some((run) => run.status === "partial_success")
-        ? "partial"
-        : null;
-    }
+    const context =
+      unfiltered.page.total > 0
+        ? { dsnMissing: false, collected: true }
+        : await fetchEmptyContext(environmentId, signal);
+    emptyKind = resolveEmptyCause({
+      filtered: unfiltered.page.total > 0,
+      unfilteredTotal: unfiltered.page.total,
+      ...context,
+    });
   } else {
     emptyKind = null;
   }
-  return { items, total, emptyKind, coverageKind };
+  return { items, total, emptyKind };
 }

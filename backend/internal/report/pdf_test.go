@@ -168,12 +168,12 @@ func TestReportContentGolden(t *testing.T) {
 	for _, line := range lines {
 		joined += line.Text + "\n"
 	}
-	for _, want := range []string{"DB Auditor - Relatório executivo", "4 tabelas | 1 achado", "Cobertura: parcial", "Índice indisponível", "Referência base", "Evolução de armazenamento", "Evidência técnica: proof", "Confirme as funções da conta", "Metodologia e glossário", "Alternativa textual: Críticos = 1 de 1 itens."} {
+	for _, want := range []string{"DB Auditor - Relatório executivo", "4 tabelas | 1 achado", "Cobertura: parcial", "Índice indisponível", "Referência base", "Evolução de armazenamento", "Evidência técnica: proof", "Confirme se o privilégio é operacional", "Metodologia e glossário", "Alternativa textual: Críticos = 1 de 1 itens."} {
 		if !strings.Contains(joined, want) {
 			t.Fatalf("report missing %q", want)
 		}
 	}
-	if !strings.Contains(joined, "Análise final e próximos passos") || !strings.Contains(joined, "Prioridade 1 (achado ") || !strings.Contains(joined, "Uma conta pode ter mais permissões") {
+	if !strings.Contains(joined, "Análise final e próximos passos") || !strings.Contains(joined, "Prioridade 1 (achado ") || !strings.Contains(joined, "Um papel tem privilégio mais amplo") {
 		t.Fatal("report is missing its final analysis")
 	}
 	if !strings.Contains(string(mustRenderPDF(t, d)), " re f ") {

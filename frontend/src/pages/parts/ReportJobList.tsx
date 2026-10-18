@@ -1,4 +1,5 @@
 import { Badge, Button, Card, EmptyState } from "../../components/ui";
+import type { EmptyCause } from "../../lib/emptyCause";
 import type { ReportJob } from "../../types";
 
 const reportStatusLabels: Record<string, string> = {
@@ -20,8 +21,13 @@ export function ReportJobList({
   jobs,
   act,
   reportJobActions,
+  emptyCause = null,
+  onEmptyAction,
 }: {
   jobs: ReportJob[];
+  /** never/dsn when there is no completed run to report on (UI-09). */
+  emptyCause?: EmptyCause | null;
+  onEmptyAction?: () => void;
   act: (job: ReportJob, action: "cancel" | "retry" | "download") => void;
   reportJobActions: (
     job: ReportJob,
@@ -31,10 +37,18 @@ export function ReportJobList({
   return (
     <>
       {jobs.length === 0 ? (
-        <EmptyState
-          title="Sem relatórios"
-          description="Selecione o ambiente e solicite o primeiro relatório."
-        />
+        emptyCause ? (
+          <EmptyState
+            cause={emptyCause}
+            subject={{ none: "Nenhum relatório", plural: "relatórios" }}
+            onAction={onEmptyAction}
+          />
+        ) : (
+          <EmptyState
+            title="Sem relatórios"
+            description="Selecione o ambiente e solicite o primeiro relatório."
+          />
+        )
       ) : null}
       {jobs.map((job) => (
         <Card

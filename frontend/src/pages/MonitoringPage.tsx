@@ -9,12 +9,15 @@ import {
   Skeleton,
 } from "../components/ui";
 import { useApp } from "../context/AppContext";
+import { useEmptyContext } from "../hooks/useEmptyContext";
+import { resolveEmptyCause } from "../lib/emptyCause";
 import { formatError } from "../lib/errors";
 import { api } from "../services/api";
 import type { AuditAnnotation, AuditRun, RegressionAlert } from "../types";
 
 export function MonitoringPage() {
-  const { environmentId, environments, setEnvironmentId, openRun } = useApp();
+  const { environmentId, environments, setEnvironmentId, openRun, setSection } =
+    useApp();
   const [runs, setRuns] = useState<AuditRun[]>([]);
   const [annotations, setAnnotations] = useState<AuditAnnotation[]>([]);
   const [alerts, setAlerts] = useState<RegressionAlert[]>([]);
@@ -30,6 +33,13 @@ export function MonitoringPage() {
   const [ackReason, setAckReason] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
+  const noRuns = Boolean(environmentId) && !loading && runs.length === 0;
+  const emptyContext = useEmptyContext(environmentId, noRuns);
+  const monitoringEmptyCause = resolveEmptyCause({
+    filtered: false,
+    dsnMissing: emptyContext.dsnMissing,
+    collected: false,
+  });
   const [error, setError] = useState<string | null>(null);
 
   const refresh = async (env: string) => {
@@ -179,9 +189,21 @@ export function MonitoringPage() {
               subtitle="Uma mudança da referência fica registrada no histórico do auditor."
             >
               {runs.length === 0 ? (
-                <p className="mt-3 text-sm text-slate-400">
-                  Sem coleta concluída. Execute uma auditoria antes de comparar.
-                </p>
+                <EmptyState
+                  className="mt-3"
+                  cause={monitoringEmptyCause}
+                  subject={{
+                    none: "Nenhuma comparação",
+                    plural: "comparações",
+                  }}
+                  onAction={() =>
+                    setSection(
+                      monitoringEmptyCause === "dsn"
+                        ? "Ambientes"
+                        : "Execuções",
+                    )
+                  }
+                />
               ) : (
                 <div className="mt-3 space-y-3 text-sm text-slate-200">
                   <Select

@@ -1,4 +1,3 @@
-import { CoverageBanner } from "../../components/CoverageBanner";
 import { Card } from "../../components/ui";
 import type {
   DashboardKPIs,
@@ -10,10 +9,13 @@ import { formatBytes, KpiGroup } from "./DashboardCharts";
 export function DashboardKpis({
   kpis,
   scores,
+  scorePartial = false,
   setSection,
 }: {
   kpis: DashboardKPIs;
   scores: ScopeAggregate[];
+  /** The scored run is partial: label the number instead of showing it bare. */
+  scorePartial?: boolean;
   setSection: (section: NavigationSection) => void;
 }) {
   return (
@@ -40,14 +42,8 @@ export function DashboardKpis({
           {scores.slice(0, 6).map((item) => (
             <Card
               key={`${item.database_name}.${item.schema_name ?? ""}`}
-              subtitle={`${item.database_name}.${item.schema_name ?? ""} · ${item.tables} ${item.status === "not_applicable" ? "coleções" : "tabelas"}`}
-              title={
-                item.status === "not_applicable"
-                  ? "não aplicável"
-                  : item.score == null
-                    ? "cobertura insuficiente"
-                    : `${item.score}/100`
-              }
+              subtitle={scoreSubtitle(item, scorePartial)}
+              title={scoreTitle(item, scorePartial)}
             />
           ))}
         </KpiGroup>
@@ -76,11 +72,6 @@ export function DashboardKpis({
         <Card subtitle="Tabelas temporais" title={String(kpis.hypertables)} />
         <Card subtitle="Políticas" title={String(kpis.policies)} />
       </KpiGroup>
-      {kpis.inventory_status !== "complete" ? (
-        <CoverageBanner
-          kind={kpis.inventory_status === "partial" ? "partial" : null}
-        />
-      ) : null}
       {kpis.inventory_status === "empty" ? (
         <p className="text-sm text-amber-300" role="status">
           Ainda não há inventário concluído para o ambiente selecionado.
@@ -99,4 +90,24 @@ export function DashboardKpis({
       </KpiGroup>
     </div>
   );
+}
+
+/** Not inflating a partial score: it carries "parcial" and its confidence. */
+export function scoreTitle(item: ScopeAggregate, runPartial: boolean): string {
+  if (item.status === "not_applicable") return "não aplicável";
+  if (item.score == null) return "cobertura insuficiente";
+  return runPartial || item.confidence < 1
+    ? `${item.score}/100 (parcial)`
+    : `${item.score}/100`;
+}
+
+export function scoreSubtitle(
+  item: ScopeAggregate,
+  runPartial: boolean,
+): string {
+  const scope = `${item.database_name}.${item.schema_name ?? ""} · ${item.tables} ${item.status === "not_applicable" ? "coleções" : "tabelas"}`;
+  if (item.score == null || item.status === "not_applicable") return scope;
+  return runPartial || item.confidence < 1
+    ? `${scope} · confiança ${Math.round(item.confidence * 100)}%`
+    : scope;
 }

@@ -26,12 +26,12 @@ body	Índice indisponível | confiança 0%
 heading	Histórico e referência de comparação
 body	Referência 00000000-0000-0000-0000-000000000001 | completa | +0 / -0 tabelas, 1 alteradas
 subheading	Novos achados de maior prioridade desde a referência
-body	alta · Este índice não teve uso observado no período disponível. · objeto erp.public.orders_old_idx · achado f-unused
+body	alta · O índice não teve uso observado na janela entre duas coletas. · objeto erp.public.orders_old_idx · achado f-unused
 heading	Riscos e prioridades
 body	Matriz de decisão (priority-v1): pontuação = peso da severidade × fator de impacto medido × confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências, equipe e janela antes de executar uma mudança.
 subheading	Matriz impacto × esforço × confiança × risco
 body	#1 | achado f-unused | pontuação 2.10/7.5 | severidade média | impacto alto | esforço médio | confiança média (70%) | risco: Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.
-subheading	[MÉDIA] Este índice não teve uso observado no período disponível. - erp.public.orders_old_idx
+subheading	[MÉDIA] O índice não teve uso observado na janela entre duas coletas. - erp.public.orders_old_idx
 body	ID do achado: f-unused | severidade: média | esforço preliminar: médio (teste e retorno)
 body	Impacto: 41943040 bytes de 104857600 bytes de todos os índices da tabela (40.0%) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto
 body	Unidade: bytes / bytes de todos os índices da tabela | Período de referência: 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC
@@ -40,13 +40,13 @@ body	Hipótese: Índice sem uso. Hipótese até confirmação humana.
 body	Ganho previsto: no máximo a condição observada (41943040 bytes de 104857600 bytes de todos os índices da tabela (40.0%) · período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC · impacto alto); o ganho real depende da ação e só é conhecido após nova coleta.
 body	Ganho medido: table_size_bytes: antes 1000, depois 600 bytes (variação -400) na execução run-after
 body	Evidência técnica: {"idx_scan":0}
-body	Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Confiança: 70% | Regra: rules-v3
 heading	Inventário técnico (apêndice)
 body	erp.public.orders | 1048576 bytes | 1000 linhas estimadas | PK: Sim
 heading	Análise final e próximos passos
 body	Foi observado 1 achado neste recorte, incluindo 0 críticos e 0 altos. Priorize a validação dos itens de maior severidade com a equipe responsável pelo banco.
-body	Prioridade 1 (achado f-unused, média, pontuação 2.10): Este índice não teve uso observado no período disponível. em erp.public.orders_old_idx. Próximo passo: Confira a janela das estatísticas e as consultas antes de considerar sua remoção.
+body	Prioridade 1 (achado f-unused, média, pontuação 2.10): O índice não teve uso observado na janela entre duas coletas. em erp.public.orders_old_idx. Próximo passo: Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.
 body	Valide cada recomendação com métricas, plano de execução e teste em ambiente controlado. O auditor não aplica mudanças no banco auditado.
 heading	Metodologia e glossário
 body	Somente dados e observações da execução informada foram usados.

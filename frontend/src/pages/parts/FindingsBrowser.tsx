@@ -11,6 +11,7 @@ import {
   Skeleton,
 } from "../../components/ui";
 import type { PageSize } from "../../components/ui/PaginationControls";
+import type { CoverageSignal } from "../../lib/coverage";
 import { labels } from "../../lib/labels";
 import type { SortState } from "../../lib/sort";
 import { api } from "../../services/api";
@@ -38,7 +39,7 @@ export function FindingsBrowser({
   selectionCount,
   bulkTriage,
   error,
-  coverageKind,
+  coverageSignals,
   emptyKind,
   setSection,
   sortedItems,
@@ -78,7 +79,7 @@ export function FindingsBrowser({
   selectionCount: number;
   bulkTriage: (status: string) => void;
   error: string | null;
-  coverageKind: "partial" | "gap" | "permission" | null;
+  coverageSignals: CoverageSignal[];
   emptyKind: "never" | "zero" | "filter" | "dsn" | null;
   setSection: (section: NavigationSection) => void;
   sortedItems: Finding[];
@@ -300,54 +301,23 @@ export function FindingsBrowser({
         {error ? (
           <ErrorBanner message={error} onRetry={() => void load()} />
         ) : null}
-        <CoverageBanner kind={coverageKind} />
+        <CoverageBanner signals={coverageSignals} />
         {busy ? <Skeleton className="h-40 w-full" /> : null}
 
         {!busy && !error && items.length === 0 && emptyKind ? (
           <EmptyState
-            title={
-              emptyKind === "filter"
-                ? "Nenhum achado neste filtro"
-                : emptyKind === "zero"
-                  ? "Nenhum achado observado"
-                  : emptyKind === "dsn"
-                    ? "Ambiente sem conexão configurada"
-                    : "Nenhuma coleta concluída"
-            }
-            description={
-              emptyKind === "filter"
-                ? "Os filtros atuais não correspondem a nenhum achado. Limpe os filtros para ver os demais."
-                : emptyKind === "zero"
-                  ? "A coleta terminou sem achados. Isso não prova ausência de risco se a cobertura estiver parcial."
-                  : emptyKind === "dsn"
-                    ? "O ambiente não tem DSN configurado. Peça a um operador para concluir a conexão antes de auditar."
-                    : "Ainda não há coleta concluída. Execute uma auditoria para gerar diagnósticos."
-            }
-            action={
-              <div className="flex flex-wrap justify-center gap-2">
-                {emptyKind === "filter" ? (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setSeverityFilter("");
-                      setStatusFilter("");
-                      setMine(false);
-                      setOverdueOnly(false);
-                    }}
-                  >
-                    Limpar filtros
-                  </Button>
-                ) : emptyKind === "dsn" ? (
-                  <Button onClick={() => setSection("Ambientes")}>
-                    Abrir Ambientes
-                  </Button>
-                ) : (
-                  <Button onClick={() => setSection("Execuções")}>
-                    Ir para Execuções
-                  </Button>
-                )}
-              </div>
-            }
+            cause={emptyKind}
+            subject={{ none: "Nenhum achado", plural: "achados" }}
+            onAction={() => {
+              if (emptyKind === "filter") {
+                setSeverityFilter("");
+                setStatusFilter("");
+                setMine(false);
+                setOverdueOnly(false);
+              } else {
+                setSection(emptyKind === "dsn" ? "Ambientes" : "Execuções");
+              }
+            }}
           />
         ) : null}
 
