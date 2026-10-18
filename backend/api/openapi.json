@@ -565,7 +565,7 @@
     "/api/v1/environments/{id}/reports": {
       "post": {
         "summary": "Queue a run-scoped PDF or architecture Markdown report",
-        "description": "report_type=architecture requires format=markdown, filters.database and the server feature flag AUDITOR_ARCHITECTURE_REPORT_ENABLED=true. Existing types use format=pdf. The worker reads snapshots from the control database only. Artifacts expire after 30 days.",
+        "description": "Job state includes limit_note: any truncation, detail limit or partial coverage applied while rendering (empty when complete for the scope). report_type=architecture requires format=markdown, filters.database and the server feature flag AUDITOR_ARCHITECTURE_REPORT_ENABLED=true. Existing types use format=pdf. The worker reads snapshots from the control database only. Artifacts expire after 30 days.",
         "requestBody": {
           "required": true,
           "content": {"application/json": {"schema": {"type": "object", "required": ["audit_run_id", "report_type"], "properties": {"audit_run_id": {"type": "string", "format": "uuid"}, "report_type": {"type": "string", "enum": ["executive", "technical", "table", "architecture"]}, "format": {"type": "string", "enum": ["pdf", "markdown"]}, "filters": {"type": "object", "properties": {"database": {"type": "string"}, "schema": {"type": "string"}, "table": {"type": "string"}, "severity": {"type": "string"}, "redaction": {"type": "string", "enum": ["none", "identifiers", "strict"]}}}}}}}
@@ -1218,6 +1218,42 @@
         }
       }
     },
+    "/api/v1/retention-policy": {
+      "get": {
+        "summary": "Read the retention policy",
+        "description": "Operator session required. snapshot_retention_days=0 keeps every snapshot. approved_by/approved_at are empty until the owner approves the current version.",
+        "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetentionPolicy"}}}}, "403": {"description": "Operator session required"}}
+      },
+      "put": {
+        "summary": "Update (and optionally approve) the retention policy",
+        "description": "Operator session required. Any change clears the previous approval unless approve=true in the same request, which records the session user as approver.",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["snapshot_retention_days", "report_job_retention_days", "owner_name", "encryption_at_rest"], "properties": {"snapshot_retention_days": {"type": "integer", "minimum": 0, "maximum": 3650}, "report_job_retention_days": {"type": "integer", "minimum": 30, "maximum": 3650}, "owner_name": {"type": "string", "maxLength": 128}, "encryption_at_rest": {"type": "string", "maxLength": 500}, "archive_note": {"type": "string", "maxLength": 2000}, "approve": {"type": "boolean"}}}}}},
+        "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetentionPolicy"}}}}, "400": {"description": "Invalid policy"}, "403": {"description": "Operator session required"}}
+      }
+    },
+    "/api/v1/retention-policy/plan": {
+      "get": {
+        "summary": "Dry-run retention plan",
+        "description": "Operator session required. Counts only; nothing is removed. Lists every blocker (approval, verified backup within 7 days, successful restore drill within 30 days).",
+        "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object", "required": ["policy", "snapshot_runs_eligible", "report_jobs_eligible", "expired_artifacts", "blockers", "cleanup_allowed", "snapshot_deletion_notes"], "properties": {"policy": {"$ref": "#/components/schemas/RetentionPolicy"}, "snapshot_runs_eligible": {"type": "integer"}, "report_jobs_eligible": {"type": "integer"}, "expired_artifacts": {"type": "integer"}, "last_backup_verified": {"$ref": "#/components/schemas/RetentionEvidence"}, "last_restore_drill": {"$ref": "#/components/schemas/RetentionEvidence"}, "blockers": {"type": "array", "items": {"type": "string"}}, "cleanup_allowed": {"type": "boolean"}, "snapshot_deletion_notes": {"type": "string"}}}}}}, "403": {"description": "Operator session required"}}
+      }
+    },
+    "/api/v1/retention-policy/evidence": {
+      "post": {
+        "summary": "Record backup verification or restore drill evidence",
+        "description": "Operator session required. Produced by deploy/snapshot-restore-verify.sh; a failed drill is recorded but never unblocks cleanup.",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["kind", "environment_label", "artifact_sha256", "succeeded", "performed_at"], "properties": {"kind": {"type": "string", "enum": ["backup_verified", "restore_drill"]}, "environment_label": {"type": "string", "maxLength": 128}, "artifact_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "succeeded": {"type": "boolean"}, "rto_seconds": {"type": "integer", "minimum": 0}, "integrity": {"type": "object", "additionalProperties": true}, "note": {"type": "string", "maxLength": 2000}, "performed_at": {"type": "string", "format": "date-time"}}}}}},
+        "responses": {"201": {"description": "Recorded", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetentionEvidence"}}}}, "400": {"description": "Invalid evidence"}, "403": {"description": "Operator session required"}}
+      }
+    },
+    "/api/v1/retention-policy/apply": {
+      "post": {
+        "summary": "Remove expired report job trails beyond the approved period",
+        "description": "Operator session required. Refused (409) without approval, recent verified backup and restore drill, or when expected_report_jobs differs from the current plan. Snapshots are never removed by the API.",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["expected_report_jobs", "confirm"], "properties": {"expected_report_jobs": {"type": "integer", "minimum": 0}, "confirm": {"type": "boolean"}}}}}},
+        "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object", "required": ["report_jobs_removed"], "properties": {"report_jobs_removed": {"type": "integer"}}}}}}, "400": {"description": "Confirmation missing"}, "403": {"description": "Operator session required"}, "409": {"description": "Blocked by governance"}}
+      }
+    },
     "/api/v1/findings/priorities": {
       "get": {
         "description": "Top achados abertos priorizados por severidade × impacto conservador × confiança ÷ esforço (fórmula priority-v1). Achado sem métrica ou confiança permanece com confiança baixa.",
@@ -1651,6 +1687,16 @@
   },
   "components": {
     "schemas": {
+      "RetentionPolicy": {
+        "type": "object",
+        "required": ["snapshot_retention_days", "report_job_retention_days", "owner_name", "encryption_at_rest", "archive_note", "approved_by", "updated_at"],
+        "properties": {"snapshot_retention_days": {"type": "integer"}, "report_job_retention_days": {"type": "integer"}, "owner_name": {"type": "string"}, "encryption_at_rest": {"type": "string"}, "archive_note": {"type": "string"}, "approved_by": {"type": "string"}, "approved_at": {"type": "string", "format": "date-time"}, "updated_at": {"type": "string", "format": "date-time"}}
+      },
+      "RetentionEvidence": {
+        "type": "object",
+        "required": ["id", "kind", "environment_label", "artifact_sha256", "succeeded", "integrity", "note", "recorded_by", "performed_at", "recorded_at"],
+        "properties": {"id": {"type": "string", "format": "uuid"}, "kind": {"type": "string", "enum": ["backup_verified", "restore_drill"]}, "environment_label": {"type": "string"}, "artifact_sha256": {"type": "string"}, "succeeded": {"type": "boolean"}, "rto_seconds": {"type": "integer"}, "integrity": {"type": "object", "additionalProperties": true}, "note": {"type": "string"}, "recorded_by": {"type": "string"}, "performed_at": {"type": "string", "format": "date-time"}, "recorded_at": {"type": "string", "format": "date-time"}}
+      },
       "CAGGDetailSnapshot": {
         "type": "object",
         "required": [

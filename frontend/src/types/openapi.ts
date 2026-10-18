@@ -121,6 +121,10 @@ export type ApiPath =
   | "/api/v1/mappings/{id}"
   | "/api/v1/reports/findings"
   | "/api/v1/reports/inventory"
+  | "/api/v1/retention-policy"
+  | "/api/v1/retention-policy/apply"
+  | "/api/v1/retention-policy/evidence"
+  | "/api/v1/retention-policy/plan"
   | "/api/v1/server-compare"
   | "/api/v1/status";
 
@@ -306,6 +310,31 @@ export interface PriorityRanked {
   risk: string;
   reason: string;
   formula: string;
+}
+
+export interface RetentionEvidence {
+  id: string;
+  kind: string;
+  environment_label: string;
+  artifact_sha256: string;
+  succeeded: boolean;
+  rto_seconds?: number;
+  integrity: Record<string, unknown>;
+  note: string;
+  recorded_by: string;
+  performed_at: string;
+  recorded_at: string;
+}
+
+export interface RetentionPolicy {
+  snapshot_retention_days: number;
+  report_job_retention_days: number;
+  owner_name: string;
+  encryption_at_rest: string;
+  archive_note: string;
+  approved_by: string;
+  approved_at?: string;
+  updated_at: string;
 }
 
 export interface ScopeScore {
