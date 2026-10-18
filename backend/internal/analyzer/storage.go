@@ -20,6 +20,13 @@ func (StorageAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findin
 	sort.Slice(tables, func(i, j int) bool {
 		return tables[i].SizeBytes > tables[j].SizeBytes
 	})
+	databaseBytes := map[string]int64{}
+	for _, t := range tables {
+		databaseBytes[t.Database] += t.SizeBytes
+	}
+	basis := func(t TableFact) map[string]any {
+		return map[string]any{"database_size_bytes": databaseBytes[t.Database], "collected_at": timeOrEmpty(t.CollectedAt)}
+	}
 	topN := 5
 	if len(tables) < topN {
 		topN = len(tables)
@@ -45,8 +52,9 @@ func (StorageAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findin
 			SchemaName:    t.Schema,
 			ObjectName:    t.Name,
 			Evidence: map[string]any{
-				"size_bytes": t.SizeBytes,
-				"rank":       i + 1,
+				"size_bytes":   t.SizeBytes,
+				"rank":         i + 1,
+				"impact_basis": basis(t),
 			},
 			DedupKey: DedupKey("storage.top_consumer", key, title),
 		}
@@ -74,8 +82,9 @@ func (StorageAnalyzer) Analyze(_ context.Context, facts SnapshotFacts) ([]Findin
 			SchemaName:    t.Schema,
 			ObjectName:    t.Name,
 			Evidence: map[string]any{
-				"size_bytes": t.SizeBytes,
-				"threshold":  oneGiB,
+				"size_bytes":   t.SizeBytes,
+				"threshold":    oneGiB,
+				"impact_basis": basis(t),
 			},
 			DedupKey: DedupKey("storage.large_table", key, title),
 		}

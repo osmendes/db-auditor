@@ -110,6 +110,7 @@ type SnapshotFacts struct {
 	CollectionComplete bool
 	PreviousComplete   bool
 	PreviousTables     []TableFact
+	PreviousGap        bool
 }
 
 // TableFact is a minimal table size fact for storage analysis.

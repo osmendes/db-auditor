@@ -110,6 +110,7 @@ export type ApiPath =
   | "/api/v1/finding-categories/{category}"
   | "/api/v1/findings"
   | "/api/v1/findings/analyze"
+  | "/api/v1/findings/priorities"
   | "/api/v1/findings/{id}"
   | "/api/v1/findings/{id}/action"
   | "/api/v1/findings/{id}/action/events"
@@ -185,6 +186,7 @@ export interface Finding {
   evidence?: Record<string, unknown>;
   references?: string[];
   rule_parameters?: Record<string, unknown>;
+  impact_estimate?: ImpactEstimate;
 }
 
 export interface FindingChange {
@@ -240,6 +242,23 @@ export interface HypertableDetailSnapshot {
   base_table_observed: boolean;
 }
 
+export interface ImpactEstimate {
+  status: string;
+  metric?: string;
+  value?: number;
+  unit?: string;
+  denominator?: number;
+  denominator_unit?: string;
+  ratio?: number;
+  period_start?: string;
+  period_end?: string;
+  period: string;
+  level: string;
+  basis: string;
+  reason?: string;
+  label: string;
+}
+
 export interface IndexDetailSnapshot {
   id: string;
   environment_id: string;
@@ -266,6 +285,27 @@ export interface IndexDetailSnapshot {
   stats_reset?: string | null;
   usage_observed?: boolean | null;
   collected_at: string;
+}
+
+export interface PriorityItem {
+  priority: PriorityRanked;
+  finding: Finding;
+}
+
+export interface PriorityRanked {
+  finding_id: string;
+  rank: number;
+  score: number;
+  max_score: number;
+  severity: string;
+  impact_level: string;
+  impact_label: string;
+  effort: string;
+  confidence: number;
+  confidence_label: string;
+  risk: string;
+  reason: string;
+  formula: string;
 }
 
 export interface ScopeScore {

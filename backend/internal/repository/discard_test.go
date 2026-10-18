@@ -38,3 +38,15 @@ func TestEvidenceSignatureStable(t *testing.T) {
 		t.Fatal("different evidence collided")
 	}
 }
+
+func TestEvidenceSignatureIsCanonicalAndIgnoresImpactBasis(t *testing.T) {
+	analyzerBytes := []byte(`{"b":2,"a":{"y":1,"x":"z"}}`)
+	jsonbText := []byte(`{"a": {"x": "z", "y": 1}, "b": 2}`)
+	if EvidenceSignature(analyzerBytes) != EvidenceSignature(jsonbText) {
+		t.Fatal("evidence read back from jsonb must hash like the analyzer output")
+	}
+	withBasis := []byte(`{"a": {"x": "z", "y": 1}, "b": 2, "impact_basis": {"window_end": "2026-10-01T00:00:00Z"}}`)
+	if EvidenceSignature(withBasis) != EvidenceSignature(analyzerBytes) {
+		t.Fatal("the volatile impact basis must not reopen a discarded finding")
+	}
+}

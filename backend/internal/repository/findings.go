@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/osmendes/db-auditor/internal/guidance"
+	"github.com/osmendes/db-auditor/internal/impact"
 )
 
 // Finding is a persisted diagnostic.
@@ -36,6 +37,7 @@ type Finding struct {
 	Recommendation    string          `json:"recommendation"`
 	FriendlyMeaning   string          `json:"friendly_meaning"`
 	FriendlyNext      string          `json:"friendly_next"`
+	ImpactEstimate    impact.Estimate `json:"impact_estimate"`
 	Validation        string          `json:"validation"`
 	References        json.RawMessage `json:"references"`
 	RuleParameters    json.RawMessage `json:"rule_parameters"`
@@ -334,5 +336,16 @@ func scanFinding(row scannable) (*Finding, error) {
 	friendly := guidance.For(f.FindingType)
 	f.FriendlyMeaning = friendly.Meaning
 	f.FriendlyNext = friendly.Next
+	f.ImpactEstimate = EstimateImpact(f.FindingType, f.Evidence, f.FirstSeenAt, f.LastSeenAt)
 	return &f, nil
+}
+
+// EstimateImpact decodes stored evidence and applies the conservative impact
+// schema. Malformed evidence is "não estimado", never an error.
+func EstimateImpact(rule string, evidence []byte, firstSeen, lastSeen time.Time) impact.Estimate {
+	var decoded map[string]any
+	if len(evidence) > 0 {
+		_ = json.Unmarshal(evidence, &decoded)
+	}
+	return impact.For(rule, decoded, firstSeen, lastSeen)
 }

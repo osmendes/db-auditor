@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/osmendes/db-auditor/internal/actions"
 	"github.com/osmendes/db-auditor/internal/guidance"
+	"github.com/osmendes/db-auditor/internal/impact"
 )
 
 var ErrActionNotFound = errors.New("finding action source not found")
@@ -26,6 +27,8 @@ type FindingAction struct {
 	Coverage      string          `json:"coverage"`
 	Suggestion    string          `json:"suggestion"`
 	Plan          actions.Plan    `json:"plan"`
+	Impact        impact.Estimate `json:"impact_estimate"`
+	Gain          GainStatement   `json:"gain"`
 	Status        string          `json:"status"`
 	Owner         string          `json:"owner"`
 	Justification string          `json:"justification"`
@@ -80,7 +83,12 @@ func (s *Store) GetFindingAction(ctx context.Context, id string) (*FindingAction
 	item := &FindingAction{FindingID: f.ID, EnvironmentID: f.EnvironmentID, SourceRunID: f.AuditRunID,
 		RuleID: f.FindingType, Target: f.DatabaseName + "." + f.SchemaName + "." + f.ObjectName,
 		Severity: f.Severity, Confidence: f.Confidence, Evidence: f.Evidence,
-		Suggestion: guide.Next, Plan: actions.For(f.FindingType), Status: "suggested", Coverage: "unknown"}
+		Suggestion: guide.Next, Plan: actions.For(f.FindingType), Impact: f.ImpactEstimate, Status: "suggested", Coverage: "unknown"}
+	measured, err := s.latestMeasuredGain(ctx, f.ID)
+	if err != nil {
+		return nil, err
+	}
+	item.Gain = BuildGainStatement(f.FindingType, f.Evidence, item.Impact, measured)
 	if f.AuditRunID != nil {
 		err = s.pool.QueryRow(ctx, `SELECT CASE WHEN r.status='success' AND NOT EXISTS (
  SELECT 1 FROM audit_run_coverage c WHERE c.audit_run_id=r.id AND c.status IN ('failed','skipped','attempted')

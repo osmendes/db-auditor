@@ -185,7 +185,8 @@ func (StructuralAnalyzer) Analyze(_ context.Context, f SnapshotFacts) ([]Finding
 		}
 		out = append(out, structuralFinding(f, "maintenance.dead_tuple_pressure", v.Database, v.Schema, "table", v.Name,
 			"Dead tuple estimate is high relative to live tuples; investigate vacuum and bloat with exact diagnostics.", SeverityLow,
-			map[string]any{"n_dead_tup": v.NDeadTup, "n_live_tup": v.NLiveTup, "estimate_only": true}))
+			map[string]any{"n_dead_tup": v.NDeadTup, "n_live_tup": v.NLiveTup, "estimate_only": true,
+				"impact_basis": map[string]any{"last_vacuum": v.LastVacuum, "last_autovacuum": v.LastAutovacuum}}))
 	}
 	workloadSeen := map[string]bool{}
 	for _, q := range f.QueryStats {

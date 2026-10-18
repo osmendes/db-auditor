@@ -3,7 +3,10 @@ package repository
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"time"
+
+	"github.com/osmendes/db-auditor/internal/impact"
 )
 
 // DiscardDecision is how the next identical observation treats a discarded finding.
@@ -15,8 +18,20 @@ const (
 	DiscardReopen
 )
 
-// EvidenceSignature is the stable hash of a finding's evidence JSON.
+// EvidenceSignature is the stable hash of a finding's evidence JSON. The JSON
+// is canonicalized first (sorted keys, no whitespace) so evidence read back
+// from jsonb hashes like evidence produced by the analyzer, and the volatile
+// impact basis (denominators and windows that move every run) is excluded.
 func EvidenceSignature(evidence []byte) string {
+	var decoded any
+	if err := json.Unmarshal(evidence, &decoded); err == nil {
+		if m, ok := decoded.(map[string]any); ok {
+			delete(m, impact.BasisKey)
+		}
+		if canonical, err := json.Marshal(decoded); err == nil {
+			evidence = canonical
+		}
+	}
 	sum := sha256.Sum256(evidence)
 	return hex.EncodeToString(sum[:])
 }

@@ -269,6 +269,12 @@ func (s *Store) loadMaintenanceContext(ctx context.Context, environmentID, audit
 		return err
 	}
 	f.PreviousComplete = previous != nil && previous.Completeness == "complete"
+	// A partial, failed or cancelled run between the two complete runs is a
+	// gap: the pair is not one continuous observation (BA-21, AN-11).
+	if err = s.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM audit_run WHERE environment_id=$1::uuid AND id NOT IN ($2::uuid,$3::uuid)
+AND started_at > (SELECT started_at FROM audit_run WHERE id=$2::uuid) AND started_at < $4 AND status IN ('partial_success','failed','cancelled'))`, environmentID, prior, auditRunID, started).Scan(&f.PreviousGap); err != nil {
+		return err
+	}
 	rows, err := s.pool.Query(ctx, `SELECT database_name,schema_name,table_name,total_size_bytes,collected_at,n_tup_del,stats_reset FROM table_snapshot WHERE environment_id=$1::uuid AND audit_run_id=$2::uuid`, environmentID, prior)
 	if err != nil {
 		return err

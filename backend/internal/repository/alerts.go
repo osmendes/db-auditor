@@ -70,7 +70,8 @@ func (s *Store) findingAlertsAllowed(ctx context.Context, environmentID, runID s
 		return false
 	}
 	var prior string
-	err = s.pool.QueryRow(ctx, `SELECT id::text FROM audit_run WHERE environment_id=$1::uuid AND status='success' AND id<>$2::uuid AND started_at<$3 ORDER BY started_at DESC LIMIT 1`, environmentID, runID, started).Scan(&prior)
+	var priorStarted time.Time
+	err = s.pool.QueryRow(ctx, `SELECT id::text,started_at FROM audit_run WHERE environment_id=$1::uuid AND status='success' AND id<>$2::uuid AND started_at<$3 ORDER BY started_at DESC LIMIT 1`, environmentID, runID, started).Scan(&prior, &priorStarted)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return AllowFindingAlert(true, false, false)
 	}
@@ -79,6 +80,15 @@ func (s *Store) findingAlertsAllowed(ctx context.Context, environmentID, runID s
 	}
 	previous, err := s.GetSnapshotCompleteness(ctx, environmentID, prior)
 	if err != nil || previous == nil {
+		return false
+	}
+	// A gap (long interval or an incomplete run in between) is treated like a
+	// partial neighbor: the new finding may be a coverage artifact.
+	pair := RegressionPair{PriorStarted: priorStarted, CurrentStarted: started}
+	if err = s.pool.QueryRow(ctx, `SELECT count(*) FROM audit_run WHERE environment_id=$1::uuid AND started_at>$2 AND started_at<$3 AND status IN ('partial_success','failed','cancelled')`, environmentID, priorStarted, started).Scan(&pair.IncompleteBetween); err != nil {
+		return false
+	}
+	if ok, _ := PairComparable(pair, RegressionMaxGap(), false); !ok {
 		return false
 	}
 	return AllowFindingAlert(true, true, AllowRegressionAlert(current.Completeness, previous.Completeness))

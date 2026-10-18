@@ -1,0 +1,123 @@
+{
+  "index.unused": {
+    "category": "query_and_index",
+    "meaning": "O índice não teve uso observado na janela entre duas coletas.",
+    "evidence": "idx_scan igual nas duas coletas, sem stats_reset no intervalo.",
+    "impact": "não estimado sem bytes do índice, janela de idx_scan e tamanho total dos índices da tabela.",
+    "next": "Confirme reset de estatísticas, réplicas e consultas raras (mensais, fechamento) antes de considerar remoção.",
+    "expected_benefit": "Impacto ainda não estimado; meça a condição antes de planejar uma alteração.",
+    "effort": "médio",
+    "risk": "Criar ou remover índice pode aumentar escrita, ocupar espaço ou causar bloqueios; planeje execução concorrente quando aplicável.",
+    "prerequisites": "Confira estatísticas, taxa de escrita, espaço e plano da consulta em ambiente seguro.",
+    "confirmation": "Compare EXPLAIN (sem executar alterações) e o fingerprint da consulta; confirme cobertura e período das estatísticas.",
+    "validation": "Meça latência, leituras, escrita e espaço antes/depois sob carga comparável; documente rollback.",
+    "false_positive_risk": "Contadores zerados após reset ou uma janela curta não provam inutilidade de índice.",
+    "read_only_query": "SELECT s.indexrelid::regclass, s.idx_scan, s.last_idx_scan, pg_catalog.pg_relation_size(s.indexrelid) AS index_bytes, d.stats_reset FROM pg_catalog.pg_stat_user_indexes s CROSS JOIN pg_catalog.pg_stat_database d WHERE s.indexrelid = $1::regclass AND d.datname = pg_catalog.current_database() LIMIT 100;",
+    "query": {
+      "sql": "SELECT s.indexrelid::regclass, s.idx_scan, s.last_idx_scan, pg_catalog.pg_relation_size(s.indexrelid) AS index_bytes, d.stats_reset FROM pg_catalog.pg_stat_user_indexes s CROSS JOIN pg_catalog.pg_stat_database d WHERE s.indexrelid = $1::regclass AND d.datname = pg_catalog.current_database() LIMIT 100;",
+      "engine": "postgresql",
+      "capability": "indexes",
+      "min_permission": "CONNECT e USAGE no schema; pg_read_all_stats para estatísticas de outros papéis",
+      "params": [
+        "$1 índice (schema.indice)"
+      ],
+      "row_limit": 100,
+      "timeout_ms": 5000,
+      "impact_warning": "Rode em BEGIN READ ONLY com SET LOCAL statement_timeout. Lê só catálogo/estatísticas; em catálogos muito grandes pode custar CPU, prefira réplica ou horário de baixa carga."
+    }
+  },
+  "integrity.missing_primary_key": {
+    "category": "structure",
+    "meaning": "Esta relação não tem chave primária observada na coleta.",
+    "evidence": "pg_constraint sem contype='p' para a relação; a consulta lista as constraints primárias e zero linhas confirma a ausência.",
+    "impact": "não estimado: ausência de chave não tem tamanho nem latência mensuráveis nesta coleta.",
+    "next": "Valide duplicatas e o identificador usado pela aplicação antes de propor uma chave.",
+    "expected_benefit": "Impacto ainda não estimado; meça a condição antes de planejar uma alteração.",
+    "effort": "alto",
+    "risk": "Uma mudança sem conhecer dependências e carga pode afetar a aplicação.",
+    "prerequisites": "Confirme a cobertura da coleta, dependências e janela de manutenção.",
+    "confirmation": "Inspecione as dependências e o catálogo do objeto; confirme com o dono da aplicação antes de alterar chaves, constraints ou índices.",
+    "validation": "Após correção externa, confira o catálogo e compare uma nova coleta com a anterior.",
+    "false_positive_risk": "Ausência de uso observado não comprova que um objeto está órfão ou pode ser removido.",
+    "read_only_query": "SELECT c.conname, c.contype, c.convalidated FROM pg_catalog.pg_constraint c WHERE c.conrelid = $1::regclass AND c.contype = 'p' LIMIT 100;",
+    "query": {
+      "sql": "SELECT c.conname, c.contype, c.convalidated FROM pg_catalog.pg_constraint c WHERE c.conrelid = $1::regclass AND c.contype = 'p' LIMIT 100;",
+      "engine": "postgresql",
+      "capability": "catalog",
+      "min_permission": "CONNECT no banco; catálogo pg_catalog é legível por qualquer papel",
+      "params": [
+        "$1 relação (schema.tabela)"
+      ],
+      "row_limit": 100,
+      "timeout_ms": 5000,
+      "impact_warning": "Rode em BEGIN READ ONLY com SET LOCAL statement_timeout. Lê só catálogo/estatísticas; em catálogos muito grandes pode custar CPU, prefira réplica ou horário de baixa carga."
+    }
+  },
+  "security.excessive_privilege": {
+    "category": "security",
+    "meaning": "Um papel tem privilégio mais amplo do que o uso conhecido da aplicação.",
+    "evidence": "Grants efetivos gravados na coleta. A API não executa SQL no alvo.",
+    "impact": "não estimado: exposição não vira nota sem o privilégio e o papel.",
+    "next": "Confirme se o privilégio é operacional antes de qualquer revogação.",
+    "expected_benefit": "Impacto ainda não estimado; meça a condição antes de planejar uma alteração.",
+    "effort": "alto",
+    "risk": "Uma revogação pode interromper um serviço legítimo; mudanças devem ter rollback externo.",
+    "prerequisites": "Confirme o papel da aplicação, a permissão efetiva e a política de acesso antes de revogar privilégios.",
+    "confirmation": "Revise grants, políticas e dependências com o responsável pela aplicação.",
+    "validation": "Teste o fluxo autorizado e repita a coleta para verificar a permissão efetiva.",
+    "false_positive_risk": "Permissão aparentemente ampla pode ser necessária a uma função operacional conhecida.",
+    "read_only_query": "SELECT g.grantee, g.privilege_type, g.is_grantable FROM information_schema.role_table_grants g WHERE g.table_schema = $1 AND g.table_name = $2 LIMIT 100;",
+    "query": {
+      "sql": "SELECT g.grantee, g.privilege_type, g.is_grantable FROM information_schema.role_table_grants g WHERE g.table_schema = $1 AND g.table_name = $2 LIMIT 100;",
+      "engine": "postgresql",
+      "capability": "security",
+      "min_permission": "CONNECT e USAGE no schema; information_schema mostra só objetos visíveis ao papel",
+      "params": [
+        "$1 schema",
+        "$2 tabela"
+      ],
+      "row_limit": 100,
+      "timeout_ms": 5000,
+      "impact_warning": "Rode em BEGIN READ ONLY com SET LOCAL statement_timeout. Lê só catálogo/estatísticas; em catálogos muito grandes pode custar CPU, prefira réplica ou horário de baixa carga."
+    }
+  },
+  "vacuum.high_dead_tuples": {
+    "category": "maintenance",
+    "meaning": "A relação acumulou tuplas mortas acima do limiar da regra.",
+    "evidence": "n_dead_tup e n_live_tup da coleta. Estimativa, não bloat medido.",
+    "impact": "não estimado sem n_dead_tup, n_live_tup e o instante do último (auto)vacuum.",
+    "next": "Confira autovacuum, transações longas e a carga de escrita. Não agende VACUUM a partir daqui.",
+    "expected_benefit": "Impacto ainda não estimado; meça a condição antes de planejar uma alteração.",
+    "effort": "médio",
+    "risk": "Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.",
+    "prerequisites": "Confirme tendência, volume, custo operacional, SLA e janela aprovada. Retenção depende de decisão de negócio.",
+    "confirmation": "Compare duas ou mais coletas completas e verifique a configuração e as estatísticas do objeto.",
+    "validation": "Após ação externa, compare tamanho, atraso e saúde dos jobs em novas coletas.",
+    "false_positive_risk": "Um único pico ou coleta parcial não estabelece tendência de crescimento.",
+    "read_only_query": "SELECT t.relid::regclass, t.n_live_tup, t.n_dead_tup, t.last_vacuum, t.last_autovacuum, t.autovacuum_count, c.reloptions FROM pg_catalog.pg_stat_user_tables t JOIN pg_catalog.pg_class c ON c.oid = t.relid WHERE t.relid = $1::regclass LIMIT 100;",
+    "query": {
+      "sql": "SELECT t.relid::regclass, t.n_live_tup, t.n_dead_tup, t.last_vacuum, t.last_autovacuum, t.autovacuum_count, c.reloptions FROM pg_catalog.pg_stat_user_tables t JOIN pg_catalog.pg_class c ON c.oid = t.relid WHERE t.relid = $1::regclass LIMIT 100;",
+      "engine": "postgresql",
+      "capability": "workload",
+      "min_permission": "CONNECT e USAGE no schema; pg_read_all_stats para estatísticas de outros papéis",
+      "params": [
+        "$1 relação (schema.tabela)"
+      ],
+      "row_limit": 100,
+      "timeout_ms": 5000,
+      "impact_warning": "Rode em BEGIN READ ONLY com SET LOCAL statement_timeout. Lê só catálogo/estatísticas; em catálogos muito grandes pode custar CPU, prefira réplica ou horário de baixa carga."
+    },
+    "maintenance": {
+      "kind": "autovacuum",
+      "capability": "PostgreSQL/TimescaleDB (pg_stat_user_tables)",
+      "preconditions": "Tendência de tuplas mortas em duas coletas completas; transações longas e slots de replicação verificados.",
+      "read_cost": "VACUUM lê a tabela inteira ou as páginas marcadas; pode competir por I/O.",
+      "write_cost": "Ajustes mais agressivos aumentam I/O de manutenção; menos agressivos acumulam tuplas mortas.",
+      "storage_cost": "VACUUM comum não devolve espaço ao sistema; só reorganização (fora do auditor) reduz arquivo.",
+      "window": "Ajuste de parâmetro por tabela pode ser feito a qualquer hora; reorganizações exigem janela.",
+      "risk": "Parâmetros errados elevam I/O ou deixam bloat crescer; VACUUM FULL bloqueia a tabela.",
+      "post_validation": "Compare n_dead_tup, last_autovacuum e tamanho em novas coletas completas.",
+      "business_approval": false
+    }
+  }
+}

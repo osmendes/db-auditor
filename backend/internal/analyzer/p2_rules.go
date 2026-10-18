@@ -17,6 +17,10 @@ func unusedIndexFindings(facts SnapshotFacts) []Finding {
 		prev[indexKey(idx)] = idx
 	}
 	out := make([]Finding, 0)
+	tableIndexBytes := map[string]int64{}
+	for _, idx := range facts.Indexes {
+		tableIndexBytes[idx.Database+"."+idx.Schema+"."+idx.TableName] += idx.SizeBytes
+	}
 	for _, idx := range facts.Indexes {
 		if idx.IsPrimary || idx.IsUnique {
 			continue
@@ -51,6 +55,14 @@ func unusedIndexFindings(facts SnapshotFacts) []Finding {
 				"current_idx_scan":  idx.IdxScan,
 				"previous_idx_scan": earlier.IdxScan,
 				"note":              "Never recommend DROP automatically",
+				// Denominator and window for the impact estimate (AN-03). Excluded
+				// from the discard signature because it moves every collection.
+				"impact_basis": map[string]any{
+					"size_bytes":        idx.SizeBytes,
+					"table_index_bytes": tableIndexBytes[idx.Database+"."+idx.Schema+"."+idx.TableName],
+					"window_start":      timeOrEmpty(earlier.CollectedAt),
+					"window_end":        timeOrEmpty(idx.CollectedAt),
+				},
 			},
 			DedupKey: DedupKey("index.unused", key, title),
 		})
@@ -360,4 +372,11 @@ func ChunkDeadTupleSample(dead, live int64) bool {
 // ShouldSkipStructural is true for the fast profile when the previous structure hash matches.
 func ShouldSkipStructural(profile, previousHash, currentHash string) bool {
 	return profile == "fast" && previousHash != "" && previousHash == currentHash
+}
+
+func timeOrEmpty(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.UTC().Format(time.RFC3339)
 }

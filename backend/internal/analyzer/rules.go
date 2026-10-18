@@ -290,11 +290,24 @@ func EnrichFindings(f SnapshotFacts, items []Finding) []Finding {
 		item.RuleID = def.ID
 		item.RuleVersion = def.Version
 		item.Category = def.Category
-		item.Confidence = def.Confidence
-		item.Impact = def.Impact
-		item.Risk = def.Risk
-		item.Recommendation = def.Recommendation
-		item.Validation = def.Validation
+		// An analyzer may only lower the catalog confidence (for example a
+		// trend from a short window) and may state a measured impact; it can
+		// never raise confidence above the versioned rule.
+		if item.Confidence <= 0 || item.Confidence > def.Confidence {
+			item.Confidence = def.Confidence
+		}
+		if strings.TrimSpace(item.Impact) == "" {
+			item.Impact = def.Impact
+		}
+		if strings.TrimSpace(item.Risk) == "" {
+			item.Risk = def.Risk
+		}
+		if strings.TrimSpace(item.Recommendation) == "" {
+			item.Recommendation = def.Recommendation
+		}
+		if strings.TrimSpace(item.Validation) == "" {
+			item.Validation = def.Validation
+		}
 		item.References = append([]string(nil), def.References...)
 		item.RuleParameters = params
 		fingerprint, _ := json.Marshal(params)

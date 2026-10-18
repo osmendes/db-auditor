@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/osmendes/db-auditor/internal/priority"
 	"github.com/osmendes/db-auditor/internal/repository"
 )
 
@@ -64,6 +66,7 @@ func registerFindingRoutes(mux *http.ServeMux, store FindingStore, analysis Anal
 		}
 		writePage(w, items, limit, offset, total)
 	})
+	mux.HandleFunc("GET /api/v1/findings/priorities", listPriorities(store))
 	mux.HandleFunc("GET /api/v1/findings/{id}", getFinding(store))
 	mux.HandleFunc("GET /api/v1/findings/{id}/timeline", func(w http.ResponseWriter, r *http.Request) {
 		backend, ok := store.(interface {
@@ -342,5 +345,39 @@ func analyzeFindings(runner AnalysisRunner) http.HandlerFunc {
 			"produced": produced,
 			"saved":    saved,
 		})
+	}
+}
+
+// listPriorities returns the top open findings ranked by impact, effort and
+// confidence (AN-02). limit defaults to 5 and is capped at 20.
+func listPriorities(store FindingStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		backend, ok := store.(interface {
+			ListPriorities(context.Context, string, int) ([]repository.PriorityItem, int, error)
+		})
+		if !ok {
+			writeError(w, http.StatusServiceUnavailable, CodeUnavailable, "Priorização indisponível.")
+			return
+		}
+		env := r.URL.Query().Get("environment_id")
+		if env != "" && !uuidPattern.MatchString(env) {
+			writeError(w, http.StatusBadRequest, CodeValidation, "Ambiente inválido.")
+			return
+		}
+		limit := 5
+		if raw := r.URL.Query().Get("limit"); raw != "" {
+			parsed, err := strconv.Atoi(raw)
+			if err != nil || parsed < 1 || parsed > 20 {
+				writeError(w, http.StatusBadRequest, CodeValidation, "Limite inválido (1 a 20).")
+				return
+			}
+			limit = parsed
+		}
+		items, candidates, err := backend.ListPriorities(r.Context(), env, limit)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, CodeInternal, "Não foi possível priorizar os achados.")
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]any{"items": items, "candidates": candidates, "candidate_limit": repository.PriorityCandidateLimit, "formula": priority.FormulaVersion, "max_score": priority.MaxScore})
 	}
 }

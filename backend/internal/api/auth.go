@@ -400,7 +400,7 @@ func authorizeRequest(r *http.Request, user *repository.AuditorUser, store AuthS
 			return "", false
 		}
 	} else {
-		allowedGlobal := path == "audit-runs" || path == "findings" ||
+		allowedGlobal := path == "audit-runs" || path == "findings" || path == "findings/priorities" ||
 			path == "finding-categories/security" || path == "finding-categories/performance" ||
 			path == "analytics/kpis" || path == "analytics/storage" || path == "analytics/findings-trends" || path == "analytics/job-health" ||
 			path == "reports/inventory" || path == "reports/findings"

@@ -1218,6 +1218,73 @@
         }
       }
     },
+    "/api/v1/findings/priorities": {
+      "get": {
+        "description": "Top achados abertos priorizados por severidade × impacto conservador × confiança ÷ esforço (fórmula priority-v1). Achado sem métrica ou confiança permanece com confiança baixa.",
+        "parameters": [
+          {
+            "name": "environment_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "candidates",
+                    "candidate_limit",
+                    "formula",
+                    "max_score"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PriorityItem"
+                      }
+                    },
+                    "candidates": {
+                      "type": "number"
+                    },
+                    "candidate_limit": {
+                      "type": "number"
+                    },
+                    "formula": {
+                      "type": "string"
+                    },
+                    "max_score": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "parâmetro inválido"
+          }
+        }
+      }
+    },
     "/api/v1/findings": {
       "get": {
         "responses": {
@@ -2187,6 +2254,138 @@
           }
         }
       },
+      "ImpactEstimate": {
+        "type": "object",
+        "required": [
+          "status",
+          "period",
+          "level",
+          "basis",
+          "label"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "estimated",
+              "not_estimated"
+            ]
+          },
+          "metric": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "denominator": {
+            "type": "number"
+          },
+          "denominator_unit": {
+            "type": "string"
+          },
+          "ratio": {
+            "type": "number"
+          },
+          "period_start": {
+            "type": "string"
+          },
+          "period_end": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "level": {
+            "type": "string"
+          },
+          "basis": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "PriorityRanked": {
+        "type": "object",
+        "required": [
+          "finding_id",
+          "rank",
+          "score",
+          "max_score",
+          "severity",
+          "impact_level",
+          "impact_label",
+          "effort",
+          "confidence",
+          "confidence_label",
+          "risk",
+          "reason",
+          "formula"
+        ],
+        "properties": {
+          "finding_id": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "number"
+          },
+          "score": {
+            "type": "number"
+          },
+          "max_score": {
+            "type": "number"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "impact_level": {
+            "type": "string"
+          },
+          "impact_label": {
+            "type": "string"
+          },
+          "effort": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number"
+          },
+          "confidence_label": {
+            "type": "string"
+          },
+          "risk": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "formula": {
+            "type": "string"
+          }
+        }
+      },
+      "PriorityItem": {
+        "type": "object",
+        "required": [
+          "priority",
+          "finding"
+        ],
+        "properties": {
+          "priority": {
+            "$ref": "#/components/schemas/PriorityRanked"
+          },
+          "finding": {
+            "$ref": "#/components/schemas/Finding"
+          }
+        }
+      },
       "Finding": {
         "type": "object",
         "required": [
@@ -2344,6 +2543,9 @@
           },
           "rule_parameters": {
             "type": "object"
+          },
+          "impact_estimate": {
+            "$ref": "#/components/schemas/ImpactEstimate"
           }
         }
       },
