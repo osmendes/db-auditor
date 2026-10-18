@@ -300,7 +300,7 @@ export interface RegressionAlert {
   environment_id: string;
   baseline_run_id: string;
   audit_run_id: string;
-  category: "structure" | "findings";
+  category: "structure" | "findings" | "workload";
   evidence: Record<string, unknown>;
   status: "open" | "acknowledged";
   reason: string;

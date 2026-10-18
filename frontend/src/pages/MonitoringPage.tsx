@@ -15,6 +15,7 @@ import { resolveEmptyCause } from "../lib/emptyCause";
 import { formatError, isAbortError } from "../lib/errors";
 import { api } from "../services/api";
 import type { AuditAnnotation, AuditRun, RegressionAlert } from "../types";
+import { regressionCategoryLabel } from "./parts/regressionCategory";
 
 export function MonitoringPage() {
   const { environmentId, environments, setEnvironmentId, openRun, setSection } =
@@ -314,10 +315,7 @@ export function MonitoringPage() {
                       className="rounded border border-slate-700 p-3 text-sm text-slate-200"
                     >
                       <p>
-                        {item.category === "findings"
-                          ? "Achados altos ou críticos"
-                          : "Mudanças estruturais"}{" "}
-                        · {item.status}
+                        {regressionCategoryLabel(item.category)} · {item.status}
                       </p>
                       <p className="text-xs text-slate-400">
                         Execução {item.audit_run_id} · referência{" "}

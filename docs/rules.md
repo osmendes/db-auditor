@@ -101,18 +101,34 @@ Uma regressão só é registrada quando:
 2. o intervalo entre elas é de no máximo `AUDITOR_REGRESSION_MAX_GAP`
    (padrão 168h, mínimo 1h) e não há execução parcial, falha ou cancelada no
    meio (lacuna);
-3. para achados, `stats_reset` não mudou entre as duas coletas (reset de
-   contador);
+3. para achados e consultas, o reset de contadores não mudou entre as duas
+   coletas: `stats_reset` das tabelas (`pg_stat_database`) e o de
+   `pg_stat_statements`. A passagem de `NULL` (cluster nunca resetado) para um
+   valor, e o inverso, também conta como reset;
 4. a referência (baseline) é completa, anterior e com o mesmo perfil, versão
    de coletor e manifesto de regras;
 5. o limiar é **persistente**: a anterior **e** a atual ficam acima da
-   referência (achados altos/críticos observados; tabelas removidas ou
-   alteradas para estrutura). Um pico isolado não alerta.
+   referência. Um pico isolado não alerta. Por categoria:
+   - `findings`: achados altos/críticos observados acima do total da
+     referência;
+   - `structure`: a mesma tabela removida ou alterada (tipo, chave primária,
+     número de colunas), ou o mesmo índice removido, nas duas coletas;
+   - `workload`: a mesma consulta lenta ou pesada (`performance.slow_query`,
+     `performance.workload_*`) nova em relação à referência nas duas coletas.
+     Esses achados são de severidade baixa e não entram em `findings`.
 
-Deduplicação: para a mesma referência e categoria, um novo alerta só é criado
-quando o nível atual é pior que o do último alerta, reconhecido ou não.
-Reconhecer um alerta silencia repetições do mesmo nível. A notificação de
-novos achados segue a mesma regra de lacuna. O motivo do silêncio
+Deduplicação por identidade: cada alerta guarda as chaves do que alertou
+(`dedup_key` dos achados, tabelas, índices; até 1000, com o total em
+`keys_total`). Para a mesma referência e categoria, enquanto o episódio dura,
+um novo alerta só é criado se aparecer algo que o último não tinha (um achado,
+tabela, índice ou consulta diferente), mesmo com contagem menor ou igual.
+Reconhecer um alerta silencia a repetição do mesmo conteúdo. O episódio acaba
+quando uma coleta completa e analisada entre o último alerta e a atual mostra a
+regressão resolvida (achados de volta ao total da referência; nenhuma das
+chaves alertadas ainda regredida). Depois disso, a mesma regressão volta a
+alertar, com `previous_alert_recovered` na evidência. Alertas antigos, sem
+chaves, seguem a regra anterior (só alerta se a contagem piorar). A notificação
+de novos achados segue a mesma regra de lacuna. O motivo do silêncio
 (`partial_collection`, `gap_window`, `intermediate_incomplete_run`,
 `stats_reset`, `below_threshold`, `deduplicated`…) é registrado em log de
 depuração.
