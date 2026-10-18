@@ -160,6 +160,57 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      - name: Report under a container memory limit (PF-07)
+        timeout-minutes: 8
+        env:
+          # 48 MiB, swap disabled. The worker test peaks around 15 MiB locally.
+          REPORT_MEMORY_LIMIT_BYTES: "50331648"
+        run: |
+          set -euo pipefail
+          CGO_ENABLED=0 go test -c -o "$RUNNER_TEMP/reportworker.test" ./internal/reportworker/
+          docker pull -q alpine:3.20 >/dev/null
+          limit="$REPORT_MEMORY_LIMIT_BYTES"
+          # Control: the same flags really kill a process that needs more memory.
+          docker run --name report-mem-control --memory "$limit" --memory-swap "$limit" alpine:3.20 \
+            sh -c 'x=$(head -c 200000000 /dev/zero | tr "\000" a); echo survived' || true
+          control=$(docker inspect -f '{{.State.OOMKilled}}' report-mem-control)
+          docker rm report-mem-control >/dev/null
+          if [ "$control" != "true" ]; then
+            echo "::error::control container was not OOM-killed; the memory limit is not enforced"
+            exit 1
+          fi
+          set +e
+          docker run --name report-mem --network host --memory "$limit" --memory-swap "$limit" \
+            -e AUDITOR_TEST_DATABASE_URL="postgresql://postgres@127.0.0.1:55437/db_auditor_test?sslmode=disable" \
+            -e AUDITOR_TEST_DISPOSABLE=1 -e AUDITOR_TEST_CONTAINER_MEMORY=1 -e AUDITOR_TEST_MEMORY_LIMIT_BYTES="$limit" \
+            -v "$RUNNER_TEMP/reportworker.test:/reportworker.test:ro" alpine:3.20 \
+            /reportworker.test -test.run '^TestLargeReportUnderContainerMemoryLimit$' -test.v -test.count=1 -test.timeout 5m 2>&1 | tee report-memory.log
+          status=${PIPESTATUS[0]}
+          set -e
+          oom=$(docker inspect -f '{{.State.OOMKilled}}' report-mem)
+          docker rm report-mem >/dev/null
+          if [ "$oom" = "true" ]; then
+            echo "::error::report worker test was OOM-killed under a ${limit}-byte container limit"
+            exit 1
+          fi
+          if [ "$status" -ne 0 ]; then
+            echo "::error::report worker test failed inside the memory-limited container (exit $status)"
+            exit 1
+          fi
+          result=$(grep -o 'CONTAINER_MEMORY_RESULT.*' report-memory.log || true)
+          if [ -z "$result" ]; then
+            echo "::error::container memory test did not report CONTAINER_MEMORY_RESULT (skipped?)"
+            exit 1
+          fi
+          echo "::notice title=Report memory::${result}"
+          {
+            echo "### Report under a container memory limit"
+            echo
+            echo '```'
+            echo "control_oom_killed=${control} ${result}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Trivy filesystem (backend)
         uses: aquasecurity/trivy-action@v0.36.0
         with:

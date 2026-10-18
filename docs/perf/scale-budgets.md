@@ -72,11 +72,21 @@ Os números do runner (PostgreSQL 18 no CI) aparecem no resumo do job **Backend 
 
 ## Memória do relatório (PF-07, issue #65)
 
-`TestWritePDFPeakHeapBelowLegacyRenderer` compara o pico de heap de um PDF de cerca de 190 páginas (5 600 tabelas, 1,1 MB):
+O PDF é escrito página a página direto no `COPY` de `report_artifact`. Os dados são lidos por seção por `Store.OpenReportSections`: visão geral, achados, bancos e tabelas, todos de um único snapshot `REPEATABLE READ READ ONLY`. O renderizador (`report.WritePDFSections`) percorre as seções três vezes: contagens do resumo, contagem de páginas e escrita. Cada seção é carregada, diagramada e liberada antes da próxima. A saída é byte a byte idêntica ao renderizador de referência: o código anterior ao #65 fica copiado sem mudanças em `pdf_legacy_test.go`, com testes por nível de redação, com achados empatados e com filtros.
 
-| Renderizador | Pico de heap |
-| --- | --- |
-| legado, em memória | ≈ 4,3 MB |
-| streaming (`WritePDF`) | ≈ 1,9 MB |
+| Medição | Documento inteiro + renderizador legado | Por seção + streaming |
+| --- | --- | --- |
+| Pico de heap, ~190 páginas (5 600 tabelas) | ≈ 5,0 MB | ≈ 1,9 MB |
+| Só o renderizador, mesmo documento já carregado | ≈ 4,5 MB | ≈ 1,1 MB |
 
-O teste exige que o streaming fique abaixo de 60% do legado. No streaming, a maior parte do pico são as linhas do documento.
+**Limite real de contêiner.** O passo de CI *Report under a container memory limit* compila o teste do worker estaticamente e o roda em `alpine` com `docker run --memory 48m --memory-swap 48m`:
+
+- Um contêiner de controle com os mesmos flags precisa ser morto por OOM. Isso prova que o limite é aplicado.
+- `TestLargeReportUnderContainerMemoryLimit` se recusa a rodar se `memory.max` do cgroup não for o limite pedido ou se houver swap.
+- O teste gera três relatórios:
+  - o maior relatório que cabe nos limites: 501 bancos e 5 001 tabelas (ambos truncados) e 200 achados, cerca de 160 páginas;
+  - a maior seção de achados (2 001, truncada em 2 000): só os 100 primeiros da prioridade são detalhados (AN-12), então o relatório sai com cerca de 113 páginas e grava `limit_note`;
+  - todas as seções no teto ao mesmo tempo: esse precisa falhar com "relatório excede 200 páginas".
+- O passo falha se houver OOM, e o teste falha se `memory.peak` atingir o limite.
+
+Localmente, num cgroup v2 de 48 MiB sem swap, o pico do cgroup foi ≈ 17 MiB. O resultado do runner aparece no resumo do job.

@@ -107,14 +107,20 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 		}
 	})
 	started := time.Now()
-	document, err := w.Store.LoadReportDocument(renderCtx, *job)
+	// #65: the report data is read section by section from one read-only
+	// snapshot while the PDF is written; it is never loaded as a whole.
+	sections, err := w.Store.OpenReportSections(renderCtx, *job)
 	if err != nil {
 		sampler.Stop()
 		return w.fail(workCtx, job.ID, jobFailure(workCtx, renderCtx, limit, err))
 	}
-	document.RedactMetadata(os.Getenv("AUDITOR_REPORT_REDACT_METADATA"))
-	document.RedactSensitive(job.Filters.Redaction)
-	limitNote := document.LimitNote()
+	defer sections.Close(workCtx)
+	// Validate the run, scope and filters before opening the artifact stream.
+	if _, err = sections.Overview(renderCtx); err != nil {
+		sampler.Stop()
+		return w.fail(workCtx, job.ID, jobFailure(workCtx, renderCtx, limit, err))
+	}
+	redaction := &report.Redaction{Metadata: os.Getenv("AUDITOR_REPORT_REDACT_METADATA"), Level: job.Filters.Redaction}
 	current, err := w.Store.GetReportJob(workCtx, job.EnvironmentID, job.ID)
 	if err != nil {
 		sampler.Stop()
@@ -125,14 +131,14 @@ func (w Worker) ProcessOne(ctx context.Context) error {
 		return nil
 	}
 	// PF-07: render straight into the report_artifact COPY stream; the PDF is
-	// never held in memory as a whole. AN-12: the limit note is stored with it.
+	// never held in memory as a whole. AN-12: the limit note, computed by the
+	// renderer from the overview and the findings count, is stored with it.
 	var rendered report.PDFResult
 	err = w.Store.FinishReportJobStream(renderCtx, job.ID, fmt.Sprintf("db-auditor-%s-%s.pdf", job.Type, job.ID), "application/pdf", func(out io.Writer) (repository.StreamedArtifact, error) {
-		result, err := report.WritePDF(renderCtx, out, document)
+		result, err := report.WritePDFSections(renderCtx, out, sections, redaction)
 		rendered = result
-		return repository.StreamedArtifact{Bytes: result.Bytes, SHA256: result.SHA256, LimitNote: limitNote}, err
+		return repository.StreamedArtifact{Bytes: result.Bytes, SHA256: result.SHA256, LimitNote: result.LimitNote}, err
 	})
-	document = report.Document{}
 	peak := sampler.Stop()
 	if errors.Is(err, repository.ErrReportConflict) {
 		return nil
