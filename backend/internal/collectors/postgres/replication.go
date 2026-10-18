@@ -25,6 +25,8 @@ type ReplicationFacts struct {
 }
 
 // CollectReplication reads pg_stat_replication, pg_stat_wal_receiver and pg_stat_archiver.
+// pg_stat_replication has no apply_lsn: a standby applies WAL by replaying it,
+// so the apply lag is the replay lag (sent_lsn - replay_lsn).
 func CollectReplication(ctx context.Context, conn *pgx.Conn) (ReplicationFacts, error) {
 	var out ReplicationFacts
 	if err := conn.QueryRow(ctx, `SELECT current_database()`).Scan(&out.DatabaseName); err != nil {
@@ -32,7 +34,7 @@ func CollectReplication(ctx context.Context, conn *pgx.Conn) (ReplicationFacts, 
 	}
 	err := conn.QueryRow(ctx, `
 SELECT count(*)::int,
-       max(pg_wal_lsn_diff(sent_lsn, apply_lsn))::bigint,
+       max(pg_wal_lsn_diff(sent_lsn, replay_lsn))::bigint,
        max(pg_wal_lsn_diff(sent_lsn, flush_lsn))::bigint,
        max(pg_wal_lsn_diff(sent_lsn, write_lsn))::bigint,
        max(pg_wal_lsn_diff(sent_lsn, replay_lsn))::bigint
