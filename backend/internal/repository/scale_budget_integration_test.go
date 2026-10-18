@@ -154,19 +154,14 @@ func seedScaleMass(ctx context.Context, t *testing.T, pool *pgxpool.Pool) (targe
 			t.Fatalf("seed: %v\n%s", err, sql)
 		}
 	}
+	// The mass is left in the disposable database on purpose: deleting it row
+	// by row through the unindexed foreign keys costs minutes, and later runs
+	// only add more noise, which the relative budgets and plan checks tolerate.
 	for _, dst := range []*string{&target, &noise} {
 		if err := pool.QueryRow(ctx, `INSERT INTO audit_environment(name,type,discovery_mode)
 VALUES('scale-'||gen_random_uuid()::text,'self_hosted','multi_database') RETURNING id::text`).Scan(dst); err != nil {
 			t.Fatal(err)
 		}
-		id := *dst
-		// Packages share the disposable database: drop the mass afterwards so
-		// later tests (and a second run of this one) see their own volume only.
-		t.Cleanup(func() {
-			if _, err := pool.Exec(context.WithoutCancel(ctx), `DELETE FROM audit_environment WHERE id=$1::uuid`, id); err != nil {
-				t.Errorf("cleanup scale environment: %v", err)
-			}
-		})
 	}
 	for _, item := range []struct {
 		env            string

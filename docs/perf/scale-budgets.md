@@ -9,7 +9,7 @@
 | alvo | 30 (1 em 10 falha) | 10 000 na última; 2×100×5 nas anteriores | 20 000 |
 | ruído | 2 000 | igual | 80 000 |
 
-O ambiente de ruído domina o volume. Assim, um plano que ignora `environment_id` paga pelo volume dos outros ambientes. A massa inclui `database_snapshot`, `audit_run_coverage`, `analysis_run` e `finding_event`. Depois do seed roda `ANALYZE`, e o teste remove os dois ambientes ao final.
+O ambiente de ruído domina o volume. Assim, um plano que ignora `environment_id` paga pelo volume dos outros ambientes. A massa inclui `database_snapshot`, `audit_run_coverage`, `analysis_run` e `finding_event`. Depois do seed roda `ANALYZE`. A massa fica no banco descartável: no CI o teste roda duas vezes (suíte e passo de relatório), e a segunda execução, com o dobro de ruído, também precisa passar.
 
 ## Orçamento relativo, não absoluto
 
