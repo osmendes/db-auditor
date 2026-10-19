@@ -22,6 +22,9 @@ func TestCollectInsertionEvidenceIntegration(t *testing.T) {
 	}
 	defer func() { _ = admin.Close(ctx) }()
 	for _, sql := range []string{
+		// PostgreSQL 14 and older grant CREATE on schema public to PUBLIC, which the
+		// read-only preflight rightly treats as write access (#134 matrix). No-op on 15+.
+		`REVOKE CREATE ON SCHEMA public FROM PUBLIC`,
 		`CREATE TABLE IF NOT EXISTS public.architecture_insertion_test(id integer PRIMARY KEY, inserted_at timestamptz NOT NULL, wrong_type text)`,
 		`TRUNCATE public.architecture_insertion_test`,
 		`INSERT INTO public.architecture_insertion_test VALUES(1,'2026-04-16 12:00:00+00','x')`,

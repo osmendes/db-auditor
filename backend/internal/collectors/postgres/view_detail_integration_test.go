@@ -21,10 +21,23 @@ func TestViewDetailCollectorsIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() { _ = conn.Close(ctx) }()
+	// security_invoker exists from PostgreSQL 15; before that the collector
+	// reports it as unknown (nil), never as false (#134 matrix).
+	var version int
+	if err = conn.QueryRow(ctx, `SELECT current_setting('server_version_num')::int`).Scan(&version); err != nil {
+		t.Fatal(err)
+	}
+	hasInvoker := version >= 150000
+	viewOptions := "security_barrier=true"
+	if hasInvoker {
+		viewOptions = "security_invoker=true, security_barrier=true"
+	}
 	for _, statement := range []string{
+		// Leftovers of an interrupted run on a reused disposable database.
+		`DROP TABLE IF EXISTS public.view_detail_fixture_table CASCADE`,
 		`CREATE TABLE public.view_detail_fixture_table (id bigint PRIMARY KEY)`,
 		`INSERT INTO public.view_detail_fixture_table VALUES (1)`,
-		`CREATE VIEW public.view_detail_fixture WITH (security_invoker=true, security_barrier=true) AS SELECT id FROM public.view_detail_fixture_table`,
+		`CREATE VIEW public.view_detail_fixture WITH (` + viewOptions + `) AS SELECT id FROM public.view_detail_fixture_table`,
 		`CREATE MATERIALIZED VIEW public.view_detail_fixture_mat AS SELECT id FROM public.view_detail_fixture_table`,
 	} {
 		if _, err := conn.Exec(ctx, statement); err != nil {
@@ -54,7 +67,11 @@ func TestViewDetailCollectorsIntegration(t *testing.T) {
 		}
 		if item.ViewName == "view_detail_fixture" {
 			foundView = true
-			if item.Relkind != "v" || item.SecurityInvoker == nil || !*item.SecurityInvoker || item.SecurityBarrier == nil || !*item.SecurityBarrier || item.IsPopulated != nil {
+			invokerOK := item.SecurityInvoker != nil && *item.SecurityInvoker
+			if !hasInvoker {
+				invokerOK = item.SecurityInvoker == nil
+			}
+			if item.Relkind != "v" || !invokerOK || item.SecurityBarrier == nil || !*item.SecurityBarrier || item.IsPopulated != nil {
 				t.Fatalf("view options: %#v", item)
 			}
 		} else {

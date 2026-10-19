@@ -67,6 +67,10 @@ func fullCollectionTarget(t *testing.T, adminURL string, withTimescale bool) str
 	}
 	defer target.Close()
 	setup := []string{
+		// PostgreSQL 14 and older grant CREATE on schema public to PUBLIC; the
+		// read-only preflight refuses such a role, so the production setup
+		// revokes it (docs/ops.md, #134). No-op on 15+.
+		`REVOKE CREATE ON SCHEMA public FROM PUBLIC`,
 		`CREATE SCHEMA app`,
 		`CREATE TABLE app.customers(id bigint PRIMARY KEY, name text NOT NULL)`,
 		`CREATE TABLE app.orders(id bigint PRIMARY KEY, customer_id bigint NOT NULL REFERENCES app.customers(id), created_at timestamptz NOT NULL DEFAULT now())`,

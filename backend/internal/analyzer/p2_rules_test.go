@@ -28,7 +28,7 @@ func TestUnusedIndexNeedsTwoCollections(t *testing.T) {
 	}
 	current.StatsReset = nil
 	hit, _ := P2Analyzer{}.Analyze(t.Context(), SnapshotFacts{Indexes: []IndexFact{current}, PreviousIndexes: []IndexFact{prev}})
-	if len(hit) != 1 || hit[0].Evidence["note"] != "Never recommend DROP automatically" {
+	if len(hit) != 1 || hit[0].Evidence["note"] != "O auditor nunca recomenda DROP automaticamente; a remoção exige revisão humana." {
 		t.Fatalf("%#v", hit)
 	}
 	if strings.Contains(hit[0].Summary, "DROP") && strings.Contains(strings.ToLower(hit[0].Summary), "recommend drop") {

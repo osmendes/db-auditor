@@ -86,7 +86,10 @@ func (r *ReportSections) tableLimit() int {
 // reportGrowthSQL picks the last six runs before joining their snapshots
 // (#106): the LIMIT runs on audit_run_latest_idx and each run's total is one
 // index lookup on table_snapshot_env_run_idx, instead of aggregating every
-// snapshot of the environment and keeping six groups.
+// snapshot of the environment and keeping six groups. Each point sums the
+// tables of the report scope: $3 database, $4 schema and $5 table, the same
+// filters as the table list. Before #135 only the database was applied, so a
+// table report plotted every table of its database.
 const reportGrowthSQL = `WITH recent AS (
  SELECT r.id,r.started_at,r.status FROM audit_run r
  WHERE r.environment_id=$1::uuid AND r.status IN ('success','partial_success') AND r.started_at<=$2
@@ -96,6 +99,7 @@ SELECT recent.id::text,recent.started_at,recent.status,COALESCE(s.bytes,0),s.tab
 FROM recent CROSS JOIN LATERAL (
  SELECT sum(t.total_size_bytes) bytes,count(*) tables FROM table_snapshot t
  WHERE t.environment_id=$1::uuid AND t.audit_run_id=recent.id AND ($3='' OR t.database_name=$3)
+ AND ($4='' OR t.schema_name=$4) AND ($5='' OR t.table_name=$5)
 ) s
 ORDER BY recent.started_at DESC,recent.id DESC`
 
@@ -156,7 +160,7 @@ func (r *ReportSections) Overview(ctx context.Context) (report.Document, error) 
 			d.CoverageNotes = append(d.CoverageNotes, "Score sem cobertura suficiente: "+strings.Join(score.MissingCollectors, ", "))
 		}
 	}
-	rows, err := r.tx.Query(ctx, reportGrowthSQL, job.EnvironmentID, d.RunStarted, job.Filters.Database)
+	rows, err := r.tx.Query(ctx, reportGrowthSQL, job.EnvironmentID, d.RunStarted, job.Filters.Database, job.Filters.Schema, job.Filters.Table)
 	if err != nil {
 		return d, err
 	}

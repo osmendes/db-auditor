@@ -152,6 +152,31 @@ exclusão, `DROP` ou alteração automática. A interface e o PDF separam
 **hipótese**, **ganho previsto** e **ganho medido**; o ganho medido só aparece
 com uma medição comparável registrada após nova coleta completa.
 
+## Roles poderosas e versão do PostgreSQL (#126, #134)
+
+`security.powerful_role` aponta contas com LOGIN que têm SUPERUSER, BYPASSRLS,
+REPLICATION ou CREATEROLE, diretamente ou por participação em outra role, e
+membros das roles predefinidas `pg_execute_server_program`,
+`pg_read_server_files`, `pg_write_server_files`, `pg_read_all_data` e
+`pg_write_all_data`. A evidência traz `inherited` (`privilégio:role de origem`)
+e `source_roles`. Nada é revogado automaticamente.
+
+O caminho depende da versão (`server_version_num` do alvo):
+
+| | PostgreSQL 14 e 15 | PostgreSQL 16+ |
+| --- | --- | --- |
+| Atributos (SUPERUSER, BYPASSRLS, REPLICATION, CREATEROLE) | `pg_has_role(..., 'MEMBER')` | `'SET'` (SET ROLE) |
+| Roles predefinidas | `'MEMBER'` | `'SET'` ou `'USAGE'` (herança) |
+| Só ADMIN OPTION | sempre é participação, coberto por `'MEMBER'` (inclusive NOINHERIT e role SUPERUSER) | `'MEMBER WITH ADMIN OPTION'` conta para BYPASSRLS, REPLICATION, CREATEROLE e predefinidas; **não** conta sobre role SUPERUSER (só superuser concede) |
+| `WITH INHERIT FALSE, SET FALSE` sem ADMIN | não existe | não dá nada e não é relatado |
+| CREATEROLE sozinho | **alta**, com `createrole_grants_any_role: true` (concede a si qualquer role não superuser) | média (administra só as roles que criou) |
+
+Versão desconhecida ou ilegível no snapshot é tratada como 16+ (CREATEROLE
+fica média). O limiar é `>= 160000` em `membershipModes`; a CI roda o teste
+ponta a ponta `TestPowerfulAccountRoleEndToEndIntegration` em PostgreSQL 14,
+15, 16, 17 e 18, então mover o limiar ou ignorar a versão na severidade falha
+em pelo menos uma versão (veja [ops.md](ops.md#matriz-de-versões-do-postgresql-na-ci-134)).
+
 ## Relatórios PDF (BA-11)
 
 Os PDFs executivo, técnico e de tabela mostram cobertura, período, unidade,
@@ -164,3 +189,17 @@ exceder, o job falha com mensagem explícita; truncamento, limite de detalhe e
 cobertura parcial aparecem no PDF e em `limit_note` do job. Os golden files
 ficam em `backend/internal/report/testdata` (`go test ./internal/report -run
 Golden -update` para revisar mudanças).
+
+A série "Evolução de armazenamento" segue o mesmo escopo do relatório: banco,
+schema e tabela (#135). No relatório de tabela cada barra é o tamanho daquela
+tabela (`banco.schema.tabela`), não a soma do banco ou do schema; a legenda
+diz "tamanho total da tabela do escopo" e a alternativa textual, "em 1
+tabela". Antes da correção só o banco era filtrado, e o PDF de `log_evento`
+mostrava a evolução de todas as tabelas do banco. A evidência está em
+[report-samples/evidencias-135](report-samples/evidencias-135/README.md).
+
+O campo `note` da evidência de `index.unused` está em português ("O auditor
+nunca recomenda DROP automaticamente; a remoção exige revisão humana.").
+Achados já gravados mantêm o texto antigo em inglês (o histórico não é
+reescrito). A assinatura de descarte trata os dois textos como iguais, então
+um achado descartado não reabre só por causa da tradução.

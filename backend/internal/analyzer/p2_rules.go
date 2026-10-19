@@ -11,6 +11,12 @@ import (
 // PreviousIndexes and sequence/function extras are optional facts. A missing
 // previous window is not a finding.
 
+// UnusedIndexNote is the "note" of index.unused evidence (pt-BR since #135;
+// it was "Never recommend DROP automatically"). The discard signature maps it
+// back to the old text, so a discarded finding is not reopened by the
+// translation alone (repository.EvidenceSignature).
+const UnusedIndexNote = "O auditor nunca recomenda DROP automaticamente; a remoção exige revisão humana."
+
 func unusedIndexFindings(facts SnapshotFacts) []Finding {
 	prev := map[string]IndexFact{}
 	for _, idx := range facts.PreviousIndexes {
@@ -54,7 +60,7 @@ func unusedIndexFindings(facts SnapshotFacts) []Finding {
 				"table_name":        idx.TableName,
 				"current_idx_scan":  idx.IdxScan,
 				"previous_idx_scan": earlier.IdxScan,
-				"note":              "Never recommend DROP automatically",
+				"note":              UnusedIndexNote,
 				// Denominator and window for the impact estimate (AN-03). Excluded
 				// from the discard signature because it moves every collection.
 				"impact_basis": map[string]any{

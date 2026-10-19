@@ -244,7 +244,7 @@ func (p *sectionPlan) emitLines(ctx context.Context, emit func(Line) error) erro
 		}
 	}
 	if len(d.Growth) > 0 {
-		if err := out(growthLines(d.Growth)...); err != nil {
+		if err := out(growthLines(d.Growth, growthSubject(d))...); err != nil {
 			return err
 		}
 	}

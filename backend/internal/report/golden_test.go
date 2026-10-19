@@ -65,6 +65,11 @@ func goldenDocuments() map[string]Document {
 	table.Findings = []Finding{partial.Findings[0]}
 	table.Baseline = &Baseline{RunID: "00000000-0000-0000-0000-000000000001", Status: "complete", ChangedTables: 1}
 	table.Regressions = []Regression{{FindingID: "f-unused", Severity: "high", Type: "index.unused", Object: "erp.public.orders_old_idx"}}
+	// #135: the table report plots that one table, not its database.
+	table.Growth = []GrowthPoint{
+		{RunID: "00000000-0000-0000-0000-000000000001", At: goldenStart.Add(-7 * 24 * time.Hour), Status: "success", SizeBytes: 900 << 10, Tables: 1},
+		{RunID: "00000000-0000-0000-0000-000000000003", At: goldenStart, Status: "success", SizeBytes: 1 << 20, Tables: 1},
+	}
 	return map[string]Document{"empty": empty, "partial": partial, "long": long, "table": table}
 }
 

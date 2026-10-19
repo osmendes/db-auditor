@@ -89,6 +89,64 @@ make up
 
 Detalhes: `backend/migrations/README.md`.
 
+## Versões do PostgreSQL auditadas (#134)
+
+O coletor roda contra PostgreSQL 14, 15, 16, 17 e 18; a CI testa as cinco
+versões (veja abaixo). Diferenças que afetam a operação:
+
+- **PostgreSQL 14 (e anteriores):** o schema `public` de cada banco concede
+  `CREATE` a `PUBLIC` por padrão. A verificação inicial da conexão somente
+  leitura recusa uma conta de coleta com qualquer permissão de escrita, então a
+  coleta falha com "target role has effective write or administration
+  privilege". Em cada banco auditado, rode uma vez como dono do banco ou
+  superuser: `REVOKE CREATE ON SCHEMA public FROM PUBLIC;` (é o padrão do 15+;
+  confirme antes que nenhuma aplicação cria objetos em `public` com outra
+  conta).
+- **Roles poderosas:** antes do 16, CREATEROLE é severidade alta e qualquer
+  participação (inclusive NOINHERIT ou WITH ADMIN OPTION) conta como caminho;
+  no 16+ valem SET/INHERIT/ADMIN de cada concessão. Detalhes em
+  [rules.md](rules.md#roles-poderosas-e-versão-do-postgresql-126-134).
+- **Views:** `security_invoker` só existe a partir do 15; no 14 aparece como
+  não coletado, nunca como falso.
+
+### Matriz de versões do PostgreSQL na CI (#134)
+
+O job `Backend integration (PostgreSQL N)` do workflow `CI` roda para
+N = 14, 15, 16, 17 e 18 com `postgres:N-alpine` como snapshot store e alvo:
+aplica todas as migrações numeradas, roda o teste ponta a ponta de roles
+(`TestPowerfulAccountRoleEndToEndIntegration`, que precisa passar e não pode
+ser pulado; o passo confere que a versão do servidor é N) e depois
+`go test -p 1 ./...`. Lint, cobertura, teste de escala, orçamento de consultas,
+relatório sob limite de memória, MongoDB e Trivy continuam só no job
+`Backend (Go)` (PostgreSQL 18), para não multiplicar o tempo da CI.
+
+TimescaleDB: o job usa `timescale/timescaledb:2.30.2-pgN` em 16, 17 e 18. A
+2.30.2 não tem imagem para 14 nem 15 (as últimas são 2.19.3-pg14 e
+2.28.3-pg15, fora de suporte), então nessas duas versões o serviço não sobe,
+`AUDITOR_TEST_TIMESCALE_ADMIN_URL` fica vazio e os testes só de TimescaleDB
+(`TestFullCollectionWithTimescaleIsCompleteIntegration`,
+`TestJobsAndPoliciesWithInfiniteNextStartIntegration`) são pulados, com a
+mensagem "TimescaleDB ... not explicitly enabled" no log. Os outros testes com
+dados de TimescaleDB (hypertables, agregados contínuos, regressão de chunks)
+usam só snapshots gravados no store, não precisam da extensão e rodam nas cinco
+versões.
+
+O ensaio de restauração (`TestRestoreDrillRoundTripIntegration`) usa o
+`pg_dump`/`pg_restore` do runner e só roda quando o cliente tem a mesma versão
+major do servidor: cliente mais antigo não lê o servidor, e um `pg_restore`
+mais novo emite configurações que o servidor antigo não conhece (o 17 envia
+`SET transaction_timeout`, recusado por 14–16).
+
+Para reproduzir localmente uma versão:
+
+```bash
+podman run -d --name pg14 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=db_auditor_test -p 56504:5432 postgres:14-alpine
+cd backend
+for m in migrations/[0-9][0-9]_*.sql; do psql -q -v ON_ERROR_STOP=1 postgresql://postgres@127.0.0.1:56504/db_auditor_test -f "$m" >/dev/null; done
+AUDITOR_TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:56504/db_auditor_test?sslmode=disable AUDITOR_TEST_DISPOSABLE=1 \
+  go test -p 1 -count=1 -v -run PowerfulAccountRole ./internal/repository/
+```
+
 ## Adicionar um ambiente MongoDB
 
 Crie um ambiente no snapshot store após aplicar as migrações e guarde o ID retornado:

@@ -5,7 +5,9 @@ Gerados a partir dos golden files de `backend/internal/report/golden_test.go`, s
 - `empty.pdf` — executivo sem achados;
 - `partial.pdf` — técnico de execução parcial, com lacuna no gráfico, matriz de prioridade, impacto com unidade/período, hipótese/ganho previsto/ganho medido e custos de manutenção;
 - `long.pdf` — técnico com 40 achados e evidência longa;
-- `table.pdf` — por tabela, com referência e regressão.
+- `table.pdf` — por tabela, com referência, regressão e a evolução de armazenamento só da tabela do escopo (#135).
+
+A pasta [`evidencias-135`](evidencias-135/README.md) traz o PDF de tabela gerado pelo worker a partir do snapshot store e as páginas em PNG antes e depois da correção da série de `log_evento`.
 
 O caso volumoso (5000 tabelas, 2000 achados, 162 páginas) é verificado pelo resumo em `testdata/volumous.golden.txt` e não é versionado aqui.
 

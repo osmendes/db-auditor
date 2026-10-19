@@ -27,6 +27,13 @@ heading	Histórico e referência de comparação
 body	Referência 00000000-0000-0000-0000-000000000001 | completa | +0 / -0 tabelas, 1 alteradas
 subheading	Novos achados de maior prioridade desde a referência
 body	alta · O índice não teve uso observado na janela entre duas coletas. · objeto erp.public.orders_old_idx · achado f-unused
+heading	Evolução de armazenamento
+body	Barras: tamanho total da tabela do escopo (unidade: bytes) por coleta completa. Coletas parciais aparecem como lacuna e não entram na variação.
+bar_bytes	25/09/2026 00000000|921600|1048576
+body	Alternativa textual: execução 00000000-0000-0000-0000-000000000001 em 25/09/2026 = 921600 bytes em 1 tabela (coleta completa).
+bar_bytes	02/10/2026 00000000|1048576|1048576
+body	Alternativa textual: execução 00000000-0000-0000-0000-000000000003 em 02/10/2026 = 1048576 bytes em 1 tabela (coleta completa).
+body	Variação entre coletas completas: +126976 bytes (+13.8%) no período 25/09/2026 12:00 UTC a 02/10/2026 12:00 UTC. Confirme que perfil e cobertura são comparáveis antes de atribuir a mudança a uma ação.
 heading	Riscos e prioridades
 body	Matriz de decisão (priority-v1): pontuação = peso da severidade × fator de impacto medido × confiança ÷ esforço. Impacto sem métrica não eleva a prioridade. Confirme dependências, equipe e janela antes de executar uma mudança.
 subheading	Matriz impacto × esforço × confiança × risco

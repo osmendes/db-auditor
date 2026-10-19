@@ -191,6 +191,9 @@ Toda ajuda é bem-vinda: texto mais claro, correção, teste ou função nova.
    make frontend-check frontend-typecheck frontend-test
    ```
 
+   A CI roda os testes de integração do backend em PostgreSQL 14, 15, 16, 17 e 18
+   (detalhes em [docs/ops.md](docs/ops.md#matriz-de-versões-do-postgresql-na-ci-134)).
+
 5. Abra um Pull Request neste repositório. No texto, diga o que mudou e por quê. Se existir uma issue, cite o número.
 
 Não é obrigatório saber toda a arquitetura para corrigir documentação ou um texto da tela. Se a dúvida for de produto, comece pelo [guia do usuário](docs/guia-do-usuario.md).

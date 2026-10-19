@@ -282,7 +282,7 @@ func legacyBuildLines(d Document) []Line {
 		}
 	}
 	if len(d.Growth) > 0 {
-		lines = append(lines, growthLines(d.Growth)...)
+		lines = append(lines, growthLines(d.Growth, growthSubject(d))...)
 	}
 	ranked := rankFindings(d.Findings)
 	lines = append(lines, Line{"Riscos e prioridades", "heading"})

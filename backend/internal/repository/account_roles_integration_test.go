@@ -57,11 +57,26 @@ func TestAccountRoleSnapshotInactivityIntegration(t *testing.T) {
 	}
 }
 
-// #126: login roles are collected with their own attributes and with the
-// power they reach through membership, persisted, loaded and turned into
-// security.powerful_role with the source role in the evidence. Roles without
-// LOGIN, members of ordinary roles and memberships granted WITH INHERIT
-// FALSE, SET FALSE are negative controls.
+// #126/#134: login roles are collected with their own attributes and with
+// the power they reach through membership, persisted, loaded through the
+// production facts path (LoadSnapshotFacts, which also carries the collected
+// server_version) and turned into security.powerful_role with the source role
+// in the evidence. Roles without LOGIN, members of ordinary roles and
+// memberships granted WITH INHERIT FALSE, SET FALSE are negative controls.
+//
+// The expectations depend on the server (#134), and CI runs this test on
+// PostgreSQL 14, 15, 16, 17 and 18:
+//   - before 16, pg_has_role(...,'MEMBER') decides every path: NOINHERIT and
+//     WITH ADMIN OPTION members still reach the role by SET ROLE, and
+//     CREATEROLE is high with createrole_grants_any_role (it grants itself any
+//     non-superuser role);
+//   - on 16+, SET/USAGE/MEMBER WITH ADMIN OPTION decide; INHERIT FALSE,
+//     SET FALSE gives nothing, ADMIN alone counts for BYPASSRLS, REPLICATION,
+//     CREATEROLE and the predefined roles but not over a SUPERUSER role, and
+//     CREATEROLE alone is medium.
+//
+// So moving the >= 160000 threshold of membershipModes fails on 15 or 16, and
+// a CREATEROLE severity that ignores the version fails on 14/15 or on 16+.
 func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	if os.Getenv("AUDITOR_TEST_DATABASE_URL") == "" || os.Getenv("AUDITOR_TEST_DISPOSABLE") != "1" {
 		t.Skip("requires disposable database")
@@ -79,6 +94,8 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	if err = pool.QueryRow(ctx, `SELECT current_setting('server_version_num')::int`).Scan(&version); err != nil {
 		t.Fatal(err)
 	}
+	pg16 := version >= 160000
+	t.Logf("server_version_num=%d (PostgreSQL 16+ semantics: %v)", version, pg16)
 	suffix := strings.ReplaceAll(time.Now().UTC().Format("150405.000000000"), ".", "")
 	name := func(base string) string { return "r126_" + base + "_" + suffix }
 	quoted := func(base string) string { return pgx.Identifier{name(base)}.Sanitize() }
@@ -117,6 +134,9 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	role("m_repl", "LOGIN IN ROLE "+quoted("g_repl"))
 	role("m_nested", "LOGIN IN ROLE "+quoted("g_mid"))
 	role("m_noinherit", "LOGIN NOINHERIT IN ROLE "+quoted("g_super"))
+	// NOINHERIT: no privilege by inheritance, but SET ROLE still reaches
+	// COPY ... PROGRAM ('MEMBER' before 16, 'SET' on 16+).
+	role("m_noinherit_exec", "LOGIN NOINHERIT IN ROLE pg_execute_server_program")
 	// Spelled out, not taken from the collector, so dropping one there fails.
 	predefinedRoles := []string{"pg_execute_server_program", "pg_read_server_files", "pg_write_server_files", "pg_read_all_data", "pg_write_all_data"}
 	for _, predefined := range predefinedRoles {
@@ -124,7 +144,14 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	}
 	role("app_user", "LOGIN IN ROLE "+quoted("g_plain"))
 	role("plain", "LOGIN")
-	if version >= 160000 {
+	adminTargets := map[string]string{
+		"m_admin_pg_execute_server_program": "pg_execute_server_program",
+		"m_admin_g_bypass":                  quoted("g_bypass"),
+		"m_admin_g_cr":                      quoted("g_cr"),
+		"m_admin_g_repl":                    quoted("g_repl"),
+		"m_admin_super":                     quoted("g_super"),
+	}
+	if pg16 {
 		role("m_noset_super", "LOGIN")
 		role("m_noset_exec", "LOGIN")
 		exec("GRANT " + quoted("g_super") + " TO " + quoted("m_noset_super") + " WITH INHERIT FALSE, SET FALSE")
@@ -133,19 +160,20 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 		role("m_inh_only", "LOGIN")
 		exec("GRANT pg_execute_server_program TO " + quoted("m_inh_only") + " WITH INHERIT TRUE, SET FALSE")
 		// ADMIN OPTION alone: the member grants the role to itself WITH
-		// SET/INHERIT TRUE in one command.
-		for base, target := range map[string]string{
-			"m_admin_pg_execute_server_program": "pg_execute_server_program",
-			"m_admin_g_bypass":                  quoted("g_bypass"),
-			"m_admin_g_cr":                      quoted("g_cr"),
-			"m_admin_g_repl":                    quoted("g_repl"),
-		} {
+		// SET/INHERIT TRUE in one command. ADMIN over a SUPERUSER role is no
+		// path: only a superuser may grant it.
+		for base, target := range adminTargets {
 			role(base, "LOGIN")
 			exec("GRANT " + target + " TO " + quoted(base) + " WITH ADMIN TRUE, INHERIT FALSE, SET FALSE")
 		}
-		// ADMIN over a SUPERUSER role is no path: only a superuser may grant it.
-		role("m_admin_super", "LOGIN")
-		exec("GRANT " + quoted("g_super") + " TO " + quoted("m_admin_super") + " WITH ADMIN TRUE, INHERIT FALSE, SET FALSE")
+	} else {
+		// Before 16 a grant WITH ADMIN OPTION is always a membership: even a
+		// NOINHERIT member reaches the role by SET ROLE ('MEMBER'), so the
+		// SUPERUSER role counts here too.
+		for base, target := range adminTargets {
+			role(base, "LOGIN NOINHERIT")
+			exec("GRANT " + target + " TO " + quoted(base) + " WITH ADMIN OPTION")
+		}
 	}
 
 	conn, err := pgx.Connect(ctx, url)
@@ -162,6 +190,13 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 			t.Fatalf("NOLOGIN role collected: %+v", item)
 		}
 	}
+	settings, err := postgres.CollectClosedSettings(ctx, conn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if settings["server_version"] == "" {
+		t.Fatalf("server_version not collected: %v", settings)
+	}
 	var env, run pgtype.UUID
 	if err = pool.QueryRow(ctx, `INSERT INTO audit_environment(name,type,discovery_mode) VALUES(gen_random_uuid()::text,'self_hosted','single_database') RETURNING id`).Scan(&env); err != nil {
 		t.Fatal(err)
@@ -173,9 +208,15 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 	if err = store.SaveAccountRoles(ctx, env, run, collected); err != nil {
 		t.Fatal(err)
 	}
-	facts := analyzer.SnapshotFacts{}
-	if err = store.loadAccountRoles(ctx, uuidString(env), uuidString(run), &facts); err != nil {
+	if err = store.SaveServerSettings(ctx, env, run, "db_auditor_test", settings); err != nil {
 		t.Fatal(err)
+	}
+	facts, err := store.LoadSnapshotFacts(ctx, uuidString(env), uuidString(run))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if facts.ServerVersion != settings["server_version"] {
+		t.Fatalf("server_version %q not loaded into the facts (%q)", settings["server_version"], facts.ServerVersion)
 	}
 	out, err := analyzer.SecurityAnalyzer{}.Analyze(ctx, facts)
 	if err != nil {
@@ -199,42 +240,46 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 		}
 		return out
 	}
-	expect := map[string]struct {
+	type expectation struct {
 		severity  string
 		attribute string   // own attribute expected true in the evidence
 		inherited []string // privilege:source, source in short form
-	}{
-		"super":       {"high", "superuser", nil},
-		"bypass":      {"high", "bypass_rls", nil},
-		"repl":        {"high", "replication", nil},
-		"createrole":  {"medium", "createrole", nil},
-		"m_super":     {"high", "", []string{"superuser:g_super"}},
-		"m_bypass":    {"high", "", []string{"bypass_rls:g_bypass"}},
-		"m_cr":        {"medium", "", []string{"createrole:g_cr"}},
-		"m_repl":      {"high", "", []string{"replication:g_repl"}},
-		"m_nested":    {"high", "", []string{"superuser:g_super"}},
-		"m_noinherit": {"high", "", []string{"superuser:g_super"}}, // NOINHERIT still allows SET ROLE
+		anyRole   bool     // createrole_grants_any_role expected (pre-16 CREATEROLE)
+	}
+	// CREATEROLE: high before 16 (grants itself any non-superuser role),
+	// medium on 16+.
+	createRoleSeverity := "medium"
+	if !pg16 {
+		createRoleSeverity = "high"
+	}
+	expect := map[string]expectation{
+		"super":            {"high", "superuser", nil, false},
+		"bypass":           {"high", "bypass_rls", nil, false},
+		"repl":             {"high", "replication", nil, false},
+		"createrole":       {createRoleSeverity, "createrole", nil, !pg16},
+		"m_super":          {"high", "", []string{"superuser:g_super"}, false},
+		"m_bypass":         {"high", "", []string{"bypass_rls:g_bypass"}, false},
+		"m_cr":             {createRoleSeverity, "", []string{"createrole:g_cr"}, !pg16},
+		"m_repl":           {"high", "", []string{"replication:g_repl"}, false},
+		"m_nested":         {"high", "", []string{"superuser:g_super"}, false},
+		"m_noinherit":      {"high", "", []string{"superuser:g_super"}, false}, // NOINHERIT still allows SET ROLE
+		"m_noinherit_exec": {"high", "", []string{"pg_execute_server_program:pg_execute_server_program"}, false},
+		// ADMIN paths: through ADMIN alone on 16+, through the membership
+		// that ADMIN OPTION implies before 16. REPLICATION counts.
+		"m_admin_pg_execute_server_program": {"high", "", []string{"pg_execute_server_program:pg_execute_server_program"}, false},
+		"m_admin_g_bypass":                  {"high", "", []string{"bypass_rls:g_bypass"}, false},
+		"m_admin_g_cr":                      {createRoleSeverity, "", []string{"createrole:g_cr"}, !pg16},
+		"m_admin_g_repl":                    {"high", "", []string{"replication:g_repl"}, false},
 	}
 	for _, predefined := range predefinedRoles {
-		expect["m_"+predefined] = struct {
-			severity  string
-			attribute string
-			inherited []string
-		}{"high", "", []string{predefined + ":" + predefined}}
+		expect["m_"+predefined] = expectation{"high", "", []string{predefined + ":" + predefined}, false}
 	}
-	if version >= 160000 {
-		add := func(base, severity string, inherited ...string) {
-			expect[base] = struct {
-				severity  string
-				attribute string
-				inherited []string
-			}{severity, "", inherited}
-		}
-		add("m_inh_only", "high", "pg_execute_server_program:pg_execute_server_program")
-		add("m_admin_pg_execute_server_program", "high", "pg_execute_server_program:pg_execute_server_program")
-		add("m_admin_g_bypass", "high", "bypass_rls:g_bypass")
-		add("m_admin_g_cr", "medium", "createrole:g_cr")
-		add("m_admin_g_repl", "high", "replication:g_repl")
+	negative := []string{"app_user", "plain", "g_super", "g_plain"}
+	if pg16 {
+		expect["m_inh_only"] = expectation{"high", "", []string{"pg_execute_server_program:pg_execute_server_program"}, false}
+		negative = append(negative, "m_noset_super", "m_noset_exec", "m_admin_super")
+	} else {
+		expect["m_admin_super"] = expectation{"high", "", []string{"superuser:g_super"}, false}
 	}
 	short := func(entry string) string { return strings.ReplaceAll(entry, "r126_", "") }
 	for base, want := range expect {
@@ -243,10 +288,13 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 			t.Fatalf("sem powerful_role para %s", base)
 		}
 		if g.severity != want.severity {
-			t.Fatalf("%s: severidade %s, esperado %s", base, g.severity, want.severity)
+			t.Fatalf("%s: severidade %s, esperado %s (server_version_num %d)", base, g.severity, want.severity, version)
 		}
 		if want.attribute != "" && g.evidence[want.attribute] != true {
 			t.Fatalf("%s: atributo %s ausente: %v", base, want.attribute, g.evidence)
+		}
+		if anyRole := g.evidence["createrole_grants_any_role"] == true; anyRole != want.anyRole {
+			t.Fatalf("%s: createrole_grants_any_role=%v, esperado %v (server_version_num %d)", base, anyRole, want.anyRole, version)
 		}
 		have := []string{}
 		for _, entry := range inherited(g) {
@@ -263,7 +311,7 @@ func TestPowerfulAccountRoleEndToEndIntegration(t *testing.T) {
 			}
 		}
 	}
-	for _, base := range []string{"app_user", "plain", "g_super", "g_plain", "m_noset_super", "m_noset_exec", "m_admin_super"} {
+	for _, base := range negative {
 		if g, ok := powerful[name(base)]; ok {
 			t.Fatalf("powerful_role inesperado para %s: %v", base, g.evidence)
 		}

@@ -26,6 +26,11 @@ func TestReadOnlyAggregateProbeIntegration(t *testing.T) {
 			t.Error(closeErr)
 		}
 	}()
+	// PostgreSQL 14 and older grant CREATE on schema public to PUBLIC, which the
+	// read-only preflight rightly treats as write access (#134 matrix). No-op on 15+.
+	if _, err = admin.Exec(ctx, `REVOKE CREATE ON SCHEMA public FROM PUBLIC`); err != nil {
+		t.Fatal(err)
+	}
 	schema := "quality_test_" + time.Now().UTC().Format("150405000000")
 	role := "quality_reader_" + time.Now().UTC().Format("150405000000")
 	password := "integration-only-" + role

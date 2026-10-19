@@ -21,6 +21,11 @@ func TestConnectReadOnlyIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() { _ = admin.Close(ctx) }()
+	// PostgreSQL 14 and older grant CREATE on schema public to PUBLIC, which the
+	// read-only preflight rightly treats as write access (#134 matrix). No-op on 15+.
+	if _, err = admin.Exec(ctx, `REVOKE CREATE ON SCHEMA public FROM PUBLIC`); err != nil {
+		t.Fatal(err)
+	}
 	if _, err = admin.Exec(ctx, `CREATE TABLE IF NOT EXISTS public.architecture_readonly_sentinel(id integer PRIMARY KEY)`); err != nil {
 		t.Fatal(err)
 	}

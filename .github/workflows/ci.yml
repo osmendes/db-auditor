@@ -242,6 +242,106 @@ jobs:
           exit-code: "1"
           ignore-unfixed: true
 
+  backend-postgres-matrix:
+    # #134: the backend integration/E2E suite against every supported
+    # PostgreSQL major. The role privilege paths (pg_has_role MEMBER before 16,
+    # SET/USAGE/MEMBER WITH ADMIN OPTION on 16+) and the CREATEROLE severity
+    # differ by version, and TestPowerfulAccountRoleEndToEndIntegration asserts
+    # each one. Lint, coverage, scale, query budgets, the memory-limited report
+    # and Trivy stay in the "Backend (Go)" job (PostgreSQL 18).
+    name: Backend integration (PostgreSQL ${{ matrix.postgres }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # TimescaleDB 2.30.2 (the version pinned for the main job) has no
+          # image for PostgreSQL 14 or 15 (the last ones are 2.19.3-pg14 and
+          # 2.28.3-pg15, both out of support). There the TimescaleDB service is
+          # not started and the TimescaleDB-only tests skip: they read
+          # AUDITOR_TEST_TIMESCALE_ADMIN_URL, which stays empty.
+          - postgres: "14"
+            timescale: ""
+          - postgres: "15"
+            timescale: ""
+          - postgres: "16"
+            timescale: timescale/timescaledb:2.30.2-pg16
+          - postgres: "17"
+            timescale: timescale/timescaledb:2.30.2-pg17
+          - postgres: "18"
+            timescale: timescale/timescaledb:2.30.2-pg18
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}-alpine
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: db_auditor_test
+        ports:
+          - 55437:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d db_auditor_test"
+          --health-interval 10s --health-timeout 5s --health-retries 12
+      timescale:
+        # An empty image skips the service (PostgreSQL 14 and 15).
+        image: ${{ matrix.timescale }}
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 55438:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s --health-timeout 5s --health-retries 12
+    env:
+      AUDITOR_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:55437/db_auditor_test?sslmode=disable
+      AUDITOR_TEST_TIMESCALE_ADMIN_URL: ${{ matrix.timescale != '' && 'postgresql://postgres@127.0.0.1:55438/postgres?sslmode=disable' || '' }}
+      AUDITOR_TEST_DISPOSABLE: "1"
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          # Same pin as the main job (see the comment there).
+          go-version: "1.27.1"
+          cache-dependency-path: backend/go.sum
+
+      - name: Server and client versions
+        run: |
+          psql "$AUDITOR_TEST_DATABASE_URL" -Atc "SELECT version(), current_setting('server_version_num')"
+          if [ -n "$AUDITOR_TEST_TIMESCALE_ADMIN_URL" ]; then
+            psql "$AUDITOR_TEST_TIMESCALE_ADMIN_URL" -Atc "SELECT current_setting('server_version_num'), default_version FROM pg_available_extensions WHERE name = 'timescaledb'"
+          else
+            echo "TimescaleDB: no image for PostgreSQL ${{ matrix.postgres }}; TimescaleDB-only tests skip"
+          fi
+          pg_dump --version
+
+      - name: Prepare disposable snapshot store
+        run: |
+          # Every numbered migration, in order (the same set as the main job).
+          for migration in migrations/[0-9][0-9]_*.sql; do
+            psql -v ON_ERROR_STOP=1 -q "$AUDITOR_TEST_DATABASE_URL" -f "$migration" >/dev/null
+          done
+
+      - name: Role privilege detection E2E (must run, not skip)
+        run: |
+          set -o pipefail
+          go test -p 1 -count=1 -v -run '^(TestPowerfulAccountRoleEndToEndIntegration|TestMembershipModesSwitchAtPostgreSQL16|TestPowerfulRoleCreateRoleSeverityByVersion)$' \
+            ./internal/repository/ ./internal/collectors/postgres/ ./internal/analyzer/ | tee roles-e2e.log
+          grep -q -- '--- PASS: TestPowerfulAccountRoleEndToEndIntegration' roles-e2e.log || { echo "::error::role E2E did not run"; exit 1; }
+          version=$(grep -o 'server_version_num=[0-9]*' roles-e2e.log | head -1 | cut -d= -f2)
+          if [ "$((version / 10000))" != "${{ matrix.postgres }}" ]; then
+            echo "::error::role E2E ran against server_version_num=${version}, expected PostgreSQL ${{ matrix.postgres }}"
+            exit 1
+          fi
+          echo "::notice title=Role E2E (PostgreSQL ${{ matrix.postgres }})::server_version_num=${version}"
+
+      - name: Integration and E2E tests
+        run: go test -p 1 -count=1 ./...
+
   frontend:
     name: Frontend (Bun)
     runs-on: ubuntu-latest

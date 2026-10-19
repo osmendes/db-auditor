@@ -234,8 +234,11 @@ func truncateRunes(value string, limit int) string {
 // growthLines renders the storage chart with its text alternative. A partial
 // collection is a gap: it is never plotted (so never reads as zero) and never
 // enters the variation, which is computed only between complete points.
-func growthLines(points []GrowthPoint) []Line {
-	lines := []Line{{"Evolução de armazenamento", "heading"}, {"Barras: tamanho total das tabelas (unidade: bytes) por coleta completa. Coletas parciais aparecem como lacuna e não entram na variação.", "body"}}
+//
+// subject names what each bar sums (growthSubject): the series follows the
+// report scope, so a table report plots that one table (#135).
+func growthLines(points []GrowthPoint, subject string) []Line {
+	lines := []Line{{"Evolução de armazenamento", "heading"}, {"Barras: " + subject + " (unidade: bytes) por coleta completa. Coletas parciais aparecem como lacuna e não entram na variação.", "body"}}
 	var maximum int64
 	complete := []GrowthPoint{}
 	for _, point := range points {
@@ -260,7 +263,7 @@ func growthLines(points []GrowthPoint) []Line {
 			continue
 		}
 		lines = append(lines, Line{fmt.Sprintf("%s %s|%d|%d", at, shortID, point.SizeBytes, maximum), "bar_bytes"},
-			Line{fmt.Sprintf("Alternativa textual: execução %s em %s = %d bytes em %d tabelas (coleta completa).", point.RunID, at, point.SizeBytes, point.Tables), "body"})
+			Line{fmt.Sprintf("Alternativa textual: execução %s em %s = %d bytes em %d %s (coleta completa).", point.RunID, at, point.SizeBytes, point.Tables, plural(point.Tables, "tabela", "tabelas")), "body"})
 	}
 	if len(complete) > 1 {
 		first, last := complete[0], complete[len(complete)-1]
@@ -275,6 +278,22 @@ func growthLines(points []GrowthPoint) []Line {
 		lines = append(lines, Line{"Variação não calculada: são necessárias ao menos duas coletas completas.", "body"})
 	}
 	return lines
+}
+
+// growthSubject describes what the storage series sums, following the same
+// database/schema/table filters as the report. It names no object, so it is
+// safe at every redaction level.
+func growthSubject(d Document) string {
+	switch {
+	case d.TableFilter != "":
+		return "tamanho total da tabela do escopo"
+	case d.SchemaFilter != "":
+		return "tamanho total das tabelas do schema do escopo"
+	case d.DatabaseFilter != "":
+		return "tamanho total das tabelas do banco do escopo"
+	default:
+		return "tamanho total das tabelas"
+	}
 }
 
 func reportTypeLabel(kind string) string {

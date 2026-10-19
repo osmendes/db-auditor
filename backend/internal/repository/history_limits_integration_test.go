@@ -133,7 +133,7 @@ VALUES($1::uuid,$2::uuid,'db','public',$3,$4,$4,$5,1,1,$6,$7)`, runs[i], envID, 
 		t.Fatalf("storage page counts buckets, not rows: %#v %d %v", storage, total, err)
 	}
 
-	growth, err := pool.Query(ctx, reportGrowthSQL, envID, base.Add(7*time.Hour), "")
+	growth, err := pool.Query(ctx, reportGrowthSQL, envID, base.Add(7*time.Hour), "", "", "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +162,7 @@ VALUES($1::uuid,$2::uuid,'db','public',$3,$4,$4,$5,1,1,$6,$7)`, runs[i], envID, 
 		limited, joined string
 		want            bool
 	}{
-		"report growth":    {reportGrowthSQL, []any{envID, base.Add(7 * time.Hour), ""}, "audit_run", "table_snapshot", true},
+		"report growth":    {reportGrowthSQL, []any{envID, base.Add(7 * time.Hour), "", "", ""}, "audit_run", "table_snapshot", true},
 		"storage history":  {storageHistorySQL["table"], []any{"hour", "table", envID, window.From, window.To, "", "", "", 50, 0}, "audit_run", "table_snapshot", true},
 		"table history":    {tableHistorySQL, []any{"hour", envID, "db", "public", "orders", window.From, window.To, 50, 0}, "table_snapshot", "audit_run", true},
 		"pre-#106 runbook": {`SELECT r.id, r.started_at, sum(t.total_size_bytes) FROM audit_run r LEFT JOIN table_snapshot t ON t.audit_run_id=r.id WHERE r.environment_id=$1::uuid GROUP BY r.id ORDER BY r.started_at DESC LIMIT 6`, []any{envID}, "audit_run", "table_snapshot", false},

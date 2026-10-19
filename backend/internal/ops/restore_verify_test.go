@@ -165,6 +165,14 @@ func TestRestoreDrillRoundTripIntegration(t *testing.T) {
 	if major := toolMajor(t, "pg_dump"); major == 0 || major < serverNum/10000 || toolMajor(t, "pg_restore") < serverNum/10000 {
 		t.Skipf("pg_dump/pg_restore %d older than server %d", major, serverNum/10000)
 	}
+	// The drill restores into a server of the same major as the source. A
+	// newer pg_restore is not guaranteed to load into an older server (17+
+	// sends SET transaction_timeout, which 14-16 reject), so the version
+	// matrix (#134) only runs the round trip where the client tools are not
+	// newer than the server.
+	if major := toolMajor(t, "pg_restore"); major > serverNum/10000 {
+		t.Skipf("pg_restore %d newer than server %d: restore into an older server is not supported", major, serverNum/10000)
+	}
 	suffix := strconv.FormatInt(time.Now().UnixNano(), 36)
 	frozen, target := "dba_drill_src_"+suffix, "dba_drill_dst_"+suffix
 	for _, name := range []string{frozen, target} {
